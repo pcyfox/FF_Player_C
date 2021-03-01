@@ -78,12 +78,6 @@ android {
 
     buildTypes {
         release {
-            if (appType.toInteger() == 0) {
-                manifestPlaceholders = [tk_icon: "@mipmap/ic_launcher_stu", tk_app_name: "教学-学生端"]
-            } else {
-                manifestPlaceholders = [tk_icon: "@mipmap/ic_launcher_teach", tk_app_name: "教学-教师端"]
-            }
-
             minifyEnabled true
             isMinifyEnabled = minifyEnabled
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -91,11 +85,6 @@ android {
             //debuggable false
         }
         debug {
-            if (appType.toInteger() == 0) {
-                manifestPlaceholders = [tk_icon: "@mipmap/ic_launcher_stu", tk_app_name: "教学-学生端"]
-            } else {
-                manifestPlaceholders = [tk_icon: "@mipmap/ic_launcher_teach", tk_app_name: "教学-教师端"]
-            }
             minifyEnabled false
             isMinifyEnabled = minifyEnabled
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
