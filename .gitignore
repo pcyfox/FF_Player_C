@@ -1,0 +1,7 @@
+/.idea/
+/.gradle/
+/lib_ffmpeg/build/
+/lib_ffmpeg/.cxx/
+/app/build/
+/module_recorder/build/
+/lib_ffmpeg/.cxx/
