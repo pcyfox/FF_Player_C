@@ -1,0 +1,29 @@
+{
+  "buildFiles": [
+    "/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/CMakeLists.txt",
+    "/Users/pcyfox/Library/Android/sdk/ndk/21.3.6528147/build/cmake/android.toolchain.cmake",
+    "/Users/pcyfox/Library/Android/sdk/ndk/21.3.6528147/build/cmake/platforms.cmake"
+  ],
+  "cleanCommands": [
+    "/Users/pcyfox/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/.cxx/cmake/release/arm64-v8a\" clean"
+  ],
+  "buildTargetsCommand": "/Users/pcyfox/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja  -C \"/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/.cxx/cmake/release/arm64-v8a\" {LIST_OF_TARGETS_TO_BUILD}",
+  "libraries": {
+    "ff_player-Release-arm64-v8a": {
+      "artifactName": "ff_player",
+      "buildCommand": "/Users/pcyfox/Library/Android/sdk/cmake/3.10.2.4988404/bin/ninja -C \"/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/.cxx/cmake/release/arm64-v8a\" ff_player",
+      "abi": "arm64-v8a",
+      "output": "/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/build/intermediates/cmake/release/obj/arm64-v8a/libff_player.so",
+      "runtimeFiles": [
+        "/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/libs/arm64-v8a/libavcodec-57.so",
+        "/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/libs/arm64-v8a/libavdevice-57.so",
+        "/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/libs/arm64-v8a/libavfilter-6.so",
+        "/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/libs/arm64-v8a/libavformat-57.so",
+        "/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/libs/arm64-v8a/libavutil-55.so",
+        "/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/libs/arm64-v8a/libswresample-2.so",
+        "/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/libs/arm64-v8a/libswscale-4.so",
+        "/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/libs/arm64-v8a/libpostproc-54.so"
+      ]
+    }
+  }
+}

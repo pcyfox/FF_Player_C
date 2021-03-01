@@ -1,0 +1,18 @@
+ninja: Entering directory `/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/.cxx/cmake/debug/arm64-v8a'
+[1/2] Building CXX object CMakeFiles/ff_player.dir/player/Player.cpp.o
+/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/player/Player.cpp:495:14: warning: format specifies type 'long long' but the argument has type 'int64_t' (aka 'long') [-Wformat]
+             fmt_ctx->bit_rate);
+             ^~~~~~~~~~~~~~~~~
+/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/include/../include/android_log.h:8:75: note: expanded from macro 'LOGD'
+#define LOGD(...) if(IS_DEBUG)__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+                                                                          ^~~~~~~~~~~
+/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/player/Player.cpp:1006:37: warning: implicit conversion of NULL constant to 'int' [-Wnull-conversion]
+                                    NULL,
+                                    ^~~~
+                                    0
+/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/src/main/cpp/player/Player.cpp:1008:37: warning: implicit conversion of NULL constant to 'int' [-Wnull-conversion]
+                                    NULL,
+                                    ^~~~
+                                    0
+3 warnings generated.
+[2/2] Linking CXX shared library /Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/build/intermediates/cmake/debug/obj/arm64-v8a/libff_player.so

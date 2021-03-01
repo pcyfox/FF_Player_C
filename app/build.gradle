@@ -1,0 +1,156 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
+def isMinifyEnabled = false
+def projectName = ""
+kapt {
+    arguments {
+        arg("AROUTER_MODULE_NAME", project.getName())
+    }
+}
+
+android {
+    buildToolsVersion = project.androidBuildTools
+    compileSdkVersion project.compileSdkVersion
+    defaultConfig {
+        if (appType.toInteger() == 0) {
+            applicationId "com.taike.edu.stu"
+            projectName = "TK-Stu"
+            versionCode project.StuAppVersionCode
+            versionName project.StuAppVersionName
+        } else {
+            applicationId "com.taike.edu.teach"
+            projectName = "TK-Teach"
+            versionCode project.TeachAppVersionCode
+            versionName project.TeachAppVersionName
+        }
+
+
+        minSdkVersion project.minSdkVersion
+        targetSdkVersion project.androidTargetSdk
+        multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
+        androidExtensions {//z支持动态添加控件（tip:LayoutContainer）
+            experimental = true
+        }
+        resConfigs('zh-rCN')
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
+
+        compileOptions {
+            sourceCompatibility rootProject.ext.javaSourceCompatibility
+            targetCompatibility rootProject.ext.javaTargetCompatibility
+        }
+
+        manifestPlaceholders = ["design_width_in_dp": 1920]
+        manifestPlaceholders = ["design_height_in_dp": 1080]
+
+    }
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file('taike.jks')
+            storePassword "dftk1689"
+            keyAlias "taike"
+            keyPassword "szyd2433"
+        }
+
+        release {
+            storeFile file('taike.jks')
+            storePassword "dftk1689"
+            keyAlias "taike"
+            keyPassword "szyd2433"
+        }
+    }
+
+    buildTypes {
+        release {
+            if (appType.toInteger() == 0) {
+                manifestPlaceholders = [tk_icon: "@mipmap/ic_launcher_stu", tk_app_name: "教学-学生端"]
+            } else {
+                manifestPlaceholders = [tk_icon: "@mipmap/ic_launcher_teach", tk_app_name: "教学-教师端"]
+            }
+
+            minifyEnabled true
+            isMinifyEnabled = minifyEnabled
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+            //debuggable false
+        }
+        debug {
+            if (appType.toInteger() == 0) {
+                manifestPlaceholders = [tk_icon: "@mipmap/ic_launcher_stu", tk_app_name: "教学-学生端"]
+            } else {
+                manifestPlaceholders = [tk_icon: "@mipmap/ic_launcher_teach", tk_app_name: "教学-教师端"]
+            }
+            minifyEnabled false
+            isMinifyEnabled = minifyEnabled
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                if ('debug' == buildType.name) {
+                    def flag
+                    if (isMinifyEnabled) {
+                        flag = "_minify_true_"
+                    } else {
+                        flag = "_minify_false_"
+                    }
+                    outputFileName = buildType.name + flag + projectName + "_" + defaultConfig.versionName + "_" + defaultConfig.versionCode + "_" + new Date().format("yyyy-MM-dd_HH-mm-ss") + ".apk"
+                } else {
+                    outputFileName = buildType.name + "_" + projectName + "_" + defaultConfig.versionName + "_" + defaultConfig.versionCode + "_" + new Date().format("yyyy-MM-dd_HH-mm-ss") + ".apk"
+                }
+            }
+
+            //编译完成后将apk复制到指定目录
+            variant.assemble.doLast {
+                variant.outputs.all {
+                    //复制到根目录下的output文件夹 如果不需要可以直接将代码删除
+                    File desFilePath = new File("${rootDir}/apks/" + projectName + "-" + defaultConfig.versionName)
+                    if (desFilePath.exists()) {
+                        desFilePath.deleteDir()
+                    }
+
+                    File out = new File("${rootDir}/app/build/outputs")
+                    //删除output目录
+                    //delete desFilePath
+                    // 将编译好的apk 复制到output目录，方便使用
+                    copy {
+                        from out
+                        into desFilePath
+                    }
+                }
+            }
+    }
+
+    buildFeatures {
+        dataBinding = true
+    }
+
+}
+
+dependencies {
+    if (isDeveloperMode.toBoolean()) {
+        debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
+    }
+    implementation 'com.android.support:multidex:1.0.3'
+    implementation 'me.jessyan:autosize:1.2.0'
+    implementation project(path: ':module_recorder')
+
+}

@@ -1,0 +1,23 @@
+include ':lib_ffmpeg'
+include ':module_recorder'
+include ':lib_video_cache',
+        ':lib_vitamio',
+        ':lib_cache',
+        'module_resourceviewer',
+        ':lib_glide',
+        ':app',
+        ':lib_common',
+        ':lib_third',
+        ':lib_utils',
+        ':lib_network',
+        ':lib_usbcamera',
+        ':lib_log',
+        ':module_stu',
+        ':module_teach',
+        ':module_bridge',
+        ':lib_x5web',
+        ':module_arcface',
+        ':lib_view',
+        ':lib_video',
+        'lib_rtsp_player'
+

@@ -1,0 +1,26 @@
+# ninja log v5
+1	7	0	clean	4b09511e43c6816c
+0	8	0	clean	4b09511e43c6816c
+0	6	0	clean	4b09511e43c6816c
+1	87	1614326702	CMakeFiles/ff_player.dir/player/Utils.cpp.o	39d207fb11923f4e
+5	89	1614326702	CMakeFiles/ff_player.dir/player/StateListener.cpp.o	fb06e3ae21244be3
+7	219	1614326702	CMakeFiles/ff_player.dir/jni/FFPlayerBridge.cpp.o	fbbd5ed735370e5
+3	296	1614326702	CMakeFiles/ff_player.dir/player/Muxer.c.o	5a9f236c0fc2ea2d
+4	932	1614326702	CMakeFiles/ff_player.dir/player/RecorderInfo.cpp.o	53283f4cdca54b4a
+1	970	1614326703	CMakeFiles/ff_player.dir/player/PlayerInfo.cpp.o	2917e7c060796e5d
+1	1337	1614326703	CMakeFiles/ff_player.dir/player/Player.cpp.o	2ccefec28aa46d02
+1337	1402	1614326703	/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/build/intermediates/cmake/release/obj/armeabi-v7a/libff_player.so	d981bffc03c473ae
+0	10	0	clean	4b09511e43c6816c
+2	310	1614327808	CMakeFiles/ff_player.dir/player/Utils.cpp.o	39d207fb11923f4e
+0	6	0	clean	4b09511e43c6816c
+0	6	0	clean	4b09511e43c6816c
+0	7	0	clean	4b09511e43c6816c
+6	96	1614334505	CMakeFiles/ff_player.dir/player/Utils.cpp.o	39d207fb11923f4e
+10	108	1614334505	CMakeFiles/ff_player.dir/player/StateListener.cpp.o	fb06e3ae21244be3
+11	224	1614334505	CMakeFiles/ff_player.dir/jni/FFPlayerBridge.cpp.o	fbbd5ed735370e5
+7	284	1614334505	CMakeFiles/ff_player.dir/player/Muxer.c.o	5a9f236c0fc2ea2d
+8	807	1614334506	CMakeFiles/ff_player.dir/player/RecorderInfo.cpp.o	53283f4cdca54b4a
+4	849	1614334506	CMakeFiles/ff_player.dir/player/PlayerInfo.cpp.o	2917e7c060796e5d
+3	1152	1614334506	CMakeFiles/ff_player.dir/player/Player.cpp.o	2ccefec28aa46d02
+1152	1209	1614334506	/Users/pcyfox/AndroidProjects/Rtsp_Player_C/lib_ffmpeg/build/intermediates/cmake/release/obj/armeabi-v7a/libff_player.so	d981bffc03c473ae
+0	7	0	clean	4b09511e43c6816c
