@@ -33,203 +33,6 @@ static bool isDebug = false;
 
 static int is_under_analysis_resource = 0;
 
-static int h2645_ps_to_nalu(const uint8_t *src, uint8_t src_size, uint8_t **out, int *out_size) {
-    int i;
-    int ret = 0;
-    uint8_t *p = NULL;
-    static const uint8_t nalu_header[] = {0x00, 0x00, 0x00, 0x01};
-
-    if (!out || !out_size) {
-        return AVERROR(EINVAL);
-    }
-
-    p = static_cast<uint8_t *>(av_malloc(sizeof(nalu_header) + src_size));
-
-    if (!p) {
-        return AVERROR(ENOMEM);
-    }
-
-    *out = p;
-    *out_size = sizeof(nalu_header) + src_size;
-
-    memcpy(p, nalu_header, sizeof(nalu_header));
-    memcpy(p + sizeof(nalu_header), src, src_size);
-
-    /* Escape 0x00, 0x00, 0x0{0-3} pattern */
-    for (i = 4; i < *out_size; i++) {
-        if (i < *out_size - 3 &&
-            p[i + 0] == 0 &&
-            p[i + 1] == 0 &&
-            p[i + 2] <= 3) {
-            uint8_t *new_data;
-
-            *out_size += 1;
-            new_data = static_cast<uint8_t *>(av_realloc(*out, *out_size));
-            if (!new_data) {
-                ret = AVERROR(ENOMEM);
-                goto done;
-            }
-            *out = p = new_data;
-
-            i = i + 2;
-            memmove(p + i + 1, p + i, *out_size - (i + 1));
-            p[i] = 0x03;
-        }
-    }
-    done:
-    if (ret < 0) {
-        av_freep(out);
-        *out_size = 0;
-    }
-
-    return ret;
-}
-
-static int set_start_code(AVPacket *out,
-                          const uint8_t *sps_pps, uint32_t sps_pps_size,
-                          const uint8_t *buf, uint32_t in_size) {
-
-    uint32_t offset = out->size;
-    uint8_t nal_header_size = 4;
-    int err;
-    err = av_grow_packet(out, sps_pps_size + in_size + nal_header_size);
-    if (err < 0)
-        return err;
-
-    if (sps_pps) {
-        memcpy(out->data + offset, sps_pps, sps_pps_size);
-    }
-
-    memcpy(out->data + sps_pps_size + nal_header_size + offset, buf, in_size);
-
-    if (!offset) {
-        AV_WB32(out->data + sps_pps_size, 1);
-    } else {
-        (out->data + offset + sps_pps_size)[0] =
-        (out->data + offset + sps_pps_size)[1] = 0;
-        (out->data + offset + sps_pps_size)[2] = 1;
-    }
-
-    return 0;
-}
-
-int h264_extra_data_to_annexb(const uint8_t *codec_extra_data, const int codec_extra_data_size,
-                              AVPacket *out_extra_data, int padding) {
-    uint16_t unit_size = 0;
-    uint64_t total_size = 0;
-    uint8_t *buffer = NULL;
-    uint8_t unit_nb = 0;//sps的数量，通常只有一个
-    uint8_t sps_done = 0;
-
-    uint8_t sps_seen = 0;//是否找到sps
-    uint8_t pps_seen = 0;//是否找到pps
-
-    uint8_t sps_offset = 0;
-    uint8_t pps_offset = 0;
-
-    /**
-     * AVCC
-     * bits
-     *  8   version ( always 0x01 )
-     *  8   avc profile ( sps[0][1] )
-     *  8   avc compatibility ( sps[0][2] )
-     *  8   avc level ( sps[0][3] )
-     *
-     *  6   reserved ( all bits on )
-     *  2   NALULengthSizeMinusOne    // 这个值是（前缀长度-1），值如果是3，那前缀就是4，因为4-1=3
-     *
-     *  3   reserved ( all bits on )
-     *  5   number of SPS NALUs (usually 1)
-     *
-     *  repeated once per SPS:
-     *  16     SPS size
-     *
-     *  variable   SPS NALU data
-     *  8   number of PPS NALUs (usually 1)
-     *
-     *  repeated once per PPS
-     *  16    PPS size
-     *  variable PPS NALU data
-     */
-
-    const uint8_t *extra_data = codec_extra_data + 4; //extra_data存放数据的格式如上，前4个字节没用
-    static const uint8_t nalu_header[4] = {0, 0, 0, 1}; //每个H264裸数据都是以 0001 4个字节为开头的
-    extra_data++;//跳过一个字节，这个也没用
-
-    sps_offset = pps_offset = -1;
-
-    /* retrieve sps and pps unit(s) */
-    unit_nb = *extra_data++ & 0x1f; /* 取 SPS 个数，理论上可以有多个, 但我没有见到过多 SPS 的情况*/
-
-    if (!unit_nb) {
-        goto pps;
-    } else {
-        sps_offset = 0;
-        sps_seen = 1;
-    }
-
-    while (unit_nb--) {
-        int err;
-        unit_size = AV_RB16(extra_data);
-        total_size += unit_size + 4; //加上4字节的h264 header, 即 0001
-
-        if (total_size > INT_MAX - padding) {
-            LOGE("Too big extradata size, corrupted stream or invalid MP4/AVCC bitstream\n");
-            av_free(buffer);
-            return AVERROR(EINVAL);
-        }
-
-        //2:表示上面 unit_size 的所占字结数
-        //这句的意思是 extra_data 所指的地址，加两个字节，再加 unit 的大小所指向的地址
-        //是否超过了能访问的有效地址空间
-        if (extra_data + 2 + unit_size > codec_extra_data + codec_extra_data_size) {
-            LOGE("Packet header is not contained in global extradata, ""corrupted stream or invalid MP4/AVCC bitstream\n");
-            av_free(buffer);
-            return AVERROR(EINVAL);
-        }
-
-        //分配存放 SPS 的空间
-        if ((err = av_reallocp(&buffer, total_size + padding)) < 0)
-            return err;
-
-        memcpy(buffer + total_size - unit_size - 4, nalu_header, 4);
-        memcpy(buffer + total_size - unit_size, extra_data + 2, unit_size);
-
-
-        extra_data += 2 + unit_size;
-
-        pps:
-        //当 SPS 处理完后，开始处理 PPS
-        if (!unit_nb && !sps_done++) {
-            unit_nb = *extra_data++; /* number of pps unit(s) */
-            if (unit_nb) {
-                pps_offset = total_size;
-                pps_seen = 1;
-            }
-        }
-    }
-
-
-    //余下的空间清0
-    if (buffer) {
-        memset(buffer + total_size, 0, padding);
-    }
-
-    if (!sps_seen)
-        av_log(NULL, AV_LOG_WARNING,
-               "Warning: SPS NALU missing or invalid. "
-               "The resulting stream may not play.\n");
-
-    if (!pps_seen)
-        av_log(NULL, AV_LOG_WARNING,
-               "Warning: PPS NALU missing or invalid. "
-               "The resulting stream may not play.\n");
-
-    out_extra_data->data = buffer;
-    out_extra_data->size = total_size;
-
-    return 0;
-}
 
 AVStream *findVideoStream(AVFormatContext *i_fmt_ctx) {
     int index = av_find_best_stream(i_fmt_ctx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
@@ -254,163 +57,6 @@ int GetNALUType(AVPacket *packet) {
         }
     }
     return nalu_type;
-}
-
-void get_sps_pps_form_extra_data(const uint8_t *codec_extra_data, const int codec_extra_data_size,
-                                 uint8_t **pps, int *ppsSize, uint8_t **sps,
-                                 int *spsSize,
-                                 int padding) {
-
-
-//    for (int i = 0; i < codec_extra_data_size; ++i) {
-//        LOGI("extra data i=%d,data= %02x", i, *(codec_extra_data + i));
-//    }
-
-
-    uint16_t sps_size, pps_size;
-    uint64_t sps_total_length = 0, pps_total_length = 0;//start code长度+真实数据长度
-    uint8_t unit_nb = 0;//sps的数量，通常只有一个
-    uint8_t sps_done = 0;
-
-    uint8_t sps_seen = 0;//是否找到sps
-    uint8_t pps_seen = 0;//是否找到pps
-
-    uint8_t *pps_buffer = *pps;
-    uint8_t *sps_buffer = *sps;
-
-
-    /**
-     * AVCC
-     * bits
-     *  8   version ( always 0x01 )
-     *  8   avc profile ( sps[0][1] )
-     *  8   avc compatibility ( sps[0][2] )
-     *  8   avc level ( sps[0][3] )
-     *byte_5:
-     *  6   reserved ( all bits on )
-     *  2   NALULengthSizeMinusOne    // 这个值是（前缀长度-1），值如果是3，那前缀就是4，因为4-1=3
-     *byte_6:
-     *  3   reserved ( all bits on )
-     *  5   number of SPS NALUs (usually 1)
-     *byte_7
-     *  ----------------SPS---------------------------
-     *  repeated once per SPS:
-     *
-     *
-     *
-     *  16     SPS size
-     *
-     *
-     *
-     *
-     *  variable   SPS NALU data
-     *
-     *
-     *
-     *  ----------------PPS---------------------------
-     *  8   number of PPS NALUs (usually 1)
-     *
-     *  repeated once per PPS
-     *  16    PPS size
-     *
-     *  variable PPS NALU data
-     */
-
-    const uint8_t *current_extra_data = codec_extra_data + 4; //extra_data存放数据的格式如上，前4个字节没用
-    static const uint8_t nalu_start_code[4] = {0, 0, 0, 1}; //每个H264裸数据都是以 0001 4个字节为开头的
-
-    //-----byte_5
-    current_extra_data++;//跳过一个字节，这个也没用,跳到第5个字节处
-
-    //获取nalu length所占字节数
-    int nalu_length_bytes = (*current_extra_data++ & 0x03) + 1;
-    LOGI("nalu_length_bytes=%d", nalu_length_bytes);
-
-    //------byte-6: 后五位是sps或pps的个数   retrieve sps and pps unit(s)
-    unit_nb = *current_extra_data++ & 0x1f; /* 取 SPS 个数，并将数据移动到byte_7,理论上可以有多个, 但我没有见到过多 SPS 的情况*/
-
-    if (!unit_nb) {
-        goto __pps;
-    } else {
-        sps_seen = 1;
-    }
-
-    while (unit_nb--) {
-        //-------byte_7、byte_8两个字节表示sps数据的长度
-        sps_size = AV_RB16(current_extra_data);
-
-        sps_total_length += sps_size + 4; //加上4字节的h264 header, 即 0001
-        if (sps_total_length > INT_MAX - padding) {
-            LOGE("Too big extradata size, corrupted stream or invalid MP4/AVCC bitstream\n");
-            spsSize = 0;
-            av_free(sps_buffer);
-            return;
-        }
-
-        {
-            // byte_9: 从第9个开始是nalu数据。检查包类型：
-            uint8_t nalu_type = current_extra_data[1];
-            nalu_type = nalu_type & 0x1f;
-            LOGI("nalu_type=%d", nalu_type);
-        }
-
-        //+2:表示上面 unit_size 的所占字结数
-        //这句的意思是 current_extra_data 所指的地址，加两个字节，再加 unit 的大小所指向的地址
-        //是否超过了能访问的有效地址空间
-        if (current_extra_data + 2 + sps_size > codec_extra_data + codec_extra_data_size) {
-            LOGE("Packet header is not contained in global extradata, ""corrupted stream or invalid MP4/AVCC bitstream\n");
-            spsSize = 0;
-            av_free(sps_buffer);
-            return;
-        }
-
-        //分配存放 SPS 的空间
-        if (av_reallocp(&sps_buffer, sps_total_length + padding) < 0) {
-            return;
-        }
-
-        //加入 start code
-        memcpy(sps_buffer, nalu_start_code, 4);
-        //再copy sps数据到buffer
-        memcpy(sps_buffer + sps_total_length - sps_size, current_extra_data + 2, sps_size);
-        *spsSize = sps_total_length + padding;
-
-        //跳到pps起始处
-        current_extra_data += 2 + sps_size;
-        __pps:
-        //当 SPS 处理完后，开始处理 PPS
-        if (!unit_nb && !sps_done++) {
-            // number of pps unit(s) ,强行当做只有一个 pps来处理
-            unit_nb = *current_extra_data++;
-            if (unit_nb) {
-                pps_seen = 1;
-                pps_size = AV_RB16(current_extra_data);
-                pps_total_length += pps_size + 4; //加上4字节的h264 header, 即 0001
-                if (av_reallocp(&pps_buffer, pps_total_length + padding) < 0) {
-                    return;
-                }
-                //加入 start code
-                memcpy(pps_buffer, nalu_start_code, 4);
-                //再copy pps数据到buffer
-                memcpy(pps_buffer + pps_total_length - pps_size, current_extra_data + 2, pps_size);
-                *ppsSize = pps_total_length + padding;
-            }
-
-        }
-
-    }
-
-
-    if (!sps_seen)
-        av_log(NULL, AV_LOG_WARNING,
-               "Warning: SPS NALU missing or invalid. "
-               "The resulting stream may not play.\n");
-
-    if (!pps_seen)
-        av_log(NULL, AV_LOG_WARNING,
-               "Warning: PPS NALU missing or invalid. "
-               "The resulting stream may not play.\n");
-
 }
 
 
@@ -635,6 +281,9 @@ void *RecordPkt(void *) {
     AVPacket *packet = av_packet_alloc();
     while (true) {
         RecordState recordState = recorderInfo->GetRecordState();
+        if (recordState == RECORD_PAUSE) {
+            continue;
+        }
         if (playerInfo->GetPlayState() == STOPPED || recordState == RECORD_STOP) {
             /*write file trailer*/
             LOGD("--------- recordState changed to stop ---------");
@@ -643,39 +292,25 @@ void *RecordPkt(void *) {
             recorderInfo->o_fmt_ctx = NULL;
             LOGI("--------- record stop ,and write trailer over ---------");
             break;
-        } else if (recordState == RECORD_PAUSE) {
-            continue;
         }
         int ret = recorderInfo->packetQueue.getAvPacket(packet);
         if (ret == PLAYER_RESULT_ERROR) {
             continue;
         }
-        //---------------write pkt data to file-----------
-        /*write packet and auto free packet*/
         //等待关键帧或sps、pps的出现
         if (recorderInfo->GetRecordState() == RECORD_PREPARED) {
             int type = GetNALUType(packet);
             if (type == 0x65 || type == 0x67) {
                 recorderInfo->SetRecordState(RECORDING);
-                LOGI("use idr frame in recorderInfo");
-            } else if (playerInfo) {
-                AVPacket *keyFrame = playerInfo->lastKeyFrame;
-                if (keyFrame && keyFrame->size) {
-                    av_interleaved_write_frame(recorderInfo->o_fmt_ctx, keyFrame);
-                    recorderInfo->SetRecordState(RECORDING);
-                    LOGI("use cache key frame in playerInfo");
-                }
-            }
-
-            if (recorderInfo->GetRecordState() == RECORDING) {
                 LOGI("-----------------real start recording--------------");
+            } else {
+                continue;
             }
         }
+
         if (recorderInfo->GetRecordState() == RECORDING) {
-            if (isDebug) {
-                int type = GetNALUType(packet);
-                LOGD("record pkt data type= %02x", type);
-            }
+            //---------------write pkt data to file-----------
+            /*write packet and auto free packet*/
             av_interleaved_write_frame(recorderInfo->o_fmt_ctx, packet);
             av_packet_unref(packet);
         }
@@ -744,99 +379,37 @@ void *Decode(void *param) {
 
 
 int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar) {
-    int buf_size = packet->size;
-    const uint8_t *buf = packet->data;
-    static int ptk_index = 1;
-    //  LOGI("------- ProcessPacket -pkt index--------%d]\n", ptk_index++);
-//    for (int k = 0; k < buf_size; ++k) {
-//        LOGI("pkt data k=%d,data= %02x", k, *(buf + k));
-//    }
-    if (buf_size == 0) {
-        return PLAYER_RESULT_ERROR;
-    }
     //检查是否有起始码,如果有说明是标准的H.264数据
-    if (buf_size > 5) {
-        int nalu_type = GetNALUType(packet);
-        PlayState playState = playerInfo->GetPlayState();
-        if (nalu_type == 0x65) {
-            if (playState != STOPPED) {
-                if (!playerInfo->lastKeyFrame) {
-                    playerInfo->lastKeyFrame = av_packet_alloc();
-                }
-                playerInfo->lastKeyFrame = av_packet_clone(packet);
+    if (packet->size < 5 || playerInfo == NULL) {
+        return PLAYER_RESULT_ERROR;
+    }
+    if (playerInfo->isReceivedSPS_PPS < 0) {
+        int type = GetNALUType(packet);
+        LOGD("NALU type=%0x", type);
+        if (type == 0x67 || type == 0x68) {
+            playerInfo->isReceivedSPS_PPS = 1;
+        }
+    }
+    if (playerInfo->isReceivedSPS_PPS <= 0) {
+        LOGW("refuse this pkt,because not received sps or pps");
+        return PLAYER_RESULT_ERROR;
+    }
+    if (recorderInfo != NULL) {
+        RecordState state = recorderInfo->GetRecordState();
+        if (state == RECORDING || state == RECORD_PREPARED || state == RECORD_START) {
+            AVPacket *copy = NULL;
+            copy = av_packet_clone(packet);
+            if (copy) {
+                //加入录制队列
+                recorderInfo->packetQueue.putAvPacket(copy);
+            } else {
+                LOGE("ProcessPacket clone packet fail!");
             }
         }
-
-        if (playState != STOPPED) {
-            RecordState state = recorderInfo->GetRecordState();
-            if (state == RECORDING || state == RECORD_PREPARED || state == RECORD_START) {
-                AVPacket *copy = NULL;
-                copy = av_packet_clone(packet);
-                if (copy) {
-                    recorderInfo->packetQueue.putAvPacket(copy);
-                } else {
-                    LOGE("ProcessPacket clone packet fail!");
-                }
-            }
-        }
-        //加入解码队列
-        if (playState != STOPPED) {
-            playerInfo->packetQueue.putAvPacket(packet);
-        }
-        return PLAYER_RESULT_OK;
     }
-    LOGW("ProcessPacket pkt is not a full h.264 pkt!");
-    int len, i, ret;
-    uint8_t unit_type;
-    int32_t nal_size;
-    const uint8_t *buf_end;
-    AVPacket *out = NULL;
-    out = av_packet_alloc();
-    AVPacket spspps_pkt;
-    if (!buf) {
-        return PLAYER_RESULT_ERROR;
-    }
-    buf_end = packet->data + buf_size;
-    //因为每个视频帧的前 4 个字节是视频帧的长度
-    //如果buf中的数据都不能满足4字节，所以后面就没有必要再进行处理了
-    if (buf + 4 > buf_end)
-        return PLAYER_RESULT_ERROR;
-
-    //将前四字节转换成整型,也就是取出视频帧长度
-    for (nal_size = 0, i = 0; i < 4; i++)
-        nal_size = (nal_size << 8) | buf[i];
-
-    //跳过4字节（也就是视频帧长度），从而指向真正的视频帧数据
-    buf += 4;
-    //视频帧的第一个字节里有NAL TYPE
-    unit_type = *buf & 0x1f;
-    //如果视频帧长度大于从 AVPacket 中读到的数据大小，说明这个数据包肯定是出错了
-    if (nal_size > buf_end - buf || nal_size < 0)
-        return PLAYER_RESULT_ERROR;
-
-    if (unit_type == 5) {
-        //在每个I帧之前都加 SPS/PPS
-        h264_extra_data_to_annexb(codecpar->extradata,
-                                  codecpar->extradata_size,
-                                  &spspps_pkt,
-                                  AV_INPUT_BUFFER_PADDING_SIZE);
-        if ((ret = set_start_code(out,
-                                  spspps_pkt.data, spspps_pkt.size,
-                                  buf, nal_size)) < 0) { return PLAYER_RESULT_ERROR; }
-    } else {
-        //在每个P帧之前都加NALU start code
-        if ((ret = set_start_code(out, NULL, 0, buf, nal_size)) < 0) {
-            return PLAYER_RESULT_ERROR;
-        }
-    }
-
-    //在每个帧之前都加NALU start code
-    if (set_start_code(out, NULL, 0, buf, buf_size) < 0) {
-        return PLAYER_RESULT_ERROR;
-    }
-    //-------------add data to queue------------
-    playerInfo->packetQueue.putAvPacket(out);
-    return PLAYER_RESULT_ERROR;
+    //加入解码队列
+    playerInfo->packetQueue.putAvPacket(packet);
+    return PLAYER_RESULT_OK;
 }
 
 
@@ -882,22 +455,18 @@ void *DeMux(void *param) {
             LOGD("DeMux() stop!");
             return NULL;
         }
-        AVPacket *i_pkt = av_packet_alloc();
-        if (!i_pkt || !playerInfo->inputContext) {
+        AVPacket *i_pkt = NULL;
+        i_pkt = av_packet_alloc();
+        if (i_pkt == NULL) {
+            LOGE("DeMux fail,because alloc av packet fail!");
             return NULL;
         }
-        if (playerInfo && av_read_frame(playerInfo->inputContext, i_pkt) == 0) {
-            if (i_pkt->stream_index == video_stream_index) {
-                ProcessPacket(i_pkt, i_av_codec_parameters);
-            }
+        if (playerInfo && av_read_frame(playerInfo->inputContext, i_pkt) == 0 &&
+            i_pkt->stream_index == video_stream_index) {
+            ProcessPacket(i_pkt, i_av_codec_parameters);
         }
     }
-    LOGD("DeMux() stop!");
-    /*
-    * pts and dts should increase monotonically
-    * pts should be >= dts
-    * AV_PKT_FLAG_KEY     0x0001 ///< The packet contains a keyframe
-    */
+    LOGD("DeMux() stop! start to delete playerInfo");
     static int num = 1;
     //释放资源
     delete playerInfo;

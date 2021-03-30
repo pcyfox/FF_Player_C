@@ -25,15 +25,10 @@ PlayerInfo::~PlayerInfo() {
 
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&cond);
-
     avformat_free_context(outContext);
     outContext = NULL;
     avformat_free_context(inputContext);
     inputContext = NULL;
-
-    if (lastKeyFrame) {
-        av_packet_free(&lastKeyFrame);
-    }
     decode_thread = 0;
     deMux_thread = 0;
     open_resource_thread = 0;

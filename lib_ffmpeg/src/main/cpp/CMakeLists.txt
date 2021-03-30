@@ -21,7 +21,6 @@ add_library( # Sets the name of the library.
         # Provides a relative path to your source file(s).
         ${player_dir}/Player.cpp
         ${player_dir}/PlayerInfo.cpp
-        ${player_dir}/Utils.cpp
         ${player_dir}/Muxer.c
         ${player_dir}/RecorderInfo.cpp
         ${player_dir}/StateListener.cpp
@@ -90,8 +89,8 @@ find_library(android-log-lib log)
 target_link_libraries(ff_player
         android
         mediandk
-        EGL
-        GLESv3
+        #EGL
+        #GLESv3
         log
 
         avcodec-57
