@@ -34,19 +34,6 @@ set_target_properties(avcodec-57
         PROPERTIES IMPORTED_LOCATION
         ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libavcodec-57.so)
 
-add_library(avdevice-57
-        SHARED
-        IMPORTED)
-set_target_properties(avdevice-57
-        PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libavdevice-57.so)
-
-add_library(avfilter-6
-        SHARED
-        IMPORTED)
-set_target_properties(avfilter-6
-        PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libavfilter-6.so)
 
 add_library(avformat-57
         SHARED
@@ -61,6 +48,23 @@ add_library(avutil-55
 set_target_properties(avutil-55
         PROPERTIES IMPORTED_LOCATION
         ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libavutil-55.so)
+
+
+
+
+add_library(avdevice-57
+        SHARED
+        IMPORTED)
+set_target_properties(avdevice-57
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libavdevice-57.so)
+
+add_library(avfilter-6
+        SHARED
+        IMPORTED)
+set_target_properties(avfilter-6
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libavfilter-6.so)
 
 add_library(swresample-2
         SHARED
@@ -100,4 +104,5 @@ target_link_libraries(ff_player
         avutil-55
         swresample-2
         swscale-4
-        postproc-54)
+        postproc-54
+        )
