@@ -295,7 +295,7 @@ public static *** w(...);
 -dontwarn org.apache.http.**
 -keep class org.apache.http.** { *;}
 
--keep  class * extends  com.taike.lib_common.application.AbstractApplication
+-keep  class * extends  com.pcyfox.lib_common.application.AbstractApplication
 -keepattributes SourceFile,LineNumberTable
 
 

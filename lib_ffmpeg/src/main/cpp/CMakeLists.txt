@@ -4,7 +4,7 @@
 cmake_minimum_required(VERSION 3.10.2)
 set(CMAKE_BUILD_TYPE "Debug")
 
-project("tk_ffmpeg")
+project("x_ffmpeg")
 
 set(include_dir ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(jni_dir ${CMAKE_CURRENT_SOURCE_DIR}/jni)

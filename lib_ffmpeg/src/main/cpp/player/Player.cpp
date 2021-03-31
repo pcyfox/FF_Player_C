@@ -315,10 +315,10 @@ void *RecordPkt(void *) {
             av_packet_unref(packet);
         }
     }
+    LOGI("----------------- record work stop,start to delete recordInfo--------------");
     //释放资源
     delete recorderInfo;
     recorderInfo = NULL;
-    LOGI("----------------- record work stop --------------");
     return (void *) PLAYER_RESULT_OK;
 }
 
@@ -447,12 +447,12 @@ void *DeMux(void *param) {
     AVCodecParameters *i_av_codec_parameters = i_video_stream->codecpar;
     int video_stream_index = i_video_stream->index;
     PlayState state;
-    while ((state = playerInfo->GetPlayState()) != STOPPED) {
+    while ((state = playerInfo->GetPlayState()) != STOPPED || state == PAUSE) {
         if (state == PAUSE) {
             continue;
         }
         if (playerInfo->GetPlayState() == STOPPED) {
-            LOGD("DeMux() stop!");
+            LOGD("DeMux() stop,due to state-STOPPED!");
             return NULL;
         }
         AVPacket *i_pkt = NULL;
@@ -624,6 +624,9 @@ int Play() {
 
 int Pause(int delay) {
     LOGI("--------Pause()  called-------");
+    if (playerInfo == NULL) {
+        return PLAYER_RESULT_ERROR;
+    }
     if (playerInfo->GetPlayState() != STARTED) {
         LOGE("--------Pause()  called-,fail player not started------");
         return PLAYER_RESULT_ERROR;

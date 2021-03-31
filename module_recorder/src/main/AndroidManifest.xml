@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.taike.module_recoder">
+    package="com.pcyfox.module_recoder">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -13,7 +13,7 @@
 
     <application>
         <activity
-            android:name=".ui.activity.MediaRecorderActivity"
+            android:name="com.pcyfox.module_recoder.ui.activity.MediaRecorderActivity"
             android:screenOrientation="landscape"
             android:turnScreenOn="true"
             android:windowSoftInputMode="stateHidden|stateUnchanged">

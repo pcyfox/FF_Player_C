@@ -63,7 +63,7 @@ const void *onStateChange(PlayState state) {
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_taike_lib_1ffmpeg_FFPlayer_setResource(JNIEnv *env, jobject thiz, jstring url) {
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_setResource(JNIEnv *env, jobject thiz, jstring url) {
     char *inputUrl = (char *) env->GetStringUTFChars(url, 0);
     if (!inputUrl) {
         LOGE("fuck! input url is NULL");
@@ -74,13 +74,13 @@ Java_com_taike_lib_1ffmpeg_FFPlayer_setResource(JNIEnv *env, jobject thiz, jstri
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_taike_lib_1ffmpeg_FFPlayer_play(JNIEnv *env, jobject thiz) {
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_play(JNIEnv *env, jobject thiz) {
     return Play();
 }
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_taike_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz, jstring store_dir,
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz, jstring store_dir,
                                                  jobject surface, int w, int h) {
     ANativeWindow *native_window = NULL;
     native_window = ANativeWindow_fromSurface(env, surface);
@@ -95,7 +95,7 @@ Java_com_taike_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz, jstr
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_taike_lib_1ffmpeg_FFPlayer_onSurfaceChange(JNIEnv *env, jobject thiz, jobject surface,
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_onSurfaceChange(JNIEnv *env, jobject thiz, jobject surface,
                                                     jint w, jint h) {
 
     ANativeWindow *native_window = NULL;
@@ -109,7 +109,7 @@ Java_com_taike_lib_1ffmpeg_FFPlayer_onSurfaceChange(JNIEnv *env, jobject thiz, j
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_taike_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug) {
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug) {
     if (!playerObject) {
         SetDebug(isDebug);
         playerObject = env->NewGlobalRef(thiz);
@@ -124,7 +124,7 @@ Java_com_taike_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug)
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_taike_lib_1ffmpeg_FFPlayer_stop(JNIEnv *env, jobject thiz) {
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_stop(JNIEnv *env, jobject thiz) {
     return Stop();
 }
 
@@ -132,14 +132,14 @@ Java_com_taike_lib_1ffmpeg_FFPlayer_stop(JNIEnv *env, jobject thiz) {
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_taike_lib_1ffmpeg_FFPlayer_pause(JNIEnv *env, jobject thiz) {
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_pause(JNIEnv *env, jobject thiz) {
     return Pause(0);
 }
 
 
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_taike_lib_1ffmpeg_FFPlayer_setRecordState(JNIEnv *env, jobject thiz, jint state) {
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_setRecordState(JNIEnv *env, jobject thiz, jint state) {
     switch (state) {
         case 0:
             return StartRecord();
@@ -155,7 +155,7 @@ Java_com_taike_lib_1ffmpeg_FFPlayer_setRecordState(JNIEnv *env, jobject thiz, ji
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_taike_lib_1ffmpeg_FFPlayer_muxAV(JNIEnv *env, jobject thiz, jstring audio_file,
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_muxAV(JNIEnv *env, jobject thiz, jstring audio_file,
                                           jstring video_file, jstring out_file) {
     char *audioFile = (char *) env->GetStringUTFChars(audio_file, 0);
     char *videoFile = (char *) env->GetStringUTFChars(video_file, 0);

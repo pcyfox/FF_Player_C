@@ -10,7 +10,6 @@ buildscript {
         maven {
             url 'http://repo.spring.io/libs-milestone/'
         }
-        maven { url 'https://dl.bintray.com/umsdk/release' }
         maven { url 'https://jitpack.io' }
     }
     dependencies {
@@ -26,14 +25,7 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven {
-            url 'http://repo.spring.io/libs-milestone/'
-        }
         maven { url 'https://jitpack.io' }
-        maven { url 'http://raw.github.com/saki4510t/libcommon/master/repository/' }
-        flatDir {
-            dirs project(':lib_usbcamera').file('libs')
-        }
     }
 }
 
