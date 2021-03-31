@@ -19,6 +19,7 @@ PlayerInfo::~PlayerInfo() {
         window = NULL;
     }
     if (AMediaCodec) {
+        AMediaCodec_stop(AMediaCodec);
         AMediaCodec_delete(AMediaCodec);
         AMediaCodec = NULL;
     }

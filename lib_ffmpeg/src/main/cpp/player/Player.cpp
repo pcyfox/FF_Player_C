@@ -642,7 +642,6 @@ int Stop() {
     playerInfo->SetPlayState(STOPPED);
     //停止录制
     StopRecord();
-    AMediaCodec_stop(playerInfo->AMediaCodec);
     LOGD("--------Stop Over------");
     return PLAYER_RESULT_OK;
 }
