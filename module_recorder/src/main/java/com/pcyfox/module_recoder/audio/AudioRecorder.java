@@ -130,6 +130,10 @@ public class AudioRecorder implements RecorderContract.Recorder {
         }
     }
 
+    public boolean isPrepared() {
+        return isPrepared;
+    }
+
     @Override
     public void pauseRecording() {
         Log.d(TAG, "pauseRecording() called");
