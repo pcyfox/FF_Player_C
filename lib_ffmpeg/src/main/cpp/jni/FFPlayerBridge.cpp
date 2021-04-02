@@ -81,7 +81,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_play(JNIEnv *env, jobject thiz) {
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz, jstring store_dir,
-                                                 jobject surface, int w, int h) {
+                                                  jobject surface, int w, int h) {
     ANativeWindow *native_window = NULL;
     native_window = ANativeWindow_fromSurface(env, surface);
     if (!native_window) {
@@ -96,7 +96,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz, jst
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_onSurfaceChange(JNIEnv *env, jobject thiz, jobject surface,
-                                                    jint w, jint h) {
+                                                     jint w, jint h) {
 
     ANativeWindow *native_window = NULL;
     native_window = ANativeWindow_fromSurface(env, surface);
@@ -145,6 +145,8 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_setRecordState(JNIEnv *env, jobject thiz, j
             return StartRecord();
         case 1:
             return PauseRecord();
+        case 2:
+            return ResumeRecord();
         case -1:
             return StopRecord();
     }
@@ -156,7 +158,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_setRecordState(JNIEnv *env, jobject thiz, j
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_muxAV(JNIEnv *env, jobject thiz, jstring audio_file,
-                                          jstring video_file, jstring out_file) {
+                                           jstring video_file, jstring out_file) {
     char *audioFile = (char *) env->GetStringUTFChars(audio_file, 0);
     char *videoFile = (char *) env->GetStringUTFChars(video_file, 0);
     char *outFile = (char *) env->GetStringUTFChars(out_file, 0);
@@ -166,4 +168,8 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_muxAV(JNIEnv *env, jobject thiz, jstring au
         return PLAYER_RESULT_ERROR;
     }
 }
-
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_resume(JNIEnv *env, jobject thiz) {
+    return Resume();
+}

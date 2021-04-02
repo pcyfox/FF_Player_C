@@ -635,6 +635,19 @@ int Pause(int delay) {
     return PLAYER_RESULT_OK;
 }
 
+int Resume() {
+    LOGI("--------Resume()  called-------");
+    if (playerInfo == NULL) {
+        return PLAYER_RESULT_ERROR;
+    }
+    if (playerInfo->GetPlayState() != PAUSE) {
+        LOGE("--------Pause()  called-,fail player not pause------");
+        return PLAYER_RESULT_ERROR;
+    }
+    playerInfo->SetPlayState(STARTED);
+    return PLAYER_RESULT_OK;
+}
+
 
 int Stop() {
     LOGI("--------Stop()  called-------");
@@ -691,6 +704,14 @@ int PauseRecord() {
     }
 }
 
+int ResumeRecord() {
+    if (recorderInfo && recorderInfo->GetRecordState() == RECORD_PAUSE) {
+        recorderInfo->SetRecordState(RECORD_START);
+        return PLAYER_RESULT_OK;
+    } else {
+        return PLAYER_RESULT_ERROR;
+    }
+}
 
 int Release() {
     LOGD("Release() called!");

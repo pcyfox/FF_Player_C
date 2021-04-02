@@ -7,6 +7,7 @@ import android.view.SurfaceView;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+
 @Keep
 public class FFPlayer {
     private static final String TAG = "FFPlayer";
@@ -32,13 +33,15 @@ public class FFPlayer {
     }
 
     public int startRecord() {
-        setRecordState(0);
-        return 1;
+        return setRecordState(0);
     }
 
     public int pauseRecord() {
-        setRecordState(1);
-        return 1;
+        return setRecordState(1);
+    }
+
+    public int resumeRecord() {
+        return setRecordState(2);
     }
 
     public int stopRecord() {
@@ -98,6 +101,9 @@ public class FFPlayer {
     public native int stop();
 
     public native int pause();
+
+    public native int resume();
+
 
     public native int muxAV(String audioFile, String videoFile, String outFile);
     //-------------for native-------------------------

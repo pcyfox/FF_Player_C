@@ -25,6 +25,8 @@ int Play();
 
 int Pause(int delay);
 
+int Resume();
+
 int Stop();
 
 void SetStateChangeListener(void (*listener)(PlayState));
@@ -36,6 +38,8 @@ int StopRecord();
 int StartRecord();
 
 int PauseRecord();
+
+int ResumeRecord();
 
 int Release();
 
