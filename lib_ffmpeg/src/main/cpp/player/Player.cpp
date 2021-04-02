@@ -696,6 +696,7 @@ int StopRecord() {
 
 
 int PauseRecord() {
+    LOGI("------PauseRecord() called------");
     if (recorderInfo) {
         recorderInfo->SetRecordState(RECORD_PAUSE);
         return PLAYER_RESULT_OK;
@@ -705,6 +706,7 @@ int PauseRecord() {
 }
 
 int ResumeRecord() {
+    LOGI("------ResumeRecord() called------");
     if (recorderInfo && recorderInfo->GetRecordState() == RECORD_PAUSE) {
         recorderInfo->SetRecordState(RECORD_START);
         return PLAYER_RESULT_OK;
