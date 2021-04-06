@@ -46,31 +46,26 @@ class RecorderView : RelativeLayout {
         audioRecorder.setRecorderCallback(object : RecorderContract.RecorderCallback {
             override fun onPrepareRecord() {
                 avRecorderCallback?.onPauseRecord()
-                Log.d(TAG, "onPrepareRecord() called")
             }
 
             override fun onStartRecord(output: File?) {
                 avRecorderCallback?.onStartRecord(output, File(videoPath))
-                Log.d(TAG, "onStartRecord() called with: output = $output")
             }
 
             override fun onPauseRecord() {
-                Log.d(TAG, "onPauseRecord() called")
+                avRecorderCallback?.onPauseRecord()
             }
 
             override fun onRecordProgress(mills: Long, amp: Int) {
                 avRecorderCallback?.onRecordProgress(mills, amp)
-                Log.d(TAG, "onRecordProgress() called with: mills = $mills, amp = $amp")
             }
 
             override fun onStopRecord(output: File?) {
                 avRecorderCallback?.onStopRecord(output, File(videoPath))
-                Log.d(TAG, "onStopRecord() called with: output = $output")
             }
 
             override fun onError(throwable: Exception?) {
                 avRecorderCallback?.onError(throwable)
-                Log.e(TAG, "onError() called with: throwable = $throwable")
             }
         })
     }
