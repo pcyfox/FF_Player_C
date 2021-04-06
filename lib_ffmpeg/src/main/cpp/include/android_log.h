@@ -7,7 +7,7 @@
 
 #include <android/log.h>
 
-#define IS_DEBUG  true
+#define IS_DEBUG false
 
 #define LOGV(...) if(IS_DEBUG)__android_log_print(ANDROID_LOG_VERBOSE, TAG, __VA_ARGS__)
 #define LOGD(...) if(IS_DEBUG)__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
