@@ -275,9 +275,8 @@ void *RecordPkt(void *) {
             recorderInfo->SetRecordState(RECORD_ERROR);
             return (void *) PLAYER_RESULT_ERROR;
         }
-        LOGI("--------------record prepared----------------");
-        recorderInfo->SetRecordState(RECORD_PREPARED);
     }
+
     AVPacket *packet = av_packet_alloc();
     while (true) {
         RecordState recordState = recorderInfo->GetRecordState();
@@ -297,8 +296,9 @@ void *RecordPkt(void *) {
         if (ret == PLAYER_RESULT_ERROR) {
             continue;
         }
+
         //等待关键帧或sps、pps的出现
-        if (recorderInfo->GetRecordState() == RECORD_PREPARED) {
+        if (recorderInfo->GetRecordState() == RECORD_START) {
             int type = GetNALUType(packet);
             if (type == 0x65 || type == 0x67) {
                 recorderInfo->SetRecordState(RECORDING);
@@ -323,13 +323,13 @@ void *RecordPkt(void *) {
 }
 
 
-void *Decode(void *param) {
+void *Decode(void *) {
     AMediaCodec *codec = playerInfo->AMediaCodec;
     AVPacket *packet = av_packet_alloc();
-    while (playerInfo->GetPlayState() == STARTED) {
+    PlayState state;
+    while ((state = playerInfo->GetPlayState()) && state == STARTED || state == PAUSE) {
         int ret = playerInfo->packetQueue.getAvPacket(packet);
         if (ret == PLAYER_RESULT_OK) {
-//            LOGD("start to decode data,size=%d", packet->size);
             uint8_t *data = packet->data;
             int length = packet->size;
             // 获取buffer的索引
@@ -396,19 +396,21 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar) {
     }
     if (recorderInfo != NULL) {
         RecordState state = recorderInfo->GetRecordState();
-        if (state == RECORDING || state == RECORD_PREPARED || state == RECORD_START) {
-            AVPacket *copy = NULL;
-            copy = av_packet_clone(packet);
-            if (copy) {
+        if (state != RECORD_PREPARED && state != RECORD_PAUSE && state != RECORD_ERROR) {
+            AVPacket *copyPkt = NULL;
+            copyPkt = av_packet_clone(packet);
+            if (copyPkt != NULL) {
                 //加入录制队列
-                recorderInfo->packetQueue.putAvPacket(copy);
+                recorderInfo->packetQueue.putAvPacket(copyPkt);
             } else {
                 LOGE("ProcessPacket clone packet fail!");
             }
         }
     }
-    //加入解码队列
-    playerInfo->packetQueue.putAvPacket(packet);
+    if (playerInfo->GetPlayState() == STARTED) {
+        //加入解码队列
+        playerInfo->packetQueue.putAvPacket(packet);
+    }
     return PLAYER_RESULT_OK;
 }
 
@@ -448,12 +450,13 @@ void *DeMux(void *param) {
     int video_stream_index = i_video_stream->index;
     PlayState state;
     while ((state = playerInfo->GetPlayState()) != STOPPED || state == PAUSE) {
-        if (state == PAUSE) {
-            continue;
-        }
         if (playerInfo->GetPlayState() == STOPPED) {
             LOGD("DeMux() stop,due to state-STOPPED!");
             return NULL;
+        }
+
+        if (state == PAUSE && recorderInfo->GetRecordState() == RECORD_PAUSE) {
+            continue;
         }
         AVPacket *i_pkt = NULL;
         i_pkt = av_packet_alloc();
@@ -520,6 +523,10 @@ void SetDebug(bool debug) {
 
 int SetResource(char *resource) {
     LOGD("---------SetResource() called with:resource=%s\n", resource);
+    if (playerInfo != NULL) {
+        LOGE("player is not stopped!");
+        return PLAYER_RESULT_ERROR;
+    }
     if (InitPlayerInfo()) {
         playerInfo->resource = resource;
     } else {
@@ -531,7 +538,7 @@ int SetResource(char *resource) {
 }
 
 
-int Configure(char *dest, ANativeWindow *window, int w, int h) {
+int Configure(ANativeWindow *window, int w, int h) {
     LOGD("----------Configure() called with: w=%d,h=%d", w, h);
     if (!playerInfo) {
         LOGE("player info not init !");
@@ -539,11 +546,6 @@ int Configure(char *dest, ANativeWindow *window, int w, int h) {
     if (is_under_analysis_resource) {
         LOGE("has resource under analysis!");
         return PLAYER_RESULT_ERROR;
-    }
-
-    if (dest) {
-        recorderInfo = new RecorderInfo;
-        recorderInfo->storeFile = dest;
     }
 
     if (playerInfo && playerInfo->GetPlayState() != ERROR) {
@@ -560,6 +562,10 @@ int Configure(char *dest, ANativeWindow *window, int w, int h) {
         return PLAYER_RESULT_ERROR;
     }
     LOGD("----------Configure Over-------------");
+    return PLAYER_RESULT_OK;
+}
+
+int OnWindowDestroy(ANativeWindow *window) {
     return PLAYER_RESULT_OK;
 }
 
@@ -598,14 +604,27 @@ void SetStateChangeListener(void (*listener)(PlayState)) {
 
 int Play() {
     LOGI("--------Play()  called-------");
-    if (playerInfo->GetPlayState() == PAUSE) {
+    if (playerInfo == NULL) {
+        LOGE("player not init,playerInfo == NULL!");
+        return PLAYER_RESULT_ERROR;
+    }
+    PlayState state = playerInfo->GetPlayState();
+    if (state == STARTED) {
+        LOGE("player is started!");
+        return PLAYER_RESULT_ERROR;
+    }
+
+    if (state == PAUSE) {
         playerInfo->SetPlayState(STARTED);
         return PLAYER_RESULT_OK;
     }
-    if (playerInfo->GetPlayState() != PREPARED) {
-        LOGE("player not PREPARED!\n");
+
+
+    if (state != PREPARED) {
+        LOGE("player not PREPARED!");
         return PLAYER_RESULT_ERROR;
     }
+
 
     media_status_t status = AMediaCodec_start(playerInfo->AMediaCodec);
     if (status != AMEDIA_OK) {
@@ -628,7 +647,7 @@ int Pause(int delay) {
         return PLAYER_RESULT_ERROR;
     }
     if (playerInfo->GetPlayState() != STARTED) {
-        LOGE("--------Pause()  called-,fail player not started------");
+        LOGE("--------Pause()  called fail ,player not started------");
         return PLAYER_RESULT_ERROR;
     }
     playerInfo->SetPlayState(PAUSE);
@@ -641,7 +660,7 @@ int Resume() {
         return PLAYER_RESULT_ERROR;
     }
     if (playerInfo->GetPlayState() != PAUSE) {
-        LOGE("--------Pause()  called-,fail player not pause------");
+        LOGE("--------Pause()  called fail, player not pause------");
         return PLAYER_RESULT_ERROR;
     }
     playerInfo->SetPlayState(STARTED);
@@ -651,8 +670,12 @@ int Resume() {
 
 int Stop() {
     LOGI("--------Stop()  called-------");
-    if (playerInfo->GetPlayState() != STARTED) {
+    if (playerInfo == NULL) {
         LOGE("playerInfo is NULL");
+        return PLAYER_RESULT_ERROR;
+    }
+    if (playerInfo->GetPlayState() != STARTED && playerInfo->GetPlayState() != PAUSE) {
+        LOGE("player is not start!");
         return PLAYER_RESULT_ERROR;
     }
     playerInfo->SetPlayState(STOPPED);
@@ -662,24 +685,48 @@ int Stop() {
     return PLAYER_RESULT_OK;
 }
 
+int PrepareRecorder(char *outPath) {
+    LOGI("---------PrepareRecorder() called with putPath=%s---------", outPath);
+    if (!outPath) {
+        return PLAYER_RESULT_ERROR;
+    }
+    if (recorderInfo == NULL) {
+        recorderInfo = new RecorderInfo;
+    }
+    recorderInfo->storeFile = outPath;
+    recorderInfo->SetRecordState(RECORD_PREPARED);
+    return PLAYER_RESULT_OK;
+}
 
 int StartRecord() {
     LOGD("------StartRecord() called");
     if (!playerInfo || !recorderInfo) {
-        LOGE("------StartRecord() player or recorder not init");
+        LOGE("------StartRecord() player init or recorder not prepare");
         return PLAYER_RESULT_ERROR;
     }
-    if (playerInfo->GetPlayState() != STARTED) {
-        LOGE("------StartRecord() player not start");
-        return PLAYER_RESULT_ERROR;
-    }
+    RecordState state = recorderInfo->GetRecordState();
 
-    if (recorderInfo->GetRecordState() == RECORDING) {
+    if (state == RECORDING) {
         LOGE("------StartRecord() recorder is recording!");
         return PLAYER_RESULT_ERROR;
     }
-    recorderInfo->SetRecordState(RECORD_START);
-    StartRecorderThread();
+
+    if (state == RECORD_ERROR) {
+        LOGE("------StartRecord() recorder error!");
+        return PLAYER_RESULT_ERROR;
+    }
+
+    if (state == RECORD_PAUSE) {
+        recorderInfo->SetRecordState(RECORDING);
+        return PLAYER_RESULT_OK;
+    }
+    if (state == RECORD_PREPARED) {
+        recorderInfo->SetRecordState(RECORD_START);
+        StartRecorderThread();
+    } else {
+        LOGE("start recorder in illegal state=%d", state);
+        return PLAYER_RESULT_ERROR;
+    }
     return PLAYER_RESULT_OK;
 }
 

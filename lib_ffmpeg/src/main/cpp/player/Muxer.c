@@ -48,7 +48,7 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
     AVStream *audio_in_stream = NULL, *video_in_stream = NULL;
     AVStream *audio_ou_stream = NULL, *video_out_stream = NULL;
 
-    int ret = 0;
+    int ret = PLAYER_RESULT_ERROR;
     // 解封装音频文件
     LOGDX(LOG_TAG, "open input audio");
     ret = avformat_open_input(&audio_fmtCtx, audio_srcPath, NULL, NULL);
@@ -262,14 +262,14 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
                     videoPacket->duration =
                             (double) frame_duration / (double) (av_q2d(o_time_base) * AV_TIME_BASE);
 
-     /*               AVRational tb = video_in_stream->time_base;
-                    LOGDX(LOG_TAG,
-                          "video pts:%s dts:%s duration %s size %d key:%d finish %d index %lld",
-                          av_ts2timestr(videoPacket->pts, &tb),
-                          av_ts2timestr(videoPacket->dts, &tb),
-                          av_ts2timestr(videoPacket->duration, &tb),
-                          videoPacket->size, videoPacket->flags & AV_PKT_FLAG_KEY, video_finish,
-                          video_pkt_index);*/
+                    /*               AVRational tb = video_in_stream->time_base;
+                                   LOGDX(LOG_TAG,
+                                         "video pts:%s dts:%s duration %s size %d key:%d finish %d index %lld",
+                                         av_ts2timestr(videoPacket->pts, &tb),
+                                         av_ts2timestr(videoPacket->dts, &tb),
+                                         av_ts2timestr(videoPacket->duration, &tb),
+                                         videoPacket->size, videoPacket->flags & AV_PKT_FLAG_KEY, video_finish,
+                                         video_pkt_index);*/
 
                 } else {
                     videoPacket->pts = av_rescale_q_rnd(videoPacket->pts,
@@ -283,13 +283,13 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
                                                              video_out_stream->time_base,
                                                              AV_ROUND_INF);
                     AVRational tb = video_in_stream->time_base;
- /*                   LOGDX(LOG_TAG,
-                          "video pts:%s dts:%s duration %s size %d key:%d finish %d index %lld",
-                          av_ts2timestr(videoPacket->pts, &tb),
-                          av_ts2timestr(videoPacket->dts, &tb),
-                          av_ts2timestr(videoPacket->duration, &tb),
-                          videoPacket->size, videoPacket->flags & AV_PKT_FLAG_KEY, video_finish,
-                          video_pkt_index);*/
+                    /*                   LOGDX(LOG_TAG,
+                                             "video pts:%s dts:%s duration %s size %d key:%d finish %d index %lld",
+                                             av_ts2timestr(videoPacket->pts, &tb),
+                                             av_ts2timestr(videoPacket->dts, &tb),
+                                             av_ts2timestr(videoPacket->duration, &tb),
+                                             videoPacket->size, videoPacket->flags & AV_PKT_FLAG_KEY, video_finish,
+                                             video_pkt_index);*/
                 }
             }
             video_pkt_index++;

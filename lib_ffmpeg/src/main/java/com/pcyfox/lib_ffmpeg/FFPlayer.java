@@ -60,8 +60,9 @@ public class FFPlayer {
         }
     }
 
-    public int config(String storeDir, SurfaceView surfaceView, int w, int h) {
-        configPlayer(storeDir, surfaceView.getHolder().getSurface(), w, h);
+
+    public int config(SurfaceView surfaceView, int w, int h) {
+        configPlayer(surfaceView.getHolder().getSurface(), w, h);
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
@@ -88,13 +89,17 @@ public class FFPlayer {
     //-------------for native-------------------------
     public native int init(int isDebug);
 
-    public native int configPlayer(String storeDir, Surface surface, int w, int h);
+    public native int configPlayer(Surface surface, int w, int h);
 
     public native int onSurfaceChange(Surface surface, int w, int h);
+
+    public native int surfaceDestroyed(SurfaceHolder holder);
 
     public native int setResource(String url);
 
     public native int play();
+
+    public native int prepareRecorder(String outFilePath);
 
     private native int setRecordState(int state);
 
@@ -103,7 +108,6 @@ public class FFPlayer {
     public native int pause();
 
     public native int resume();
-
 
     public native int muxAV(String audioFile, String videoFile, String outFile);
     //-------------for native-------------------------

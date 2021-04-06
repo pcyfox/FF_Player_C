@@ -17,18 +17,33 @@
 
     <application
         android:allowBackup="true"
-        android:label="Rtsp_Player_C"
-        android:icon="@drawable/ic_baseline_adb_24"
-        android:supportsRtl="true"
         android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_baseline_adb_24"
+        android:label="Rtsp_Player_C"
         android:largeHeap="true"
+        android:requestLegacyExternalStorage="true"
+        android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        tools:replace="android:label"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:replace="android:label">
+        <activity
+            android:name="com.pcyfox.module_recoder.ui.activity.TestActivity"
+            android:screenOrientation="landscape"
+            android:turnScreenOn="true"
+            android:windowSoftInputMode="stateHidden|stateUnchanged">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name="com.pcyfox.module_recoder.ui.activity.MediaRecorderActivity"
+            android:screenOrientation="landscape"
+            android:turnScreenOn="true"
+            android:windowSoftInputMode="stateHidden|stateUnchanged" />
     </application>
-
-
 
 
 </manifest>

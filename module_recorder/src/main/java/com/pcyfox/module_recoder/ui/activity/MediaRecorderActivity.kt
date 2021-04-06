@@ -142,7 +142,8 @@ class MediaRecorderActivity : AppCompatActivity() {
             File(videoPath).createNewFile()
             ffPlayer?.run {
                 if (setResource(recorder_tip.text.toString()) > 0) {
-                    config(videoPath, recorder_rtp_view, recorder_rtp_view.width, recorder_rtp_view.height)
+                    prepareRecorder(videoPath)
+                    config(recorder_rtp_view, recorder_rtp_view.width, recorder_rtp_view.height)
                 }
             }
 

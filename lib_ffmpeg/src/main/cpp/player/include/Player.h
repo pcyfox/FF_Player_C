@@ -17,31 +17,35 @@ int save(char *url, char *dest);
 
 int SetResource(char *resource);
 
-int Configure(char *dest, ANativeWindow *window, int w, int h);
+int PrepareRecorder(char *outPath);
+
+int Configure(ANativeWindow *window, int w, int h);
 
 int OnWindowChange(ANativeWindow *window, int w, int h);
 
-int Play();
+int OnWindowDestroy(ANativeWindow *window);
+
+int Play(void);
 
 int Pause(int delay);
 
-int Resume();
+int Resume(void);
 
-int Stop();
+int Stop(void);
 
 void SetStateChangeListener(void (*listener)(PlayState));
 
-int PauseRecord();
+int PauseRecord(void);
 
-int StopRecord();
+int StopRecord(void);
 
-int StartRecord();
+int StartRecord(void);
 
-int PauseRecord();
+int PauseRecord(void);
 
-int ResumeRecord();
+int ResumeRecord(void);
 
-int Release();
+int Release(void);
 
 #endif
 
