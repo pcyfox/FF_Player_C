@@ -1,5 +1,4 @@
 
-#include "android_log.h"
 #include <android/native_window_jni.h>
 #include <android/native_window.h>
 #include <media/NdkMediaCodec.h>
@@ -134,7 +133,7 @@ void *OpenResource(void *res) {
             return (void *) PLAYER_RESULT_ERROR;
         }
 
-        LOGD("----------find stream info success!-------------");
+        LOGI("----------find stream info success!-------------");
         playerInfo->resource = url;
 
         LOGD("----------fmt_ctx:streams number=%d,bit rate=%lld\n", fmt_ctx->nb_streams,
@@ -159,7 +158,16 @@ void *OpenResource(void *res) {
 
         AVCodecParameters *codecpar = NULL;
         codecpar = playerInfo->inputVideoStream->codecpar;
-        if (!codecpar) {
+
+        if (isDebug) {
+            uint8_t exSize = codecpar->extradata_size;
+            if (exSize > 0) {
+                uint8_t *extraData = codecpar->extradata;
+                printCharsHex((char *) extraData, exSize, exSize - 1, "SPS-PPS");
+            }
+        }
+
+        if (codecpar == NULL) {
             playerInfo->SetPlayState(ERROR);
             is_under_analysis_resource = 0;
             LOGE("can't get video stream params\n");
@@ -198,7 +206,6 @@ void *OpenResource(void *res) {
     is_under_analysis_resource = 0;
     return (void *) PLAYER_RESULT_OK;
 }
-
 
 //抽取音频数据
 int getAudioData(AVFormatContext *ctx, char *dest) {
@@ -299,7 +306,7 @@ void *RecordPkt(void *) {
 
         //等待关键帧或sps、pps的出现
         if (recorderInfo->GetRecordState() == RECORD_START) {
-            int type = GetNALUType(packet);
+            int type = packet->flags;
             if (type == 0x65 || type == 0x67) {
                 recorderInfo->SetRecordState(RECORDING);
                 LOGI("-----------------real start recording--------------");
@@ -307,7 +314,6 @@ void *RecordPkt(void *) {
                 continue;
             }
         }
-
         if (recorderInfo->GetRecordState() == RECORDING) {
             //---------------write pkt data to file-----------
             /*write packet and auto free packet*/
@@ -327,7 +333,7 @@ void *Decode(void *) {
     AMediaCodec *codec = playerInfo->AMediaCodec;
     AVPacket *packet = av_packet_alloc();
     PlayState state;
-    while ((state = playerInfo->GetPlayState()) && state == STARTED || state == PAUSE) {
+    while ((state = playerInfo->GetPlayState()) || state == STARTED || state == PAUSE) {
         int ret = playerInfo->packetQueue.getAvPacket(packet);
         if (ret == PLAYER_RESULT_OK) {
             uint8_t *data = packet->data;
@@ -383,17 +389,14 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar) {
     if (packet->size < 5 || playerInfo == NULL) {
         return PLAYER_RESULT_ERROR;
     }
-    if (playerInfo->isReceivedSPS_PPS < 0) {
-        int type = GetNALUType(packet);
-        LOGD("NALU type=%0x", type);
-        if (type == 0x67 || type == 0x68) {
-            playerInfo->isReceivedSPS_PPS = 1;
-        }
+    int type = GetNALUType(packet);
+    //  LOGD("------ProcessPacket NALU type=%0x", type);
+    packet->flags = type;
+    if (type == 0x67 && playerInfo->lastNALUType == type) {
+        LOGW("------ProcessPacket more than one SPS in this GOP");
+     //   return PLAYER_RESULT_ERROR;
     }
-    if (playerInfo->isReceivedSPS_PPS <= 0) {
-        LOGW("refuse this pkt,because not received sps or pps");
-        return PLAYER_RESULT_ERROR;
-    }
+    playerInfo->lastNALUType = type;
     if (recorderInfo != NULL) {
         RecordState state = recorderInfo->GetRecordState();
         if (state != RECORD_PREPARED && state != RECORD_PAUSE && state != RECORD_ERROR) {
@@ -464,9 +467,12 @@ void *DeMux(void *param) {
             LOGE("DeMux fail,because alloc av packet fail!");
             return NULL;
         }
-        if (playerInfo && av_read_frame(playerInfo->inputContext, i_pkt) == 0 &&
+        int ret = av_read_frame(playerInfo->inputContext, i_pkt);
+        if (playerInfo && ret == 0 &&
             i_pkt->stream_index == video_stream_index) {
             ProcessPacket(i_pkt, i_av_codec_parameters);
+        } else if (ret < 0) {
+            LOGE("read stream of eof!");
         }
     }
     LOGD("DeMux() stop! start to delete playerInfo");
@@ -522,7 +528,7 @@ void SetDebug(bool debug) {
 }
 
 int SetResource(char *resource) {
-    LOGD("---------SetResource() called with:resource=%s\n", resource);
+    LOGI("---------SetResource() called with:resource=%s\n", resource);
     if (playerInfo != NULL) {
         LOGE("player is not stopped!");
         return PLAYER_RESULT_ERROR;
@@ -539,7 +545,7 @@ int SetResource(char *resource) {
 
 
 int Configure(ANativeWindow *window, int w, int h) {
-    LOGD("----------Configure() called with: w=%d,h=%d", w, h);
+    LOGI("----------Configure() called with: w=%d,h=%d", w, h);
     if (!playerInfo) {
         LOGE("player info not init !");
     }
@@ -686,7 +692,7 @@ int Stop() {
 }
 
 int PrepareRecorder(char *outPath) {
-    LOGI("---------PrepareRecorder() called with putPath=%s---------", outPath);
+    LOGI("---------PrepareRecorder() called with putPath=%s", outPath);
     if (!outPath) {
         return PLAYER_RESULT_ERROR;
     }
@@ -699,7 +705,7 @@ int PrepareRecorder(char *outPath) {
 }
 
 int StartRecord() {
-    LOGD("------StartRecord() called");
+    LOGI("------StartRecord() called----------");
     if (!playerInfo || !recorderInfo) {
         LOGE("------StartRecord() player init or recorder not prepare");
         return PLAYER_RESULT_ERROR;

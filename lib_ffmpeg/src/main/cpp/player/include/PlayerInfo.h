@@ -49,7 +49,7 @@ public:
     pthread_mutex_t mutex;
     pthread_cond_t cond;
 
-    int8_t isReceivedSPS_PPS = -1;
+    int8_t lastNALUType= 0;
 
     const char *mine = "video/avc";
 public:

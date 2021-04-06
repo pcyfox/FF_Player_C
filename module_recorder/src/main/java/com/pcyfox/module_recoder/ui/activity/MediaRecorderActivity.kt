@@ -29,10 +29,9 @@ class MediaRecorderActivity : AppCompatActivity() {
     private var ffPlayer: FFPlayer? = null
     private var isMuxAVWorking = false
 
-    private val url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
-    // private val url = "rtsp://admin:taike@2020@192.168.28.42:554/cam/realmonitor?channel=1&subtype=0&unicast=true&proto=Onvif"
+    //private val url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
+    private val url = "/storage/emulated/0/test/20210406_16_26_12/1/out.mp4"
 
-    //private val url = "rtsp://192.168.43.45:1935/1"
     private val storeDir = Environment.getExternalStorageDirectory().absolutePath + "/test/"
     private val audioRecorder = AudioRecorder.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {

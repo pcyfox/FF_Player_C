@@ -17,6 +17,7 @@ import java.io.File
 class TestActivity : AppCompatActivity() {
     private val TAG = "TestActivity"
     private val url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
+  //  private val url = "/storage/emulated/0/test/20210406_16_26_12/1/out.mp4"
     private val storeDir = Environment.getExternalStorageDirectory().absolutePath + "/test/"
 
     private var recordCount = 0

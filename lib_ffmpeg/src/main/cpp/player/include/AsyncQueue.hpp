@@ -3,6 +3,7 @@
 //
 
 
+#pragma once
 #ifndef AUDIO_PRACTICE_QUEUE_H
 #define AUDIO_PRACTICE_QUEUE_H
 

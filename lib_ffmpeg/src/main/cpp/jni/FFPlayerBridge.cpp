@@ -53,7 +53,7 @@ void *ChangeState(void *s) {
 
 const void *onStateChange(PlayState state) {
     if (playerObject && vm) {
-        pthread_t thread = NULL;
+        pthread_t thread = 0;
         changeState = state;
         pthread_create(&thread, NULL, ChangeState, &changeState);
         pthread_detach(pthread_self());
