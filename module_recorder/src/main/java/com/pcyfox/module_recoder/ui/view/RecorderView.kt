@@ -20,15 +20,15 @@ import java.lang.Exception
 class RecorderView : RelativeLayout {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs);
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
-            context,
-            attrs
+        context,
+        attrs
     )
 
     constructor(
-            context: Context?,
-            attrs: AttributeSet?,
-            defStyleAttr: Int,
-            defStyleRes: Int
+        context: Context?,
+        attrs: AttributeSet?,
+        defStyleAttr: Int,
+        defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes)
 
     private val sv = SurfaceView(context)
@@ -75,17 +75,21 @@ class RecorderView : RelativeLayout {
         ffPlayer.setOnStateChangeListener(listener)
     }
 
-    fun prepareRecorder(videoPath: String, audioPath: String) {
+    fun prepareRecorder(videoPath: String?, audioPath: String?="") {
         Log.d(TAG, "prepareRecorder() called with: videoPath = $videoPath, audioPath = $audioPath")
-        this.videoPath = videoPath
-        this.audioPath = audioPath
-        audioRecorder.prepare(
+        if (!videoPath.isNullOrEmpty()) {
+            this.videoPath = videoPath
+            ffPlayer.prepareRecorder(videoPath);
+        }
+        if (!audioPath.isNullOrEmpty()) {
+            this.audioPath = audioPath
+            audioRecorder.prepare(
                 audioPath,
                 MediaConstants.DEFAULT_CHANNEL_COUNT,
                 MediaConstants.DEFAULT_RECORD_SAMPLE_RATE,
                 MediaConstants.DEFAULT_RECORD_ENCODING_BITRATE
-        )
-        ffPlayer.prepareRecorder(videoPath);
+            )
+        }
     }
 
     fun startRecord(): Boolean {
@@ -97,6 +101,18 @@ class RecorderView : RelativeLayout {
             return false
         }
         audioRecorder.startRecording()
+        return ffPlayer.startRecord() > 0
+    }
+
+
+    fun startRecordVideo(): Boolean {
+        Log.d(TAG, "startRecordVideo() called")
+        if (TextUtils.isEmpty(videoPath)) {
+            return false
+        }
+        if (ffPlayer.state != PlayState.STARTED) {
+            return false
+        }
         return ffPlayer.startRecord() > 0
     }
 
@@ -117,16 +133,19 @@ class RecorderView : RelativeLayout {
     }
 
 
-    fun setResource(url: String) {
+    fun setResource(url: String, isOnlyRecordeVideo: Boolean = false) {
         ffPlayer.run {
             if (setResource(url) > 0) {
-                config(sv, sv.width, sv.height)
+                config(sv, sv.width, sv.height, isOnlyRecordeVideo)
             } else {
                 Log.e(TAG, "start() called,open url=$url fail!")
             }
         }
     }
 
+    fun start(): Boolean {
+        return ffPlayer.start() > 0
+    }
 
     fun play(): Boolean {
         return ffPlayer.play() > 0
@@ -150,8 +169,8 @@ class RecorderView : RelativeLayout {
     @WorkerThread
     fun mux(videoPath: String, audioPath: String, outPath: String): Boolean {
         Log.d(
-                TAG,
-                "mux() called with: videoPath = $videoPath, audioPath = $audioPath, outPath = $outPath"
+            TAG,
+            "mux() called with: videoPath = $videoPath, audioPath = $audioPath, outPath = $outPath"
         )
         return ffPlayer.muxAV(audioPath, videoPath, outPath) >= 0
     }

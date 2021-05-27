@@ -33,6 +33,7 @@ public:
     AVFormatContext *inputContext = NULL;
     AVFormatContext *outContext = NULL;
     AVStream *inputVideoStream = NULL;
+    bool isOnlyRecorderNode = false;
     char *resource = NULL;
     int width, height;
 
@@ -49,7 +50,7 @@ public:
     pthread_mutex_t mutex;
     pthread_cond_t cond;
 
-    int8_t lastNALUType= 0;
+    int8_t lastNALUType = 0;
 
     const char *mine = "video/avc";
 public:
@@ -65,7 +66,7 @@ public:
 
     ~PlayerInfo();
 
-    void SetPlayState(PlayState s )volatile ;
+    void SetPlayState(PlayState s) volatile;
 
     PlayState GetPlayState();
 

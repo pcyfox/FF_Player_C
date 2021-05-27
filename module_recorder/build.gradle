@@ -53,4 +53,5 @@ dependencies {
 
     implementation 'com.blankj:utilcode:1.30.0'
     implementation project(path: ':lib_ffmpeg')
+    implementation 'com.google.android.material:material:1.2.1'
 }

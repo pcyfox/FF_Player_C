@@ -61,8 +61,8 @@ public class FFPlayer {
     }
 
 
-    public int config(SurfaceView surfaceView, int w, int h) {
-        configPlayer(surfaceView.getHolder().getSurface(), w, h);
+    public int config(SurfaceView surfaceView, int w, int h, boolean isOnlyRecord) {
+        configPlayer(surfaceView.getHolder().getSurface(), w, h, isOnlyRecord ? 1 : -1);
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
@@ -89,13 +89,15 @@ public class FFPlayer {
     //-------------for native-------------------------
     public native int init(int isDebug);
 
-    public native int configPlayer(Surface surface, int w, int h);
+    public native int configPlayer(Surface surface, int w, int h, int isOnlyRecorderMod);
 
     public native int onSurfaceChange(Surface surface, int w, int h);
 
     public native int surfaceDestroyed(SurfaceHolder holder);
 
     public native int setResource(String url);
+
+    public native int start();
 
     public native int play();
 

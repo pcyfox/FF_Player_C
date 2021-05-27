@@ -18,7 +18,7 @@ import com.pcyfox.lib_ffmpeg.PlayState
 import com.pcyfox.module_recoder.R
 import com.pcyfox.module_recoder.audio.MediaConstants
 import com.pcyfox.module_recoder.audio.AudioRecorder
-import kotlinx.android.synthetic.main.activity_media_recoder.*
+import kotlinx.android.synthetic.main.recorde_activity_media_recoder.*
 import java.io.File
 
 class MediaRecorderActivity : AppCompatActivity() {
@@ -36,8 +36,9 @@ class MediaRecorderActivity : AppCompatActivity() {
     private val audioRecorder = AudioRecorder.getInstance()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_media_recoder)
-        PermissionUtils.permission(PermissionConstants.MICROPHONE, PermissionConstants.STORAGE).request()
+        setContentView(R.layout.recorde_activity_media_recoder)
+        PermissionUtils.permission(PermissionConstants.MICROPHONE, PermissionConstants.STORAGE)
+            .request()
         initView()
         if (!File(storeDir).exists()) {
             File(storeDir).mkdir()
@@ -108,7 +109,10 @@ class MediaRecorderActivity : AppCompatActivity() {
             ffPlayer?.muxAV(audioPath, videoPath, destFile.absolutePath)
             val time = (SystemClock.uptimeMillis() - startMuxTime) / 1000.0
             ToastUtils.showLong("合成结束! coast time=" + time + "s")
-            Log.d(TAG, "mux over:coastTime=$time,videoPath=${videoPath},out path=" + destFile.absolutePath)
+            Log.d(
+                TAG,
+                "mux over:coastTime=$time,videoPath=${videoPath},out path=" + destFile.absolutePath
+            )
             isMuxAVWorking = false
             runOnUiThread {
                 recorder_btn_mux.text = "合成"
@@ -135,18 +139,30 @@ class MediaRecorderActivity : AppCompatActivity() {
             isStartedRecord = true
             recorder_btn_control.setBackgroundColor(Color.RED)
             recorder_btn_control.text = "停止"
-            videoPath = videoSaveDir.absolutePath + "/$startTime _$recordCount.h264".replace(" ", "-")
-            audioPath = audioSaveDir.absolutePath + "/$startTime _$recordCount.aac".replace(" ", "-")
+            videoPath =
+                videoSaveDir.absolutePath + "/$startTime _$recordCount.h264".replace(" ", "-")
+            audioPath =
+                audioSaveDir.absolutePath + "/$startTime _$recordCount.aac".replace(" ", "-")
             File(audioPath).createNewFile()
             File(videoPath).createNewFile()
             ffPlayer?.run {
                 if (setResource(recorder_tip.text.toString()) > 0) {
                     prepareRecorder(videoPath)
-                    config(recorder_rtp_view, recorder_rtp_view.width, recorder_rtp_view.height)
+                    config(
+                        recorder_rtp_view,
+                        recorder_rtp_view.width,
+                        recorder_rtp_view.height,
+                        true
+                    )
                 }
             }
 
-            audioRecorder.prepare(audioPath, MediaConstants.DEFAULT_CHANNEL_COUNT, MediaConstants.DEFAULT_RECORD_SAMPLE_RATE, MediaConstants.DEFAULT_RECORD_ENCODING_BITRATE)
+            audioRecorder.prepare(
+                audioPath,
+                MediaConstants.DEFAULT_CHANNEL_COUNT,
+                MediaConstants.DEFAULT_RECORD_SAMPLE_RATE,
+                MediaConstants.DEFAULT_RECORD_ENCODING_BITRATE
+            )
             recordCount++
         } else {
             ffPlayer?.stop()

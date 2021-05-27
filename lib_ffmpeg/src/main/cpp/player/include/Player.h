@@ -11,6 +11,7 @@
 
 static bool LOG_DEBUG = false;
 
+
 void SetDebug(bool isDebug);
 
 int save(char *url, char *dest);
@@ -19,11 +20,13 @@ int SetResource(char *resource);
 
 int PrepareRecorder(char *outPath);
 
-int Configure(ANativeWindow *window, int w, int h);
+int Configure(ANativeWindow *window, int w, int h, bool isOnly);
 
 int OnWindowChange(ANativeWindow *window, int w, int h);
 
 int OnWindowDestroy(ANativeWindow *window);
+
+int Start(void);
 
 int Play(void);
 

@@ -78,10 +78,20 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_play(JNIEnv *env, jobject thiz) {
     return Play();
 }
 
+
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_start(JNIEnv *env, jobject thiz) {
+    return Start();
+}
+
+
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz,
-                                                  jobject surface, int w, int h) {
+                                                  jobject surface, int w, int h,
+                                                  int isOnyRecorderMod) {
     ANativeWindow *native_window = NULL;
     native_window = ANativeWindow_fromSurface(env, surface);
     if (!native_window) {
@@ -89,7 +99,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz,
         return PLAYER_RESULT_ERROR;
     }
     SetStateChangeListener(reinterpret_cast<void (*)(PlayState)>(onStateChange));
-    return Configure(native_window, w, h);
+    return Configure(native_window, w, h, isOnyRecorderMod > 0);
 }
 
 extern "C"

@@ -173,30 +173,37 @@ void *OpenResource(void *res) {
             LOGE("can't get video stream params\n");
             return (void *) PLAYER_RESULT_ERROR;
         }
-        if (!playerInfo->window || !playerInfo->windowHeight * playerInfo->windowHeight) {
-            playerInfo->SetPlayState(ERROR);
-            LOGE("configure error!");
-            is_under_analysis_resource = 0;
-            return (void *) PLAYER_RESULT_ERROR;
-        }
 
-        createAMediaCodec(&playerInfo->AMediaCodec, playerInfo->windowWith,
-                          playerInfo->windowHeight,
-                          codecpar->extradata,
-                          codecpar->extradata_size,
-                          codecpar->extradata,
-                          codecpar->extradata_size,
-                          playerInfo->window, playerInfo->mine);
+        if (!playerInfo->isOnlyRecorderNode) {
+            if (playerInfo->window == NULL ||
+                !playerInfo->windowHeight * playerInfo->windowHeight) {
+                playerInfo->SetPlayState(ERROR);
+                LOGE("configure error!");
+                is_under_analysis_resource = 0;
+                return (void *) PLAYER_RESULT_ERROR;
+            }
 
-        if (playerInfo->AMediaCodec) {
-            LOGI("createAMediaCodec success!");
-            playerInfo->SetPlayState(PREPARED);
+            createAMediaCodec(&playerInfo->AMediaCodec, playerInfo->windowWith,
+                              playerInfo->windowHeight,
+                              codecpar->extradata,
+                              codecpar->extradata_size,
+                              codecpar->extradata,
+                              codecpar->extradata_size,
+                              playerInfo->window, playerInfo->mine);
+
+            if (playerInfo->AMediaCodec) {
+                LOGI("createAMediaCodec success!");
+                playerInfo->SetPlayState(PREPARED);
+            } else {
+                LOGE("AMediaCodec is NULL");
+                is_under_analysis_resource = 0;
+                playerInfo->SetPlayState(ERROR);
+                return (void *) PLAYER_RESULT_ERROR;
+            }
         } else {
-            LOGE("AMediaCodec is NULL");
-            is_under_analysis_resource = 0;
-            playerInfo->SetPlayState(ERROR);
-            return (void *) PLAYER_RESULT_ERROR;
+            playerInfo->SetPlayState(PREPARED);
         }
+
     } else {
         is_under_analysis_resource = 0;
         fmt_ctx = NULL;
@@ -394,7 +401,7 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar) {
     packet->flags = type;
     if (type == 0x67 && playerInfo->lastNALUType == type) {
         LOGW("------ProcessPacket more than one SPS in this GOP");
-     //   return PLAYER_RESULT_ERROR;
+        //   return PLAYER_RESULT_ERROR;
     }
     playerInfo->lastNALUType = type;
     if (recorderInfo != NULL) {
@@ -410,7 +417,7 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar) {
             }
         }
     }
-    if (playerInfo->GetPlayState() == STARTED) {
+    if (playerInfo->GetPlayState() == STARTED && !playerInfo->isOnlyRecorderNode) {
         //加入解码队列
         playerInfo->packetQueue.putAvPacket(packet);
     }
@@ -448,10 +455,13 @@ void *DeMux(void *param) {
     * we can safely set output codec values from first input file
     */
     playerInfo->SetPlayState(STARTED);
-    StartDecodeThread();
+    if (!playerInfo->isOnlyRecorderNode) {
+        StartDecodeThread();
+    }
     AVCodecParameters *i_av_codec_parameters = i_video_stream->codecpar;
     int video_stream_index = i_video_stream->index;
     PlayState state;
+    LOGI("--------------------Start DeMux----------------------");
     while ((state = playerInfo->GetPlayState()) != STOPPED || state == PAUSE) {
         if (playerInfo->GetPlayState() == STOPPED) {
             LOGD("DeMux() stop,due to state-STOPPED!");
@@ -544,14 +554,21 @@ int SetResource(char *resource) {
 }
 
 
-int Configure(ANativeWindow *window, int w, int h) {
-    LOGI("----------Configure() called with: w=%d,h=%d", w, h);
+int Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNode) {
+    LOGI("----------Configure() called with: w=%d,h=%d,isOnlyRecorderNode=%d", w, h,
+         isOnlyRecorderNode);
     if (!playerInfo) {
         LOGE("player info not init !");
     }
     if (is_under_analysis_resource) {
         LOGE("has resource under analysis!");
         return PLAYER_RESULT_ERROR;
+    }
+
+    if (playerInfo && isOnlyRecorderNode) {
+        playerInfo->isOnlyRecorderNode = true;
+        StartOpenResourceThread(playerInfo->resource);
+        return PLAYER_RESULT_OK;
     }
 
     if (playerInfo && playerInfo->GetPlayState() != ERROR) {
@@ -607,6 +624,20 @@ void SetStateChangeListener(void (*listener)(PlayState)) {
     playerInfo->SetStateListener(listener);
 }
 
+int Start() {
+    LOGI("--------Play()  start-------");
+    if (playerInfo == NULL) {
+        LOGE("player not init,playerInfo == NULL!");
+        return PLAYER_RESULT_ERROR;
+    }
+    PlayState state = playerInfo->GetPlayState();
+    if (state != PREPARED) {
+        LOGE("player not PREPARED!");
+        return PLAYER_RESULT_ERROR;
+    }
+    StartDeMuxThread();
+    return PLAYER_RESULT_OK;
+}
 
 int Play() {
     LOGI("--------Play()  called-------");
@@ -614,6 +645,12 @@ int Play() {
         LOGE("player not init,playerInfo == NULL!");
         return PLAYER_RESULT_ERROR;
     }
+
+    if (playerInfo->isOnlyRecorderNode) {
+        LOGE("player is only recorder mode!");
+        return PLAYER_RESULT_ERROR;
+    }
+
     PlayState state = playerInfo->GetPlayState();
     if (state == STARTED) {
         LOGE("player is started!");
@@ -624,7 +661,6 @@ int Play() {
         playerInfo->SetPlayState(STARTED);
         return PLAYER_RESULT_OK;
     }
-
 
     if (state != PREPARED) {
         LOGE("player not PREPARED!");
@@ -641,8 +677,7 @@ int Play() {
     } else {
         LOGI("------------AMediaCodec start success!!\n");
     }
-
-    StartDeMuxThread();
+    Start();
     return PLAYER_RESULT_OK;
 }
 

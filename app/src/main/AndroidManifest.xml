@@ -27,7 +27,7 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:label">
         <activity
-            android:name="com.pcyfox.module_recoder.ui.activity.TestActivity"
+            android:name="com.pcyfox.module_recoder.ui.activity.RMainActivity"
             android:screenOrientation="landscape"
             android:turnScreenOn="true"
             android:windowSoftInputMode="stateHidden|stateUnchanged">
@@ -38,6 +38,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="com.pcyfox.module_recoder.ui.activity.RecordeMulitVideoTestActivity"
+            android:screenOrientation="landscape"
+            android:turnScreenOn="true"
+            android:windowSoftInputMode="stateHidden|stateUnchanged" />
         <activity
             android:name="com.pcyfox.module_recoder.ui.activity.MediaRecorderActivity"
             android:screenOrientation="landscape"
