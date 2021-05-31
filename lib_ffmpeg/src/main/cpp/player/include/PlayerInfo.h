@@ -8,10 +8,10 @@
 
 #include <media/NdkMediaCodec.h>
 #include "pthread.h"
-#include "Player.h"
 #include "android_log.h"
 #include "StateListener.h"
 #include "AsyncQueue.hpp"
+#include <android/native_window.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,6 +29,7 @@ extern "C" {
 class PlayerInfo {
 
 public:
+    int id;
     AMediaCodec *AMediaCodec = NULL;
     AVFormatContext *inputContext = NULL;
     AVFormatContext *outContext = NULL;
@@ -57,7 +58,7 @@ public:
 
     volatile enum PlayState playState = UN_USELESS;
 
-    void (*stateListener)(PlayState) = NULL;
+    void (*stateListener)(PlayState, int) = NULL;
 
 
 public:
@@ -70,7 +71,7 @@ public:
 
     PlayState GetPlayState();
 
-    void SetStateListener(void (*stateListener)(PlayState));
+    void SetStateListener(void (*stateListener)(PlayState,int));
 
 };
 

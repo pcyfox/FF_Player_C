@@ -16,7 +16,8 @@ import java.io.File
 class RecordeMulitVideoTestActivity : AppCompatActivity() {
     private val TAG = "TestActivity"
     private val url_1 = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
-    private val url_2 = "rtsp://admin:taike@2020@192.168.43.184:554/Streaming/Channels/101?transportmode=unicast&profile=Profile_1"
+    private val url_2 =
+        "rtsp://admin:taike@2020@192.168.43.184:554/Streaming/Channels/101?transportmode=unicast&profile=Profile_1"
 
     //  private val url = "/storage/emulated/0/test/20210406_16_26_12/1/out.mp4"
     private val storeDir = Environment.getExternalStorageDirectory().absolutePath + "/test/"
@@ -43,6 +44,7 @@ class RecordeMulitVideoTestActivity : AppCompatActivity() {
                 when (state) {
                     PlayState.PREPARED -> {
                         start()
+                        //play()
                     }
                     else -> {
                     }
@@ -55,6 +57,7 @@ class RecordeMulitVideoTestActivity : AppCompatActivity() {
                 when (state) {
                     PlayState.PREPARED -> {
                         start()
+                        //play()
                     }
                     else -> {
                     }
@@ -102,9 +105,10 @@ class RecordeMulitVideoTestActivity : AppCompatActivity() {
                 recordCount++
                 rv_record_1.prepareRecorder(getVideoFile().absolutePath)
                 rv_record_1.setResource(url_1, true)
+
                 recordCount++
                 rv_record_2.prepareRecorder(getVideoFile().absolutePath)
-                rv_record_2.setResource(url_1, true)
+                rv_record_2.setResource(url_2, true)
             }
 
             R.id.btn_stop -> {

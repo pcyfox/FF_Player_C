@@ -10,6 +10,7 @@
 
     <application>
         <activity android:name=".ui.activity.RMainActivity"></activity>
+        <activity android:name=".ui.activity.TestActivity"></activity>
     </application>
 
 </manifest>

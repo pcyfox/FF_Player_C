@@ -2,28 +2,22 @@
 // Created by Dwayne on 20/11/24.
 //
 
-
-#pragma once
 #ifndef AUDIO_PRACTICE_QUEUE_H
 #define AUDIO_PRACTICE_QUEUE_H
 
-#ifndef _COMMON
-#define _COMMON
-
 #include "queue"
 #include "pthread.h"
-#include "Player.h"
 #include "PlayerResult.h"
-#include <../include/android_log.h>
 
 #ifdef __cplusplus
 extern "C" {
 #include "libavcodec/avcodec.h"
 #endif
+
 #ifdef __cplusplus
 }
 #endif
-#endif //AUDIO_PRACTICE_QUEUE_Hyy
+
 
 template<class T>
 
@@ -64,7 +58,7 @@ AsyncQueue<_TYPE>::~AsyncQueue() {
     clearAVPacket();
     pthread_mutex_destroy(&mutexPacket);
     pthread_cond_destroy(&condPacket);
-    LOGW("AsyncQueue Deleted");
+    //LOGW("AsyncQueue Deleted");
 }
 
 
@@ -88,7 +82,6 @@ void AsyncQueue<_TYPE>::clearAVPacket() {
         av_free(avPacket);
         avPacket = NULL;
     }
-    LOGD("AsyncQueue clear over!");
     pthread_cond_signal(&condPacket);
     pthread_mutex_unlock(&mutexPacket);
 }
@@ -100,9 +93,9 @@ void AsyncQueue<_TYPE>::noticeQueue() {
 
 template<class _TYPE>
 int AsyncQueue<_TYPE>::putAvPacket(_TYPE *packet) {
+    if (quit) { return PLAYER_RESULT_ERROR; }
     pthread_mutex_lock(&mutexPacket);
     if (queuePacket.size() > 160) {
-        LOGW("queue size is too large,start to clean!");
         while (!queuePacket.empty()) {
             AVPacket *avPacket = queuePacket.front();
             queuePacket.pop();
@@ -119,26 +112,8 @@ int AsyncQueue<_TYPE>::putAvPacket(_TYPE *packet) {
 
 template<class _TYPE>
 int AsyncQueue<_TYPE>::getAvPacket(_TYPE *packet) {
+    if (quit) { return PLAYER_RESULT_ERROR; }
     pthread_mutex_lock(&mutexPacket);
-/*
-    while (!quit) {
-        if (queuePacket.size() > 0) {
-            AVPacket *avPacket = queuePacket.front();
-            if (av_packet_ref(packet, avPacket) == 0) {
-                queuePacket.pop();
-            }
-            av_packet_unref(avPacket);
-            av_packet_free(&avPacket);
-            avPacket = NULL;
-            break;
-        } else {
-            LOGW("AsyncQueue cond wait..");
-            pthread_cond_wait(&condPacket, &mutexPacket);
-            LOGW("AsyncQueue cond wait exit");
-        }
-    }
-*/
-
     if (queuePacket.size() > 0) {
         AVPacket *avPacket = queuePacket.front();
         if (av_packet_ref(packet, avPacket) == 0) {

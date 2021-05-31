@@ -27,6 +27,7 @@ public:
     AsyncQueue<AVPacket> packetQueue;
     char *storeFile;
     AVFormatContext *o_fmt_ctx = NULL;
+    AVStream *inputVideoStream = NULL;
     AVStream *o_video_stream = NULL;
     volatile enum RecordState recordState = UN_START_RECORD;
 

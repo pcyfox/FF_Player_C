@@ -9,7 +9,6 @@ RecorderInfo::~RecorderInfo() {
         avformat_free_context(o_fmt_ctx);
         o_fmt_ctx = NULL;
     }
-    LOGW("--------RecordInfo Deleted--------");
 }
 
 void RecorderInfo::SetRecordState(RecordState state) {

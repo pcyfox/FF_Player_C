@@ -2,53 +2,73 @@
 // Created by LN on 2021/1/4.
 //
 
+#ifndef PLAYER_PLAYER_H
+#define PLAYER_PLAYER_H
+
 #include <android/native_window_jni.h>
 #include "StateListener.h"
 
-#ifndef PLAYER_PLAYER_H
-#define PLAYER_PLAYER_H
+#include <PlayerInfo.h>
+#include <RecorderInfo.h>
 
 
 static bool LOG_DEBUG = false;
 
+class Player {
 
-void SetDebug(bool isDebug);
+public:
+    Player(int id);
 
-int save(char *url, char *dest);
+public:
+    jobject jPlayerObject;
+    int playerId;
+    PlayerInfo *playerInfo = NULL;
+    RecorderInfo *recorderInfo = NULL;
+public:
 
-int SetResource(char *resource);
+    void SetDebug(bool isDebug);
 
-int PrepareRecorder(char *outPath);
+    void StartRecorderThread();
 
-int Configure(ANativeWindow *window, int w, int h, bool isOnly);
+    void StartDeMuxThread();
 
-int OnWindowChange(ANativeWindow *window, int w, int h);
+    void StartOpenResourceThread(char *res);
 
-int OnWindowDestroy(ANativeWindow *window);
+    int InitPlayerInfo();
 
-int Start(void);
+    int SetResource(char *resource);
 
-int Play(void);
+    int PrepareRecorder(char *outPath);
 
-int Pause(int delay);
+    int Configure(ANativeWindow *window, int w, int h, bool isOnly);
 
-int Resume(void);
+    int OnWindowChange(ANativeWindow *window, int w, int h);
 
-int Stop(void);
+    int OnWindowDestroy(ANativeWindow *window);
 
-void SetStateChangeListener(void (*listener)(PlayState));
+    int Start(void);
 
-int PauseRecord(void);
+    int Play(void);
 
-int StopRecord(void);
+    int Pause(int delay);
 
-int StartRecord(void);
+    int Resume(void);
 
-int PauseRecord(void);
+    int Stop(void);
 
-int ResumeRecord(void);
+    void SetStateChangeListener(void (*listener)(PlayState, int id));
 
-int Release(void);
+    int PauseRecord(void);
+
+    int StopRecord(void);
+
+    int StartRecord(void);
+
+    int ResumeRecord(void);
+
+    int Release(void);
+};
+
 
 #endif
 

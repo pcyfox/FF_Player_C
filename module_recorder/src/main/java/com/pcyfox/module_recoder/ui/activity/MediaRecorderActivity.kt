@@ -60,7 +60,7 @@ class MediaRecorderActivity : AppCompatActivity() {
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        ffPlayer = FFPlayer()
+        ffPlayer = FFPlayer(hashCode())
         ffPlayer?.setOnStateChangeListener {
             Log.d(TAG, "onStateChanged() called playState=$it")
             when (it) {

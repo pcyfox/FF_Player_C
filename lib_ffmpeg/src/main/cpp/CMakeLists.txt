@@ -20,6 +20,7 @@ add_library( # Sets the name of the library.
         SHARED #动态库
         # Provides a relative path to your source file(s).
         ${player_dir}/Player.cpp
+      #  ${player_dir}/AsyncQueue.cpp
         ${player_dir}/PlayerInfo.cpp
         ${player_dir}/Muxer.c
         ${player_dir}/RecorderInfo.cpp

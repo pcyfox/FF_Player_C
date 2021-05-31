@@ -4,13 +4,10 @@
 #include <media/NdkMediaCodec.h>
 #include <media/NdkMediaFormat.h>
 
-
 #include "Player.h"
 #include <PlayerResult.h>
 #include<queue>
 #include <pthread.h>
-#include <PlayerInfo.h>
-#include <RecorderInfo.h>
 #include "Utils.h"
 
 #ifdef __cplusplus
@@ -26,11 +23,13 @@ extern "C" {
 //clang -g -o pvlib  ParseVideo.c  -lavformat -lavutil
 //clang -g -o pvlib  ParseVideo.c `pkg-config --libs libavutil libavformat`
 
-PlayerInfo *playerInfo = NULL;
-RecorderInfo *recorderInfo = NULL;
 static bool isDebug = false;
 
-static int is_under_analysis_resource = 0;
+
+struct Info {
+    PlayerInfo *playerInfo;
+    RecorderInfo *recorderInfo;
+};
 
 
 AVStream *findVideoStream(AVFormatContext *i_fmt_ctx) {
@@ -111,8 +110,10 @@ int createAMediaCodec(AMediaCodec **mMediaCodec, int width, int height, uint8_t 
 }
 
 
-void *OpenResource(void *res) {
-    char *url = (char *) res;
+void *OpenResource(void *info) {
+    auto *playerInfo = (PlayerInfo *) info;
+
+    char *url = playerInfo->resource;
     if (!playerInfo || !playerInfo->inputContext) {
         LOGE("playerInfo or it's inputContext is NULL");
         return (void *) PLAYER_RESULT_ERROR;
@@ -120,7 +121,6 @@ void *OpenResource(void *res) {
     AVFormatContext *fmt_ctx = playerInfo->inputContext;
     //打开多媒体文件，根据文件后缀名解析,第三个参数是显式制定文件类型，当文件后缀与文件格式不符
     //或者根本没有后缀时需要填写，
-    is_under_analysis_resource = 1;
     LOGD("avformat_open_input start,url=%s", url);
     int ret = avformat_open_input(&fmt_ctx, url, NULL, NULL);
     if (ret == 0) {
@@ -129,7 +129,6 @@ void *OpenResource(void *res) {
         if (avformat_find_stream_info(fmt_ctx, NULL) < 0) {
             LOGE("could not find stream info\n");
             fmt_ctx = NULL;
-            is_under_analysis_resource = 0;
             return (void *) PLAYER_RESULT_ERROR;
         }
 
@@ -145,14 +144,12 @@ void *OpenResource(void *res) {
         playerInfo->inputVideoStream = findVideoStream(playerInfo->inputContext);
         if (!playerInfo->inputVideoStream) {
             playerInfo->SetPlayState(ERROR);
-            is_under_analysis_resource = 0;
             return (void *) PLAYER_RESULT_ERROR;
         }
 
         if (playerInfo->inputVideoStream->codecpar->codec_id != AV_CODEC_ID_H264) {
             LOGE("sorry this player only support h.264 now!");
             playerInfo->SetPlayState(ERROR);
-            is_under_analysis_resource = 0;
             return (void *) PLAYER_RESULT_ERROR;
         }
 
@@ -169,7 +166,6 @@ void *OpenResource(void *res) {
 
         if (codecpar == NULL) {
             playerInfo->SetPlayState(ERROR);
-            is_under_analysis_resource = 0;
             LOGE("can't get video stream params\n");
             return (void *) PLAYER_RESULT_ERROR;
         }
@@ -179,7 +175,6 @@ void *OpenResource(void *res) {
                 !playerInfo->windowHeight * playerInfo->windowHeight) {
                 playerInfo->SetPlayState(ERROR);
                 LOGE("configure error!");
-                is_under_analysis_resource = 0;
                 return (void *) PLAYER_RESULT_ERROR;
             }
 
@@ -196,7 +191,6 @@ void *OpenResource(void *res) {
                 playerInfo->SetPlayState(PREPARED);
             } else {
                 LOGE("AMediaCodec is NULL");
-                is_under_analysis_resource = 0;
                 playerInfo->SetPlayState(ERROR);
                 return (void *) PLAYER_RESULT_ERROR;
             }
@@ -205,12 +199,10 @@ void *OpenResource(void *res) {
         }
 
     } else {
-        is_under_analysis_resource = 0;
         fmt_ctx = NULL;
         LOGE("can't open source: %s msg:%s \n", url, av_err2str(ret));
         return (void *) PLAYER_RESULT_ERROR;
     }
-    is_under_analysis_resource = 0;
     return (void *) PLAYER_RESULT_OK;
 }
 
@@ -249,7 +241,8 @@ int getAudioData(AVFormatContext *ctx, char *dest) {
 }
 
 
-void *RecordPkt(void *) {
+void *RecordPkt(void *info) {
+    auto *recorderInfo = (RecorderInfo *) info;
     if (recorderInfo->GetRecordState() == RECORD_START) {
         char *file = recorderInfo->storeFile;
         /* create output context by file name*/
@@ -263,7 +256,8 @@ void *RecordPkt(void *) {
         * since all input files are supposed to be identical (framerate, dimension, color format, ...)
         * we can safely set output codec values from first input file
         */
-        AVCodecParameters *i_av_codec_parameters = playerInfo->inputVideoStream->codecpar;
+        AVCodecParameters *i_av_codec_parameters = recorderInfo->inputVideoStream->codecpar;
+
         recorderInfo->o_video_stream = avformat_new_stream(recorderInfo->o_fmt_ctx, NULL);
         if (!recorderInfo->o_video_stream) {
             return (void *) PLAYER_RESULT_ERROR;
@@ -289,6 +283,8 @@ void *RecordPkt(void *) {
             recorderInfo->SetRecordState(RECORD_ERROR);
             return (void *) PLAYER_RESULT_ERROR;
         }
+    } else {
+        LOGW("RecordPkt() called,recorder state is not RECORD_START ");
     }
 
     AVPacket *packet = av_packet_alloc();
@@ -297,7 +293,7 @@ void *RecordPkt(void *) {
         if (recordState == RECORD_PAUSE) {
             continue;
         }
-        if (playerInfo->GetPlayState() == STOPPED || recordState == RECORD_STOP) {
+        if (recordState == RECORD_STOP) {
             /*write file trailer*/
             LOGD("--------- recordState changed to stop ---------");
             av_write_trailer(recorderInfo->o_fmt_ctx);
@@ -336,11 +332,22 @@ void *RecordPkt(void *) {
 }
 
 
-void *Decode(void *) {
+void *Decode(void *info) {
+    auto *playerInfo = (PlayerInfo *) info;
     AMediaCodec *codec = playerInfo->AMediaCodec;
     AVPacket *packet = av_packet_alloc();
-    PlayState state;
-    while ((state = playerInfo->GetPlayState()) || state == STARTED || state == PAUSE) {
+    while (true) {
+        if (playerInfo == NULL) {
+            break;
+        }
+        PlayState state = playerInfo->GetPlayState();
+        if (state == PAUSE) {
+            continue;
+        }
+        if (state != STARTED) {
+            break;
+        }
+
         int ret = playerInfo->packetQueue.getAvPacket(packet);
         if (ret == PLAYER_RESULT_OK) {
             uint8_t *data = packet->data;
@@ -391,7 +398,8 @@ void *Decode(void *) {
 }
 
 
-int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar) {
+int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *playerInfo,
+                  RecorderInfo *recorderInfo) {
     //检查是否有起始码,如果有说明是标准的H.264数据
     if (packet->size < 5 || playerInfo == NULL) {
         return PLAYER_RESULT_ERROR;
@@ -425,22 +433,35 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar) {
 }
 
 
-void StartDecodeThread() {
+void StartDecodeThread(PlayerInfo *playerInfo) {
+    if (playerInfo == NULL) {
+        LOGE("Start decode thread fail,playerInfo is null");
+        return;
+    }
     LOGI("Start decode thread");
-    pthread_create(&playerInfo->decode_thread, NULL, Decode, NULL);
+    pthread_create(&playerInfo->decode_thread, NULL, Decode, playerInfo);
     pthread_setname_np(playerInfo->decode_thread, "decode_thread");
     pthread_detach(playerInfo->decode_thread);
 }
 
-void StartRecorderThread() {
+void Player::StartRecorderThread() {
+    if (playerInfo != NULL && recorderInfo != NULL) {
+        recorderInfo->inputVideoStream = playerInfo->inputVideoStream;
+    } else {
+        LOGE("Start recorder thread fail!");
+        return;
+    }
     LOGI("Start recorder thread");
-    pthread_create(&recorderInfo->recorder_thread, NULL, RecordPkt, NULL);
+    pthread_create(&recorderInfo->recorder_thread, NULL, RecordPkt, recorderInfo);
     pthread_setname_np(recorderInfo->recorder_thread, "recorder_thread");
     pthread_detach(recorderInfo->recorder_thread);
 }
 
-void *DeMux(void *param) {
-    if (!playerInfo) {
+void *DeMux(void *info) {
+    Info *inf = (Info *) info;
+    PlayerInfo *playerInfo = inf->playerInfo;
+    RecorderInfo *recorderInfo = inf->recorderInfo;
+    if (playerInfo == NULL) {
         LOGE("Player is not init");
         return NULL;
     }
@@ -455,20 +476,25 @@ void *DeMux(void *param) {
     * we can safely set output codec values from first input file
     */
     playerInfo->SetPlayState(STARTED);
+    LOGI("--------------------DeMux() change state to STARTED----------------------");
+
     if (!playerInfo->isOnlyRecorderNode) {
-        StartDecodeThread();
+        StartDecodeThread(playerInfo);
     }
     AVCodecParameters *i_av_codec_parameters = i_video_stream->codecpar;
     int video_stream_index = i_video_stream->index;
     PlayState state;
     LOGI("--------------------Start DeMux----------------------");
-    while ((state = playerInfo->GetPlayState()) != STOPPED || state == PAUSE) {
+    while (playerInfo != NULL && (state = playerInfo->GetPlayState()) != STOPPED ||
+           state == PAUSE) {
+
         if (playerInfo->GetPlayState() == STOPPED) {
             LOGD("DeMux() stop,due to state-STOPPED!");
             return NULL;
         }
 
-        if (state == PAUSE && recorderInfo->GetRecordState() == RECORD_PAUSE) {
+        if (state == PAUSE && (recorderInfo != NULL) &&
+            recorderInfo->GetRecordState() == RECORD_PAUSE) {
             continue;
         }
         AVPacket *i_pkt = NULL;
@@ -480,9 +506,11 @@ void *DeMux(void *param) {
         int ret = av_read_frame(playerInfo->inputContext, i_pkt);
         if (playerInfo && ret == 0 &&
             i_pkt->stream_index == video_stream_index) {
-            ProcessPacket(i_pkt, i_av_codec_parameters);
+            ProcessPacket(i_pkt, i_av_codec_parameters, playerInfo, recorderInfo);
         } else if (ret < 0) {
             LOGE("read stream of eof!");
+            playerInfo->SetPlayState(STARTED);
+            break;
         }
     }
     LOGD("DeMux() stop! start to delete playerInfo");
@@ -490,28 +518,34 @@ void *DeMux(void *param) {
     //释放资源
     delete playerInfo;
     playerInfo = NULL;
+    free(info);
     return NULL;
 }
 
 
-void StartDeMuxThread() {
+void Player::StartDeMuxThread() {
     LOGI("start deMux thread");
-    pthread_create(&playerInfo->deMux_thread, NULL, DeMux, NULL);
+    Info *info = (Info *) malloc(sizeof(struct Info));
+    info->playerInfo = playerInfo;
+    info->recorderInfo = recorderInfo;
+    pthread_create(&playerInfo->deMux_thread, NULL, DeMux, info);
     pthread_setname_np(playerInfo->deMux_thread, "deMux_thread");
     pthread_detach(playerInfo->deMux_thread);
 }
 
-void StartOpenResourceThread(char *res) {
+void Player::StartOpenResourceThread(char *res) {
     LOGD("start open resource thread");
-    pthread_create(&playerInfo->open_resource_thread, NULL, OpenResource, res);
+    playerInfo->resource = res;
+    pthread_create(&playerInfo->open_resource_thread, NULL, OpenResource, playerInfo);
     pthread_setname_np(playerInfo->open_resource_thread, "open_resource_thread");
     pthread_detach(playerInfo->open_resource_thread);
 }
 
-int InitPlayerInfo() {
+int Player::InitPlayerInfo() {
     LOGD("init player info");
     if (!playerInfo) {
         playerInfo = new PlayerInfo;
+        playerInfo->id = playerId;
     } else {
         LOGE("InitPlayerInfo() error,playerInfo is not NULL,it may be inited!");
         return PLAYER_RESULT_ERROR;
@@ -532,12 +566,7 @@ int InitPlayerInfo() {
 }
 
 
-void SetDebug(bool debug) {
-    LOGD("SetDebug() called with %d", debug);
-    isDebug = debug;
-}
-
-int SetResource(char *resource) {
+int Player::SetResource(char *resource) {
     LOGI("---------SetResource() called with:resource=%s\n", resource);
     if (playerInfo != NULL) {
         LOGE("player is not stopped!");
@@ -554,17 +583,12 @@ int SetResource(char *resource) {
 }
 
 
-int Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNode) {
+int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNode) {
     LOGI("----------Configure() called with: w=%d,h=%d,isOnlyRecorderNode=%d", w, h,
          isOnlyRecorderNode);
     if (!playerInfo) {
         LOGE("player info not init !");
     }
-    if (is_under_analysis_resource) {
-        LOGE("has resource under analysis!");
-        return PLAYER_RESULT_ERROR;
-    }
-
     if (playerInfo && isOnlyRecorderNode) {
         playerInfo->isOnlyRecorderNode = true;
         StartOpenResourceThread(playerInfo->resource);
@@ -588,11 +612,11 @@ int Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNode) {
     return PLAYER_RESULT_OK;
 }
 
-int OnWindowDestroy(ANativeWindow *window) {
+int Player::OnWindowDestroy(ANativeWindow *window) {
     return PLAYER_RESULT_OK;
 }
 
-int OnWindowChange(ANativeWindow *window, int w, int h) {
+int Player::OnWindowChange(ANativeWindow *window, int w, int h) {
     LOGI("--------OnWindowChange() called with w=%d,h=%d", w, h);
     if (playerInfo && playerInfo->GetPlayState() == PAUSE) {
         playerInfo->window = window;
@@ -610,7 +634,7 @@ int OnWindowChange(ANativeWindow *window, int w, int h) {
         if (ret == PLAYER_RESULT_OK) {
             LOGI("--------OnWindowChange() success! ");
             playerInfo->SetPlayState(STARTED);
-            StartDecodeThread();
+            StartDecodeThread(playerInfo);
         }
     } else {
         LOGE("player not init or it not pause");
@@ -620,11 +644,11 @@ int OnWindowChange(ANativeWindow *window, int w, int h) {
 }
 
 
-void SetStateChangeListener(void (*listener)(PlayState)) {
+void Player::SetStateChangeListener(void (*listener)(PlayState, int)) {
     playerInfo->SetStateListener(listener);
 }
 
-int Start() {
+int Player::Start() {
     LOGI("--------Play()  start-------");
     if (playerInfo == NULL) {
         LOGE("player not init,playerInfo == NULL!");
@@ -639,7 +663,7 @@ int Start() {
     return PLAYER_RESULT_OK;
 }
 
-int Play() {
+int Player::Play() {
     LOGI("--------Play()  called-------");
     if (playerInfo == NULL) {
         LOGE("player not init,playerInfo == NULL!");
@@ -682,7 +706,7 @@ int Play() {
 }
 
 
-int Pause(int delay) {
+int Player::Pause(int delay) {
     LOGI("--------Pause()  called-------");
     if (playerInfo == NULL) {
         return PLAYER_RESULT_ERROR;
@@ -695,7 +719,7 @@ int Pause(int delay) {
     return PLAYER_RESULT_OK;
 }
 
-int Resume() {
+int Player::Resume() {
     LOGI("--------Resume()  called-------");
     if (playerInfo == NULL) {
         return PLAYER_RESULT_ERROR;
@@ -709,7 +733,7 @@ int Resume() {
 }
 
 
-int Stop() {
+int Player::Stop() {
     LOGI("--------Stop()  called-------");
     if (playerInfo == NULL) {
         LOGE("playerInfo is NULL");
@@ -720,26 +744,32 @@ int Stop() {
         return PLAYER_RESULT_ERROR;
     }
     playerInfo->SetPlayState(STOPPED);
+    if (recorderInfo != NULL) {
+        recorderInfo->SetRecordState(RECORD_STOP);
+    }
     //停止录制
     StopRecord();
     LOGD("--------Stop Over------");
     return PLAYER_RESULT_OK;
 }
 
-int PrepareRecorder(char *outPath) {
+int Player::PrepareRecorder(char *outPath) {
     LOGI("---------PrepareRecorder() called with putPath=%s", outPath);
     if (!outPath) {
         return PLAYER_RESULT_ERROR;
     }
     if (recorderInfo == NULL) {
         recorderInfo = new RecorderInfo;
+        if (playerInfo != NULL) {
+            recorderInfo->inputVideoStream = playerInfo->inputVideoStream;
+        }
     }
     recorderInfo->storeFile = outPath;
     recorderInfo->SetRecordState(RECORD_PREPARED);
     return PLAYER_RESULT_OK;
 }
 
-int StartRecord() {
+int Player::StartRecord() {
     LOGI("------StartRecord() called----------");
     if (!playerInfo || !recorderInfo) {
         LOGE("------StartRecord() player init or recorder not prepare");
@@ -771,7 +801,7 @@ int StartRecord() {
     return PLAYER_RESULT_OK;
 }
 
-int StopRecord() {
+int Player::StopRecord() {
     LOGI("------StopRecord() called------");
     if (recorderInfo &&
         recorderInfo->GetRecordState() >= RECORD_START) {
@@ -783,7 +813,7 @@ int StopRecord() {
 }
 
 
-int PauseRecord() {
+int Player::PauseRecord() {
     LOGI("------PauseRecord() called------");
     if (recorderInfo) {
         recorderInfo->SetRecordState(RECORD_PAUSE);
@@ -793,7 +823,7 @@ int PauseRecord() {
     }
 }
 
-int ResumeRecord() {
+int Player::ResumeRecord() {
     LOGI("------ResumeRecord() called------");
     if (recorderInfo && recorderInfo->GetRecordState() == RECORD_PAUSE) {
         recorderInfo->SetRecordState(RECORD_START);
@@ -803,7 +833,7 @@ int ResumeRecord() {
     }
 }
 
-int Release() {
+int Player::Release() {
     LOGD("Release() called!");
     Stop();
     if (playerInfo) {
@@ -816,5 +846,16 @@ int Release() {
     }
     return PLAYER_RESULT_OK;
 }
+
+void Player::SetDebug(bool debug) {
+    LOGD("SetDebug() called with %d", debug);
+    isDebug = debug;
+}
+
+Player::Player(int id) {
+    playerId = id;
+}
+
+
 
 

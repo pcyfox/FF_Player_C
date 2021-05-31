@@ -35,7 +35,7 @@ class RecorderView : RelativeLayout {
     private var videoPath = ""
     private var audioPath = ""
     private val TAG = "RecorderView"
-    private val ffPlayer: FFPlayer = FFPlayer()
+    private val ffPlayer: FFPlayer = FFPlayer(hashCode())
     private val audioRecorder = AudioRecorder.getInstance()
     private var avRecorderCallback: AVRecorderCallback? = null
     override fun onFinishInflate() {

@@ -40,7 +40,7 @@ PlayerInfo::~PlayerInfo() {
 void PlayerInfo::SetPlayState(PlayState s) volatile {
     playState = s;
     if (stateListener) {
-        stateListener(playState);
+        stateListener(playState, id);
     }
     LOGD("PlayerInfo SetPlayState() :%d", s);
 }
@@ -51,7 +51,7 @@ PlayState PlayerInfo::GetPlayState() {
 }
 
 
-void PlayerInfo::SetStateListener(void (*listener)(PlayState)) {
+void PlayerInfo::SetStateListener(void (*listener)(PlayState, int)) {
     this->stateListener = listener;
 }
 
