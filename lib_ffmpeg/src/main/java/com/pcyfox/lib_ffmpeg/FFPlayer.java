@@ -68,8 +68,22 @@ public class FFPlayer {
     }
 
 
+    public int onlyRecord(int id) {
+        return configPlayer(null, 0, 0, -1, id);
+    }
+
+
     public int config(SurfaceView surfaceView, int w, int h, boolean isOnlyRecord) {
-        configPlayer(surfaceView.getHolder().getSurface(), w, h, isOnlyRecord ? 1 : -1, id);
+        if (isOnlyRecord) {
+            return onlyRecord(id);
+        }
+
+        if (surfaceView == null || w * h == 0) {
+            Log.e(TAG, "config() called with: surfaceView = [" + surfaceView + "], w = [" + w + "], h = [" + h + "], isOnlyRecord = [" + isOnlyRecord + "]");
+            return -1;
+        }
+
+        configPlayer(surfaceView.getHolder().getSurface(), w, h, 1, id);
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
@@ -97,7 +111,7 @@ public class FFPlayer {
     }
 
     public int setResource(String url) {
-        return setResource(url,id);
+        return setResource(url, id);
     }
 
     public int play() {
