@@ -132,13 +132,19 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz,
     if (player == NULL) {
         return PLAYER_RESULT_ERROR;
     }
+    player->SetStateChangeListener(reinterpret_cast<void (*)(PlayState, int)>(onStateChange));
+
+    if (isOnyRecorderMod > 0) {
+        return player->Configure(NULL, 0, 0, true);
+    }
+
     ANativeWindow *native_window = NULL;
     native_window = ANativeWindow_fromSurface(env, surface);
     if (!native_window) {
         LOGE("create native window failQ");
         return PLAYER_RESULT_ERROR;
     }
-    player->SetStateChangeListener(reinterpret_cast<void (*)(PlayState, int)>(onStateChange));
+
     return player->Configure(native_window, w, h, isOnyRecorderMod > 0);
 }
 
