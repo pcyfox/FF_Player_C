@@ -69,7 +69,7 @@ public class FFPlayer {
 
 
     public int onlyRecord(int id) {
-        return configPlayer(null, 0, 0, -1, id);
+        return configPlayer(null, 0, 0, 1, id);
     }
 
 

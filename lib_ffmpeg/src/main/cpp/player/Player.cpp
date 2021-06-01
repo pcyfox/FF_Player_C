@@ -218,13 +218,12 @@ void *OpenResource(void *info) {
                               playerInfo->windowHeight,
                               codecpar->extradata,
                               codecpar->extradata_size,
-
                               codecpar->extradata,
                               codecpar->extradata_size,
                               playerInfo->window, playerInfo->mine);
 
             if (playerInfo->AMediaCodec) {
-                LOGI("createAMediaCodec success!");
+                LOGI("OpenResource()  createAMediaCodec success!,state->PREPARED");
                 playerInfo->SetPlayState(PREPARED);
             } else {
                 LOGE("AMediaCodec is NULL");
@@ -232,6 +231,7 @@ void *OpenResource(void *info) {
                 return (void *) PLAYER_RESULT_ERROR;
             }
         } else {
+            LOGI("OpenResource(): state->PREPARED");
             playerInfo->SetPlayState(PREPARED);
         }
 
@@ -472,11 +472,7 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
 
 
 void StartDecodeThread(PlayerInfo *playerInfo) {
-    if (playerInfo == NULL) {
-        LOGE("Start decode thread fail,playerInfo is null");
-        return;
-    }
-    LOGI("Start decode thread");
+    LOGI("StartDecodeThread() called");
     pthread_create(&playerInfo->decode_thread, NULL, Decode, playerInfo);
     pthread_setname_np(playerInfo->decode_thread, "decode_thread");
     pthread_detach(playerInfo->decode_thread);
@@ -580,7 +576,7 @@ void Player::StartOpenResourceThread(char *res) {
 }
 
 int Player::InitPlayerInfo() {
-    LOGD("init player info");
+    LOGD("InitPlayerInfo() called");
     if (!playerInfo) {
         playerInfo = new PlayerInfo;
         playerInfo->id = playerId;
@@ -593,6 +589,7 @@ int Player::InitPlayerInfo() {
         return PLAYER_RESULT_OK;
     }
 
+    LOGI("InitPlayerInfo():state-> INITIALIZED");
     playerInfo->SetPlayState(INITIALIZED);
 
     playerInfo->inputContext = avformat_alloc_context();
@@ -627,7 +624,7 @@ int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNo
     if (!playerInfo) {
         LOGE("player info not init !");
     }
-    if (playerInfo && isOnlyRecorderNode) {
+    if (isOnlyRecorderNode) {
         playerInfo->isOnlyRecorderNode = true;
         StartOpenResourceThread(playerInfo->resource);
         return PLAYER_RESULT_OK;
@@ -670,7 +667,7 @@ int Player::OnWindowChange(ANativeWindow *window, int w, int h) {
 
         AMediaCodec_start(playerInfo->AMediaCodec);
         if (ret == PLAYER_RESULT_OK) {
-            LOGI("--------OnWindowChange() success! ");
+            LOGI("--------OnWindowChange() success!state->STARTED");
             playerInfo->SetPlayState(STARTED);
             StartDecodeThread(playerInfo);
         }
