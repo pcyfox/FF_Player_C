@@ -23,7 +23,7 @@ extern "C" {
 //clang -g -o pvlib  ParseVideo.c  -lavformat -lavutil
 //clang -g -o pvlib  ParseVideo.c `pkg-config --libs libavutil libavformat`
 
-static bool isDebug = false;
+static bool isDebug = true;
 
 
 struct Info {
@@ -111,10 +111,13 @@ int createAMediaCodec(AMediaCodec **mMediaCodec, int width, int height, uint8_t 
 
 
 void *OpenResource(void *info) {
+    if (info == NULL) {
+        return NULL;
+    }
     auto *playerInfo = (PlayerInfo *) info;
 
     char *url = playerInfo->resource;
-    if (!playerInfo || !playerInfo->inputContext) {
+    if (!playerInfo->inputContext) {
         LOGE("playerInfo or it's inputContext is NULL");
         return (void *) PLAYER_RESULT_ERROR;
     }
@@ -147,6 +150,7 @@ void *OpenResource(void *info) {
             return (void *) PLAYER_RESULT_ERROR;
         }
 
+        //is H264?
         if (playerInfo->inputVideoStream->codecpar->codec_id != AV_CODEC_ID_H264) {
             LOGE("sorry this player only support h.264 now!");
             playerInfo->SetPlayState(ERROR);
@@ -161,6 +165,38 @@ void *OpenResource(void *info) {
             if (exSize > 0) {
                 uint8_t *extraData = codecpar->extradata;
                 printCharsHex((char *) extraData, exSize, exSize - 1, "SPS-PPS");
+            }
+            int w = playerInfo->inputVideoStream->codecpar->width;
+            int h = playerInfo->inputVideoStream->codecpar->height;
+            int level = playerInfo->inputVideoStream->codecpar->level;
+            int profile = playerInfo->inputVideoStream->codecpar->profile;
+            int sample_rate = playerInfo->inputVideoStream->codecpar->sample_rate;
+            const int codecId = playerInfo->inputVideoStream->codecpar->codec_id;
+            LOGD("input video stream info :w=%d,h=%d,codec=%d,level=%d,profile=%d,sample_rate=%d",
+                 w, h,
+                 codecId, level, profile, sample_rate);
+
+            int format = playerInfo->inputVideoStream->codecpar->format;
+            switch (format) {
+                case AV_PIX_FMT_YUV420P:
+                    LOGD("input video color format is YUV420p");
+                    break;
+                case AV_PIX_FMT_YUYV422:   ///< packed YUV 4:2:2, 16bpp, Y0 Cb Y1 Cr
+                    LOGD("input video color format is YUVV422");
+                    break;
+                case AV_PIX_FMT_YUV422P:
+                    LOGD("input video color format is YUV422P");
+                    break;
+                case AV_PIX_FMT_YUV444P:
+                    LOGD("input video color format is YUV444P");
+                    break;
+
+                case AV_PIX_FMT_YUVJ420P:
+                    LOGD("input video color format is YUVJ420P");
+                    break;
+                default:
+                    LOGD("input video color format is other");
+                    break;
             }
         }
 
@@ -182,6 +218,7 @@ void *OpenResource(void *info) {
                               playerInfo->windowHeight,
                               codecpar->extradata,
                               codecpar->extradata_size,
+
                               codecpar->extradata,
                               codecpar->extradata_size,
                               playerInfo->window, playerInfo->mine);
@@ -266,6 +303,7 @@ void *RecordPkt(void *info) {
         recorderInfo->o_video_stream->codecpar->codec_tag = 0;
         int ret = avcodec_parameters_copy(recorderInfo->o_video_stream->codecpar,
                                           i_av_codec_parameters);
+        recorderInfo->o_video_stream->codecpar->format = AV_PIX_FMT_YUV420P;
         if (ret < 0) {
             recorderInfo->SetRecordState(RECORD_ERROR);
             LOGE("Failed to copy codec parameters\n");
@@ -387,7 +425,7 @@ void *Decode(void *info) {
                 LOGE("output buffers changed");
             } else if (status == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED) {
             } else if (status == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
-                //   LOGE("video no output buffer right now");
+                LOGE("video no output buffer right now");
             } else {
                 LOGE("unexpected info code: %zd", status);
             }

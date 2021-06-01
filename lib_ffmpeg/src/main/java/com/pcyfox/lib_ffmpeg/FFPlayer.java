@@ -56,7 +56,7 @@ public class FFPlayer {
 
     //for call in native
     public void onPlayerStateChange(int state) {
-        Log.d(TAG, "onPlayerStateChange() called with: state = [" + state + "]");
+        //Log.d(TAG, "onPlayerStateChange() called with: state = [" + state + "]");
         for (PlayState s : PlayState.values()) {
             if (state == s.ordinal()) {
                 this.state = s;

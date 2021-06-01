@@ -31,6 +31,14 @@
             android:onClick="onClick"
             android:text="Test Record Multi video" />
 
+        <Button
+            android:id="@+id/btn_local_video_play_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:onClick="onClick"
+            android:text="Local Video Play Test" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
