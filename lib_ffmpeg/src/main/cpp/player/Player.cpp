@@ -115,16 +115,14 @@ void *OpenResource(void *info) {
         return NULL;
     }
     auto *playerInfo = (PlayerInfo *) info;
-
     char *url = playerInfo->resource;
     if (!playerInfo->inputContext) {
-        LOGE("playerInfo or it's inputContext is NULL");
-        return (void *) PLAYER_RESULT_ERROR;
+        playerInfo->inputContext = avformat_alloc_context();
     }
     AVFormatContext *fmt_ctx = playerInfo->inputContext;
     //打开多媒体文件，根据文件后缀名解析,第三个参数是显式制定文件类型，当文件后缀与文件格式不符
     //或者根本没有后缀时需要填写，
-    LOGD("avformat_open_input start,url=%s", url);
+    LOGD("OpenResource():avformat_open_input start,url=%s", url);
     int ret = avformat_open_input(&fmt_ctx, url, NULL, NULL);
     if (ret == 0) {
         /* find stream info  */
@@ -311,7 +309,7 @@ void *RecordPkt(void *info) {
         }
         /*open file  pb:AVIOContext*/
         if (avio_open(&recorderInfo->o_fmt_ctx->pb, file, AVIO_FLAG_WRITE) < 0) {
-            LOGE("open file ERROR");
+            LOGE("open file ERROR,file=%s", file);
             recorderInfo->SetRecordState(RECORD_ERROR);
             return (void *) PLAYER_RESULT_ERROR;
         }
@@ -364,8 +362,8 @@ void *RecordPkt(void *info) {
     }
     LOGI("----------------- record work stop,start to delete recordInfo--------------");
     //释放资源
-    delete recorderInfo;
-    recorderInfo = NULL;
+    //delete recorderInfo;
+    //recorderInfo = NULL;
     return (void *) PLAYER_RESULT_OK;
 }
 
@@ -463,7 +461,8 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
             }
         }
     }
-    if (playerInfo->GetPlayState() == STARTED && !playerInfo->isOnlyRecorderNode) {
+    if (playerInfo != NULL && playerInfo->GetPlayState() == STARTED &&
+        !playerInfo->isOnlyRecorderNode) {
         //加入解码队列
         playerInfo->packetQueue.putAvPacket(packet);
     }
@@ -492,9 +491,16 @@ void Player::StartRecorderThread() {
 }
 
 void *DeMux(void *info) {
+/*
     Info *inf = (Info *) info;
     PlayerInfo *playerInfo = inf->playerInfo;
     RecorderInfo *recorderInfo = inf->recorderInfo;
+*/
+
+    Player *player = (Player *) info;
+    PlayerInfo *playerInfo = player->playerInfo;
+    RecorderInfo *recorderInfo = player->recorderInfo;
+
     if (playerInfo == NULL) {
         LOGE("Player is not init");
         return NULL;
@@ -524,7 +530,7 @@ void *DeMux(void *info) {
 
         if (playerInfo->GetPlayState() == STOPPED) {
             LOGD("DeMux() stop,due to state-STOPPED!");
-            return NULL;
+            break;
         }
 
         if (state == PAUSE && (recorderInfo != NULL) &&
@@ -535,7 +541,7 @@ void *DeMux(void *info) {
         i_pkt = av_packet_alloc();
         if (i_pkt == NULL) {
             LOGE("DeMux fail,because alloc av packet fail!");
-            return NULL;
+            break;
         }
         int ret = av_read_frame(playerInfo->inputContext, i_pkt);
         if (playerInfo && ret == 0 &&
@@ -547,32 +553,42 @@ void *DeMux(void *info) {
             break;
         }
     }
-    LOGD("DeMux() stop! start to delete playerInfo");
+
+    if (playerInfo->inputContext != NULL) {
+        avformat_close_input(&playerInfo->inputContext);
+    }
+    LOGD("DeMux() stop over! ");
     static int num = 1;
-    //释放资源
-    delete playerInfo;
-    playerInfo = NULL;
-    free(info);
     return NULL;
 }
 
 
 void Player::StartDeMuxThread() {
     LOGI("start deMux thread");
-    Info *info = (Info *) malloc(sizeof(struct Info));
-    info->playerInfo = playerInfo;
-    info->recorderInfo = recorderInfo;
-    pthread_create(&playerInfo->deMux_thread, NULL, DeMux, info);
+
+//    Info *info = (Info *) malloc(sizeof(struct Info));
+//    info->playerInfo = playerInfo;
+//    info->recorderInfo = recorderInfo;
+
+    pthread_create(&playerInfo->deMux_thread, NULL, DeMux, this);
     pthread_setname_np(playerInfo->deMux_thread, "deMux_thread");
     pthread_detach(playerInfo->deMux_thread);
 }
 
 void Player::StartOpenResourceThread(char *res) {
+    if (!res) {
+        LOGE("StartOpenResourceThread() fail,res is null");
+        return;
+    }
+
     LOGD("start open resource thread");
     playerInfo->resource = res;
-    pthread_create(&playerInfo->open_resource_thread, NULL, OpenResource, playerInfo);
-    pthread_setname_np(playerInfo->open_resource_thread, "open_resource_thread");
-    pthread_detach(playerInfo->open_resource_thread);
+    pthread_create(&playerInfo
+            ->open_resource_thread, NULL, OpenResource, playerInfo);
+    pthread_setname_np(playerInfo
+                               ->open_resource_thread, "open_resource_thread");
+    pthread_detach(playerInfo
+                           ->open_resource_thread);
 }
 
 int Player::InitPlayerInfo() {
@@ -581,8 +597,7 @@ int Player::InitPlayerInfo() {
         playerInfo = new PlayerInfo;
         playerInfo->id = playerId;
     } else {
-        LOGE("InitPlayerInfo() error,playerInfo is not NULL,it may be inited!");
-        return PLAYER_RESULT_ERROR;
+        LOGW("InitPlayerInfo(),playerInfo is not NULL,it may be inited!");
     }
 
     if (playerInfo->GetPlayState() == INITIALIZED) {
@@ -591,11 +606,6 @@ int Player::InitPlayerInfo() {
 
     LOGI("InitPlayerInfo():state-> INITIALIZED");
     playerInfo->SetPlayState(INITIALIZED);
-
-    playerInfo->inputContext = avformat_alloc_context();
-    if (!playerInfo->inputContext) {
-        return PLAYER_RESULT_ERROR;
-    }
     LOGD("init player info over");
     return PLAYER_RESULT_OK;
 }
@@ -605,8 +615,8 @@ int Player::SetResource(char *resource) {
     LOGI("---------SetResource() called with:resource=%s\n", resource);
     if (playerInfo != NULL) {
         LOGE("player is not stopped!");
-        return PLAYER_RESULT_ERROR;
     }
+
     if (InitPlayerInfo()) {
         playerInfo->resource = resource;
     } else {
@@ -782,6 +792,7 @@ int Player::Stop() {
     if (recorderInfo != NULL) {
         recorderInfo->SetRecordState(RECORD_STOP);
     }
+    LOGI("Stop():start to stop recorde");
     //停止录制
     StopRecord();
     LOGD("--------Stop Over------");
@@ -794,6 +805,7 @@ int Player::PrepareRecorder(char *outPath) {
         return PLAYER_RESULT_ERROR;
     }
     if (recorderInfo == NULL) {
+        LOGI("---------PrepareRecorder()  new RecorderInfo ");
         recorderInfo = new RecorderInfo;
         if (playerInfo != NULL) {
             recorderInfo->inputVideoStream = playerInfo->inputVideoStream;
@@ -838,7 +850,7 @@ int Player::StartRecord() {
 
 int Player::StopRecord() {
     LOGI("------StopRecord() called------");
-    if (recorderInfo &&
+    if (recorderInfo != NULL &&
         recorderInfo->GetRecordState() >= RECORD_START) {
         recorderInfo->SetRecordState(RECORD_STOP);
         return PLAYER_RESULT_OK;
@@ -879,6 +891,8 @@ int Player::Release() {
         delete recorderInfo;
         recorderInfo = NULL;
     }
+
+    LOGD("Release() over!");
     return PLAYER_RESULT_OK;
 }
 
@@ -889,6 +903,11 @@ void Player::SetDebug(bool debug) {
 
 Player::Player(int id) {
     playerId = id;
+}
+
+Player::~Player() {
+    Release();
+    LOGE("player delete over!");
 }
 
 

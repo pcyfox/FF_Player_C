@@ -75,7 +75,7 @@ class RecorderView : RelativeLayout {
         ffPlayer.setOnStateChangeListener(listener)
     }
 
-    fun prepareRecorder(videoPath: String?, audioPath: String?="") {
+    fun prepareRecorder(videoPath: String?, audioPath: String? = "") {
         Log.d(TAG, "prepareRecorder() called with: videoPath = $videoPath, audioPath = $audioPath")
         if (!videoPath.isNullOrEmpty()) {
             this.videoPath = videoPath
@@ -98,6 +98,7 @@ class RecorderView : RelativeLayout {
             return false
         }
         if (ffPlayer.state != PlayState.STARTED) {
+            Log.e(TAG, "startRecord() called fail,state=${ffPlayer.state}")
             return false
         }
         audioRecorder.startRecording()
@@ -111,6 +112,7 @@ class RecorderView : RelativeLayout {
             return false
         }
         if (ffPlayer.state != PlayState.STARTED) {
+            Log.d(TAG, "startRecordVideo() called fail,state=${ffPlayer.state}")
             return false
         }
         return ffPlayer.startRecord() > 0
@@ -121,6 +123,7 @@ class RecorderView : RelativeLayout {
         audioRecorder.pauseRecording()
         return ffPlayer.pauseRecord()
     }
+
 
     fun resumeRecord(): Int {
         audioRecorder.startRecording()
@@ -134,6 +137,10 @@ class RecorderView : RelativeLayout {
 
 
     fun setResource(url: String, isOnlyRecordeVideo: Boolean = false) {
+        Log.d(
+            TAG,
+            "setResource() called with: url = $url, isOnlyRecordeVideo = $isOnlyRecordeVideo"
+        )
         ffPlayer.run {
             if (setResource(url) > 0) {
                 config(sv, sv.width, sv.height, isOnlyRecordeVideo)
@@ -156,6 +163,9 @@ class RecorderView : RelativeLayout {
         return ffPlayer.stop() > 0
     }
 
+    fun release(){
+       ffPlayer.release()
+    }
     fun pause(): Boolean {
         pauseRecord()
         return ffPlayer.pause() > 0

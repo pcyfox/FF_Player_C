@@ -52,8 +52,8 @@ jint JNI_OnLoad(JavaVM *jvm, void *reserved) {
 void *ChangeState(void *p) {
     int *params = (int *) p;
     int id = params[0];
-    Player *player = findPlayer(id);
 
+    Player *player = findPlayer(id);
     if (player != NULL && vm) {
         JNIEnv *env = NULL;
         int ret = vm->AttachCurrentThread(&env, NULL);
@@ -73,6 +73,7 @@ void *ChangeState(void *p) {
 
 const void *onStateChange(PlayState state, int id) {
     LOGI("onStateChange() called with:playState=%d,id=%d", state, id);
+
     if (vm) {
         pthread_t thread = 0;
         int *params = (int *) malloc(sizeof(int));
@@ -89,6 +90,7 @@ JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_setResource(JNIEnv *env, jobject thiz, jstring url, int id) {
     Player *player = findPlayer(id);
     if (player == NULL) {
+        LOGE("not found player by id=%d", id);
         return PLAYER_RESULT_ERROR;
     }
     char *inputUrl = (char *) env->GetStringUTFChars(url, 0);
@@ -105,6 +107,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_play(JNIEnv *env, jobject thiz, int id) {
     LOGI("play() called with:id=%d", id);
     Player *player = findPlayer(id);
     if (player == NULL) {
+        LOGE("not found player by id=%d", id);
         return PLAYER_RESULT_ERROR;
     }
     return player->Play();
@@ -145,7 +148,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz,
         return PLAYER_RESULT_ERROR;
     }
 
-    return player->Configure(native_window, w, h, isOnyRecorderMod > 0);
+    return player->Configure(native_window, w, h, false);
 }
 
 extern "C"
@@ -280,4 +283,13 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_surfaceDestroyed(JNIEnv *env, jobject thiz,
         return PLAYER_RESULT_ERROR;
     }
     return player->Pause(0);
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_release(JNIEnv *env, jobject thiz, jint id) {
+    Player *player = findPlayer(id);
+    if (player == NULL) {
+        return;
+    }
+    delete player;
 }

@@ -9,6 +9,10 @@ PlayerInfo::PlayerInfo() {
     pthread_cond_init(&cond, NULL);
     playState = UN_USELESS;
     av_register_all();
+    inputContext = avformat_alloc_context();
+    if (!inputContext) {
+        LOGE("avformat_alloc_context fail");
+    }
     LOGD("-------PlayerInfo created---------");
 }
 

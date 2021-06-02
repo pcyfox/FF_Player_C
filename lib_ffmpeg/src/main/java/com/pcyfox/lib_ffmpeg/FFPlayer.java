@@ -69,11 +69,13 @@ public class FFPlayer {
 
 
     public int onlyRecord(int id) {
+        Log.d(TAG, "onlyRecord() called with: id = [" + id + "]");
         return configPlayer(null, 0, 0, 1, id);
     }
 
 
     public int config(SurfaceView surfaceView, int w, int h, boolean isOnlyRecord) {
+        Log.d(TAG, "config() called with: surfaceView = [" + surfaceView + "], w = [" + w + "], h = [" + h + "], isOnlyRecord = [" + isOnlyRecord + "]");
         if (isOnlyRecord) {
             return onlyRecord(id);
         }
@@ -83,7 +85,7 @@ public class FFPlayer {
             return -1;
         }
 
-        configPlayer(surfaceView.getHolder().getSurface(), w, h, 1, id);
+        configPlayer(surfaceView.getHolder().getSurface(), w, h, 0, id);
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
@@ -127,6 +129,10 @@ public class FFPlayer {
         return stop(id);
     }
 
+    public void release() {
+        release(id);
+        state=PlayState.RELEASE;
+    }
     public int pause() {
         return pause(id);
     }
@@ -137,6 +143,8 @@ public class FFPlayer {
 
     //-------------for native-------------------------
     public native int init(int isDebug, int id);
+
+    public native void release(int id);
 
     public native int configPlayer(Surface surface, int w, int h, int isOnlyRecorderMod, int id);
 

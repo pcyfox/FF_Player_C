@@ -33,6 +33,7 @@
                 android:onClick="onClick"
                 android:text="start"
                 android:textSize="16dp" />
+
             <Button
                 android:id="@+id/btn_play"
                 android:layout_width="wrap_content"
@@ -100,6 +101,13 @@
                 android:text="stop record"
                 android:textSize="16dp" />
 
+            <Button
+                android:id="@+id/btn_release"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="onClick"
+                android:text="release"
+                android:textSize="16dp" />
 
             <Button
                 android:id="@+id/btn_mux"

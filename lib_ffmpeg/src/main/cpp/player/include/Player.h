@@ -18,6 +18,7 @@ class Player {
 
 public:
     Player(int id);
+    ~Player();
 
 public:
     jobject jPlayerObject;

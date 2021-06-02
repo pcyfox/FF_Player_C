@@ -123,6 +123,10 @@ class TestActivity : AppCompatActivity() {
                 R.id.btn_mux -> {
                     mux()
                 }
+
+                R.id.btn_release-> {
+                    release()
+                }
                 else -> {
                 }
             }
