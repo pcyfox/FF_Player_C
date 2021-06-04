@@ -30,7 +30,8 @@ class PlayerInfo {
 
 public:
     int id;
-    AMediaCodec *AMediaCodec = NULL;
+    AMediaCodec *videoCodec = NULL;
+    AMediaCodec *audioCodec = NULL;
     AVFormatContext *inputContext = NULL;
     AVFormatContext *outContext = NULL;
     AVStream *inputVideoStream = NULL;

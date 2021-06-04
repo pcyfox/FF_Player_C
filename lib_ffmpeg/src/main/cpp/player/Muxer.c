@@ -10,8 +10,7 @@
 
 static bool isMuxing = false;
 
-static void
-releaseResource(AVFormatContext **in_fmt1, AVFormatContext **in_fmt2, AVFormatContext **ou_fmt3) {
+static void releaseResource(AVFormatContext **in_fmt1, AVFormatContext **in_fmt2, AVFormatContext **ou_fmt3) {
     if (in_fmt1 && *in_fmt1) {
         avformat_close_input(in_fmt1);
         *in_fmt1 = NULL;

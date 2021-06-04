@@ -16,9 +16,10 @@ import java.io.File
 
 class TestActivity : AppCompatActivity() {
     private val TAG = "TestActivity"
-    private val url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
-
-    //  private val url = "/storage/emulated/0/test/20210406_16_26_12/1/out.mp4"
+    // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
+    // private val url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
+    private val url = "/storage/emulated/0/test.mp4"
+    //private val url = "/storage/emulated/0/test/20210602_15_23_31/1/out.mp4"
     private val storeDir = Environment.getExternalStorageDirectory().absolutePath + "/test/"
 
     private var recordCount = 0
@@ -124,7 +125,7 @@ class TestActivity : AppCompatActivity() {
                     mux()
                 }
 
-                R.id.btn_release-> {
+                R.id.btn_release -> {
                     release()
                 }
                 else -> {

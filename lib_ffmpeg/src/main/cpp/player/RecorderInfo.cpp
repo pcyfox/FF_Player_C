@@ -6,6 +6,7 @@
 #include "include/RecorderInfo.h"
 
 RecorderInfo::~RecorderInfo() {
+    LOGD("start to delete RecorderInfo ");
     if (o_fmt_ctx != NULL) {
         avformat_free_context(o_fmt_ctx);
         o_fmt_ctx = NULL;

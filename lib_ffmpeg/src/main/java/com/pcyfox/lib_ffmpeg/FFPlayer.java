@@ -8,6 +8,8 @@ import android.view.SurfaceView;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
+import java.io.File;
+
 @Keep
 public class FFPlayer {
     private final int id;
@@ -131,14 +133,31 @@ public class FFPlayer {
 
     public void release() {
         release(id);
-        state=PlayState.RELEASE;
+        state = PlayState.RELEASE;
     }
+
     public int pause() {
         return pause(id);
     }
 
     public int resume() {
         return resume(id);
+    }
+
+    public int mux(String audioFile, String videoFile, String outFile) {
+        Log.d(TAG, "mux() called with: audioFile = [" + audioFile + "], videoFile = [" + videoFile + "], outFile = [" + outFile + "]");
+        File video = new File(videoFile);
+        if (!video.exists()) {
+            Log.e(TAG, "mux fail: video not exist!");
+            return -1;
+        }
+        File audio = new File(audioFile);
+        if (!audio.exists()) {
+            Log.e(TAG, "mux fail: audio not exist!");
+            return -1;
+        }
+
+        return muxAV(audioFile, videoFile, outFile);
     }
 
     //-------------for native-------------------------
@@ -168,6 +187,7 @@ public class FFPlayer {
 
     public native int resume(int id);
 
-    public native int muxAV(String audioFile, String videoFile, String outFile);
+    private native int muxAV(String audioFile, String videoFile, String outFile);
+
     //-------------for native-------------------------
 }

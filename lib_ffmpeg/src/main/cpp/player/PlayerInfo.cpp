@@ -22,17 +22,21 @@ PlayerInfo::~PlayerInfo() {
         ANativeWindow_release(window);
         window = NULL;
     }
-    if (AMediaCodec) {
-        AMediaCodec_stop(AMediaCodec);
-        AMediaCodec_delete(AMediaCodec);
-        AMediaCodec = NULL;
+    if (videoCodec) {
+        AMediaCodec_stop(videoCodec);
+        AMediaCodec_delete(videoCodec);
+        videoCodec = NULL;
     }
 
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&cond);
-    avformat_free_context(outContext);
-    outContext = NULL;
-    avformat_free_context(inputContext);
+    if (outContext != NULL) {
+        avformat_free_context(outContext);
+        outContext = NULL;
+    }
+    if (inputContext != NULL) {
+        avformat_free_context(inputContext);
+    }
     inputContext = NULL;
     decode_thread = 0;
     deMux_thread = 0;

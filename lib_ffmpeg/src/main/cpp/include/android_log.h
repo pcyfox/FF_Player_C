@@ -29,7 +29,7 @@ static void printCharsHex(char *data, int length, int printLen, char *tag) {
         return;
     }
     for (int i = 0; i < printLen; ++i) {
-        LOGD("------------printChars() TAG=%s:i=%d,char=%02x", tag, i, *(data + i));
+        LOGD("------------%s:i=%d,char=%02x", tag, i, *(data + i));
     }
 }
 #endif

@@ -12,6 +12,7 @@
 
 #ifdef __cplusplus
 extern "C" {
+#include "libavutil/time.h"
 #include"libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
 #include "libavutil/avutil.h"
@@ -25,11 +26,24 @@ extern "C" {
 
 static bool isDebug = true;
 
+#define head_1  0x00
+#define head_2  0x00
+#define head_3  0x00
+#define head_4  0x01
 
-struct Info {
-    PlayerInfo *playerInfo;
-    RecorderInfo *recorderInfo;
-};
+#define head_I  0x65
+#define head_P  0x61
+
+
+static int GetStartCodeLen(const unsigned char *pkt) {
+    if (pkt[0] == 0 && pkt[1] == 0 && pkt[2] == 0 && pkt[3] == 1) {
+        return 4;
+    } else if (pkt[0] == 0 && pkt[1] == 0 && pkt[2] == 1) {
+        return 3;
+    } else {
+        return 0;
+    }
+}
 
 
 AVStream *findVideoStream(AVFormatContext *i_fmt_ctx) {
@@ -45,22 +59,19 @@ AVStream *findVideoStream(AVFormatContext *i_fmt_ctx) {
 int GetNALUType(AVPacket *packet) {
     int nalu_type = -1;
     const uint8_t *buf = packet->data;
-    bool hasLongStartCode = buf[0] == 0 && buf[1] == 0 && buf[2] == 0 && buf[3] == 1;
-    bool hasShortStartCode = buf[0] == 0 && buf[1] == 0 && buf[2] == 1;
-    if (hasLongStartCode || hasShortStartCode) {
-        if (hasShortStartCode) {
-            nalu_type = buf[3] & 0xFF;
-        } else {
-            nalu_type = buf[4] & 0xFF;
-        }
+    int len = GetStartCodeLen(buf);
+    if (len == 3) {
+        nalu_type = buf[3] & 0xFF;
+    } else if (len == 4) {
+        nalu_type = buf[4] & 0xFF;
     }
     return nalu_type;
 }
 
 
-int createAMediaCodec(AMediaCodec **mMediaCodec, int width, int height, uint8_t *sps, int spsSize,
-                      uint8_t *pps, int ppsSize,
-                      ANativeWindow *surface, const char *mine) {
+int createVideoCodec(AMediaCodec **mMediaCodec, int width, int height, uint8_t *sps, int spsSize,
+                     uint8_t *pps, int ppsSize,
+                     ANativeWindow *surface, const char *mine) {
 
     LOGI("createAMediaCodec() called width=%d,height=%d,spsSize=%d,ppsSize=%d,mine=%s\n", width,
          height,
@@ -188,8 +199,7 @@ void *OpenResource(void *info) {
                 case AV_PIX_FMT_YUV444P:
                     LOGD("input video color format is YUV444P");
                     break;
-
-                case AV_PIX_FMT_YUVJ420P:
+                case AV_PIX_FMT_YUVJ420P://ffmpeg 默认格式
                     LOGD("input video color format is YUVJ420P");
                     break;
                 default:
@@ -200,9 +210,10 @@ void *OpenResource(void *info) {
 
         if (codecpar == NULL) {
             playerInfo->SetPlayState(ERROR);
-            LOGE("can't get video stream params\n");
+            LOGE("OpenResource() fail:can't get video stream params");
             return (void *) PLAYER_RESULT_ERROR;
         }
+
 
         if (!playerInfo->isOnlyRecorderNode) {
             if (playerInfo->window == NULL ||
@@ -212,19 +223,19 @@ void *OpenResource(void *info) {
                 return (void *) PLAYER_RESULT_ERROR;
             }
 
-            createAMediaCodec(&playerInfo->AMediaCodec, playerInfo->windowWith,
-                              playerInfo->windowHeight,
-                              codecpar->extradata,
-                              codecpar->extradata_size,
-                              codecpar->extradata,
-                              codecpar->extradata_size,
-                              playerInfo->window, playerInfo->mine);
+            createVideoCodec(&playerInfo->videoCodec, playerInfo->windowWith,
+                             playerInfo->windowHeight,
+                             codecpar->extradata,
+                             codecpar->extradata_size,
+                             codecpar->extradata,
+                             codecpar->extradata_size,
+                             playerInfo->window, playerInfo->mine);
 
-            if (playerInfo->AMediaCodec) {
-                LOGI("OpenResource()  createAMediaCodec success!,state->PREPARED");
+            if (playerInfo->videoCodec) {
+                LOGI("OpenResource():  createAMediaCodec success!,state->PREPARED");
                 playerInfo->SetPlayState(PREPARED);
             } else {
-                LOGE("AMediaCodec is NULL");
+                LOGE("OpenResource():created AMediaCodec fail");
                 playerInfo->SetPlayState(ERROR);
                 return (void *) PLAYER_RESULT_ERROR;
             }
@@ -232,10 +243,9 @@ void *OpenResource(void *info) {
             LOGI("OpenResource(): state->PREPARED");
             playerInfo->SetPlayState(PREPARED);
         }
-
     } else {
         fmt_ctx = NULL;
-        LOGE("can't open source: %s msg:%s \n", url, av_err2str(ret));
+        LOGE("OpenResource():can't open source: %s msg:%s \n", url, av_err2str(ret));
         return (void *) PLAYER_RESULT_ERROR;
     }
     return (void *) PLAYER_RESULT_OK;
@@ -249,7 +259,6 @@ int getAudioData(AVFormatContext *ctx, char *dest) {
         LOGE("open out file %s fail! \n", dest);
         return -1;
     }
-
     //找到音频流,第二参数流类型（FFMPEG宏）第三个流的索引号，未知，填-1，第四个，相关流的索引号，
     //如音频流对应的视频流索引号，也未知，第五个制定解解码器，最后一个是标志符解
     int index = av_find_best_stream(ctx, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
@@ -265,7 +274,6 @@ int getAudioData(AVFormatContext *ctx, char *dest) {
         if (audio_pkt.stream_index == index) {
             //TODO 每个音频包前加入头信息
             int len = fwrite(audio_pkt.data, 1, audio_pkt.size, dest_fd);
-
             if (len != audio_pkt.size) {//判断写入文件是否成功
                 LOGE("the write data length not equals audio_pkt size \n");
             }
@@ -361,16 +369,13 @@ void *RecordPkt(void *info) {
         }
     }
     LOGI("----------------- record work stop,start to delete recordInfo--------------");
-    //释放资源
-    //delete recorderInfo;
-    //recorderInfo = NULL;
     return (void *) PLAYER_RESULT_OK;
 }
 
 
 void *Decode(void *info) {
     auto *playerInfo = (PlayerInfo *) info;
-    AMediaCodec *codec = playerInfo->AMediaCodec;
+    AMediaCodec *codec = playerInfo->videoCodec;
     AVPacket *packet = av_packet_alloc();
     while (true) {
         if (playerInfo == NULL) {
@@ -403,7 +408,6 @@ void *Decode(void *info) {
                     if (pts < 0 || !pts) {
                         pts = getCurrentTime();
                     }
-
                     media_status_t status = AMediaCodec_queueInputBuffer(codec, index, 0, length,
                                                                          pts, 0);
                     if (status != AMEDIA_OK) {
@@ -412,24 +416,24 @@ void *Decode(void *info) {
                 }
             }
 
-            AMediaCodecBufferInfo info;
-            ssize_t status = AMediaCodec_dequeueOutputBuffer(codec, &info, 100);
+            AMediaCodecBufferInfo bufferInfo;
+            ssize_t status = AMediaCodec_dequeueOutputBuffer(codec, &bufferInfo, 100);
             if (status >= 0) {
-                AMediaCodec_releaseOutputBuffer(codec, status, info.size != 0);
-                if (info.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
+                AMediaCodec_releaseOutputBuffer(codec, status, bufferInfo.size != 0);
+                if (bufferInfo.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
                     LOGE("video producer output EOS");
                 }
             } else if (status == AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED) {
                 LOGE("output buffers changed");
             } else if (status == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED) {
             } else if (status == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
-                LOGE("video no output buffer right now");
+                LOGW("video no output buffer right now");
             } else {
                 LOGE("unexpected info code: %zd", status);
             }
         }
     }
-    LOGD("-------Decode over!---------");
+    LOGD("-------Decode Stop!---------");
     return NULL;
 }
 
@@ -441,13 +445,37 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
         return PLAYER_RESULT_ERROR;
     }
     int type = GetNALUType(packet);
-    //  LOGD("------ProcessPacket NALU type=%0x", type);
-    packet->flags = type;
-    if (type == 0x67 && playerInfo->lastNALUType == type) {
-        LOGW("------ProcessPacket more than one SPS in this GOP");
-        //   return PLAYER_RESULT_ERROR;
+    if (isDebug) {
+        LOGD("------ProcessPacket NALU type=%0x,flag=%d", type, packet->flags);
+        if (type == 0x67 && playerInfo->lastNALUType == type) {
+            LOGW("------ProcessPacket more than one SPS in this GOP");
+        }
+        printCharsHex((char *) packet->data, 12, 6, "-------before------");
     }
-    playerInfo->lastNALUType = type;
+
+
+    //try to add start codes
+    if (type < 0) {
+        uint8_t *fullData = (uint8_t *) calloc(sizeof(uint8_t), packet->size + 5);
+        fullData[3] = head_4;
+        if (packet->flags == 1) {
+            fullData[4] = head_I;
+        } else {
+            fullData[4] = head_P;
+        }
+        memcpy(fullData + 5, packet->data, packet->size);
+        packet->data = fullData;
+        packet->size = packet->size + 5;
+        printCharsHex((char *) packet->data, 22, 16, "-------after------");
+    } else {
+        if (type == 0x61) {
+            packet->flags = 0;
+        } else {
+            packet->flags = 1;
+        }
+    }
+
+    playerInfo->lastNALUType = packet->flags;
     if (recorderInfo != NULL) {
         RecordState state = recorderInfo->GetRecordState();
         if (state != RECORD_PREPARED && state != RECORD_PAUSE && state != RECORD_ERROR) {
@@ -490,17 +518,23 @@ void Player::StartRecorderThread() {
     pthread_detach(recorderInfo->recorder_thread);
 }
 
-void *DeMux(void *info) {
-/*
-    Info *inf = (Info *) info;
-    PlayerInfo *playerInfo = inf->playerInfo;
-    RecorderInfo *recorderInfo = inf->recorderInfo;
-*/
 
-    Player *player = (Player *) info;
+static bool isLocalFile(char *url) {
+    bool isFile = false;
+    FILE *file = fopen(url, "r");
+    if (file) {
+        isFile = true;
+        fclose(file);
+    }
+    LOGD("isLocalFile:url=%s,isFile=%d", url, isFile);
+    return isFile;
+}
+
+
+void *DeMux(void *info) {
+    auto *player = (Player *) info;
     PlayerInfo *playerInfo = player->playerInfo;
     RecorderInfo *recorderInfo = player->recorderInfo;
-
     if (playerInfo == NULL) {
         LOGE("Player is not init");
         return NULL;
@@ -524,10 +558,18 @@ void *DeMux(void *info) {
     AVCodecParameters *i_av_codec_parameters = i_video_stream->codecpar;
     int video_stream_index = i_video_stream->index;
     PlayState state;
-    LOGI("--------------------Start DeMux----------------------");
+
+    float delay = 0;
+    if (isLocalFile(playerInfo->resource)) {
+        float fps = playerInfo->inputVideoStream->avg_frame_rate.num /
+                    playerInfo->inputVideoStream->avg_frame_rate.den;
+        delay = 1.0f / fps * 1000000;
+        LOGI("--------------------Start DeMux----------------------FPS:%f,span=%d", fps,
+             (unsigned int) delay);
+    }
+
     while (playerInfo != NULL && (state = playerInfo->GetPlayState()) != STOPPED ||
            state == PAUSE) {
-
         if (playerInfo->GetPlayState() == STOPPED) {
             LOGD("DeMux() stop,due to state-STOPPED!");
             break;
@@ -544,13 +586,20 @@ void *DeMux(void *info) {
             break;
         }
         int ret = av_read_frame(playerInfo->inputContext, i_pkt);
-        if (playerInfo && ret == 0 &&
-            i_pkt->stream_index == video_stream_index) {
-            ProcessPacket(i_pkt, i_av_codec_parameters, playerInfo, recorderInfo);
-        } else if (ret < 0) {
-            LOGE("read stream of eof!");
-            playerInfo->SetPlayState(STARTED);
-            break;
+        if (ret == 0) {
+            if (i_pkt->stream_index == video_stream_index) {
+                ProcessPacket(i_pkt, i_av_codec_parameters, playerInfo, recorderInfo);
+            }
+        } else if (ret == AVERROR_EOF) {
+            av_packet_free(&i_pkt);
+            playerInfo->SetPlayState(STOPPED);
+            LOGE("DeMux: end of file!,ret=%d", ret);
+        } else {
+            av_packet_free(&i_pkt);
+            LOGE("DeMux:ERROR!,ret=%d", ret);
+        }
+        if (delay > 0) {
+            av_usleep((unsigned int) delay);
         }
     }
 
@@ -667,15 +716,15 @@ int Player::OnWindowChange(ANativeWindow *window, int w, int h) {
         playerInfo->window = window;
         playerInfo->windowWith = w;
         playerInfo->windowHeight = h;
-        int ret = createAMediaCodec(&playerInfo->AMediaCodec, playerInfo->windowWith,
-                                    playerInfo->windowHeight,
-                                    NULL,
-                                    NULL,
-                                    NULL,
-                                    NULL,
-                                    playerInfo->window, playerInfo->mine);
+        int ret = createVideoCodec(&playerInfo->videoCodec, playerInfo->windowWith,
+                                   playerInfo->windowHeight,
+                                   NULL,
+                                   NULL,
+                                   NULL,
+                                   NULL,
+                                   playerInfo->window, playerInfo->mine);
 
-        AMediaCodec_start(playerInfo->AMediaCodec);
+        AMediaCodec_start(playerInfo->videoCodec);
         if (ret == PLAYER_RESULT_OK) {
             LOGI("--------OnWindowChange() success!state->STARTED");
             playerInfo->SetPlayState(STARTED);
@@ -737,11 +786,11 @@ int Player::Play() {
     }
 
 
-    media_status_t status = AMediaCodec_start(playerInfo->AMediaCodec);
+    media_status_t status = AMediaCodec_start(playerInfo->videoCodec);
     if (status != AMEDIA_OK) {
         LOGE("start AMediaCodec fail!\n");
-        AMediaCodec_delete(playerInfo->AMediaCodec);
-        playerInfo->AMediaCodec = NULL;
+        AMediaCodec_delete(playerInfo->videoCodec);
+        playerInfo->videoCodec = NULL;
         return PLAYER_RESULT_ERROR;
     } else {
         LOGI("------------AMediaCodec start success!!\n");
