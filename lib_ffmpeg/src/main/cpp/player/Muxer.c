@@ -2,9 +2,9 @@
 // Created by LN on 2021/1/13.
 //
 #include "include/Muxer.h"
-
 #define LOG_TAG "Muxer------------->"
-static bool isMuxing = IS_DEBUG;
+
+static bool isMuxing = false;
 
 static void
 ReleaseResource(AVFormatContext **in_fmt1, AVFormatContext **in_fmt2, AVFormatContext **ou_fmt3) {
