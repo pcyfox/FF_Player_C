@@ -14,14 +14,18 @@ import com.pcyfox.module_recoder.R
 import kotlinx.android.synthetic.main.recorder_activity_test.*
 import java.io.File
 
-class TestActivity : AppCompatActivity() {
-    private val TAG = "TestActivity"
-    // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
-    // private val url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
-    private val url = "/storage/emulated/0/test.mp4"
-    //private val url = "/storage/emulated/0/test/20210602_15_23_31/1/out.mp4"
-    private val storeDir = Environment.getExternalStorageDirectory().absolutePath + "/test/"
+class TestRecorderActivity : AppCompatActivity() {
+    companion object {
+        private val TAG = "TestActivity"
+        private const val KEY_URL = "KEY_URL"
+        private val storeDir = Environment.getExternalStorageDirectory().absolutePath + "/test/"
+    }
 
+
+    // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
+    private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
+    //private val url = "/storage/emulated/0/test.mp4"
+    //private val url = "/storage/emulated/0/test/20210602_15_23_31/1/out.mp4"
     private var recordCount = 0
     private var startTime = ""
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,6 +37,10 @@ class TestActivity : AppCompatActivity() {
         val store = File(storeDir)
         if (!store.exists()) {
             store.mkdirs()
+        }
+        val inputUrl = intent?.getStringExtra(KEY_URL)
+        if (!inputUrl.isNullOrEmpty()) {
+            url = inputUrl
         }
         startTime = TimeUtils.getNowString(TimeUtils.getSafeDateFormat("yyyyMMdd_HH_mm_ss"))
     }

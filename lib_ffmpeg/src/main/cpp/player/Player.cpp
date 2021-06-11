@@ -450,7 +450,7 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
         if (type == 0x67 && playerInfo->lastNALUType == type) {
             LOGW("------ProcessPacket more than one SPS in this GOP");
         }
-        printCharsHex((char *) packet->data, 12, 6, "-------before------");
+//        printCharsHex((char *) packet->data, 12, 6, "-------before------");
     }
 
 
@@ -468,11 +468,7 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
         packet->size = packet->size + 5;
         printCharsHex((char *) packet->data, 22, 16, "-------after------");
     } else {
-        if (type == 0x61) {
-            packet->flags = 0;
-        } else {
-            packet->flags = 1;
-        }
+        packet->flags = type;
     }
 
     playerInfo->lastNALUType = packet->flags;
