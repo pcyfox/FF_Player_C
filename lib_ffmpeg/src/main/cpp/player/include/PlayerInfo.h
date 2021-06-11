@@ -29,15 +29,15 @@ extern "C" {
 class PlayerInfo {
 
 public:
-    int id;
-    AMediaCodec *videoCodec = NULL;
-    AMediaCodec *audioCodec = NULL;
-    AVFormatContext *inputContext = NULL;
-    AVFormatContext *outContext = NULL;
-    AVStream *inputVideoStream = NULL;
+    int id{};
+    AMediaCodec *videoCodec = nullptr;
+    AMediaCodec *audioCodec = nullptr;
+    AVFormatContext *inputContext = nullptr;
+    AVFormatContext *outContext = nullptr;
+    AVStream *inputVideoStream = nullptr;
     bool isOnlyRecorderNode = false;
-    char *resource = NULL;
-    int width, height;
+    char *resource = nullptr;
+    int width{}, height{};
 
     AsyncQueue<AVPacket> packetQueue;
 
@@ -45,12 +45,12 @@ public:
     pthread_t deMux_thread = 0;
     pthread_t open_resource_thread = 0;
 
-    ANativeWindow *window = NULL;
-    int windowWith;
-    int windowHeight;
+    ANativeWindow *window = nullptr;
+    int windowWith{};
+    int windowHeight{};
 
-    pthread_mutex_t mutex;
-    pthread_cond_t cond;
+    pthread_mutex_t mutex{};
+    pthread_cond_t cond{};
 
     int8_t lastNALUType = 0;
 
@@ -59,7 +59,7 @@ public:
 
     volatile enum PlayState playState = UN_USELESS;
 
-    void (*stateListener)(PlayState, int) = NULL;
+    void (*stateListener)(PlayState, int) = nullptr;
 
 
 public:
@@ -72,7 +72,7 @@ public:
 
     PlayState GetPlayState();
 
-    void SetStateListener(void (*stateListener)(PlayState,int));
+    void SetStateListener(void (*stateListener)(PlayState, int));
 
 };
 

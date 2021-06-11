@@ -7,10 +7,10 @@
 
 #include <android/log.h>
 
-#define IS_DEBUG true
+#define IS_DEBUG false
 
 #define LOGV(...) if(IS_DEBUG)__android_log_print(ANDROID_LOG_VERBOSE, TAG, __VA_ARGS__)
-#define LOGD(...) if(IS_DEBUG)__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__)
+#define LOGD(...) if(IS_DEBUG){__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__);}
 #define LOGW(...) __android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
@@ -23,7 +23,7 @@
 
 
 static void printCharsHex(char *data, int length, int printLen, char *tag) {
-    LOGD("-----------------------------%s-printLen=%d--------------------------------------->" ,tag,
+    LOGD("-----------------------------%s-printLen=%d--------------------------------------->", tag,
          printLen);
     if (printLen > length) {
         return;
@@ -32,4 +32,5 @@ static void printCharsHex(char *data, int length, int printLen, char *tag) {
         LOGD("------------%s:i=%d,char=%02x", tag, i, *(data + i));
     }
 }
+
 #endif
