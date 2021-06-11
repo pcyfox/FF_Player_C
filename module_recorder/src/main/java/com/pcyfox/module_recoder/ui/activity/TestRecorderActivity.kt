@@ -24,6 +24,7 @@ class TestRecorderActivity : AppCompatActivity() {
 
     // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
     private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
+
     //private val url = "/storage/emulated/0/test.mp4"
     //private val url = "/storage/emulated/0/test/20210602_15_23_31/1/out.mp4"
     private var recordCount = 0
@@ -108,6 +109,7 @@ class TestRecorderActivity : AppCompatActivity() {
                 }
 
                 R.id.btn_stop -> {
+                    pb_recorde.visibility = View.GONE
                     stop()
                 }
                 R.id.btn_pause -> {
@@ -119,15 +121,18 @@ class TestRecorderActivity : AppCompatActivity() {
 
                 R.id.btn_start_record -> {
                     startRecord()
+                    pb_recorde.visibility = View.VISIBLE
                 }
                 R.id.btn_pause_record -> {
                     pauseRecord()
                 }
                 R.id.btn_resume_record -> {
                     resumeRecord()
+                    pb_recorde.visibility = View.VISIBLE
                 }
                 R.id.btn_stop_record -> {
                     stopRecord()
+                    pb_recorde.visibility = View.GONE
                 }
                 R.id.btn_mux -> {
                     mux()
