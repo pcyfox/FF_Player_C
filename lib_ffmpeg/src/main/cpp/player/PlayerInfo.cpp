@@ -5,8 +5,8 @@
 #include "PlayerInfo.h"
 
 PlayerInfo::PlayerInfo() {
-    pthread_mutex_init(&mutex, nullptr);
-    pthread_cond_init(&cond, nullptr);
+    pthread_mutex_init(&mutex, NULL);
+    pthread_cond_init(&cond, NULL);
     playState = UN_USELESS;
     if (IS_DEBUG) {
         av_log_set_level(AV_LOG_DEBUG);
@@ -24,25 +24,25 @@ PlayerInfo::~PlayerInfo() {
     playState = UN_USELESS;
     if (window) {
         ANativeWindow_release(window);
-        window = nullptr;
+        window = NULL;
     }
     if (videoCodec) {
         AMediaCodec_stop(videoCodec);
         AMediaCodec_delete(videoCodec);
-        videoCodec = nullptr;
+        videoCodec = NULL;
     }
 
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&cond);
-    if (outContext != nullptr) {
+    if (outContext != NULL) {
         avformat_free_context(outContext);
-        outContext = nullptr;
+        outContext = NULL;
     }
-    if (inputContext != nullptr) {
+    if (inputContext != NULL) {
         avformat_free_context(inputContext);
     }
 
-    inputContext = nullptr;
+    inputContext = NULL;
     decode_thread = 0;
     deMux_thread = 0;
     open_resource_thread = 0;

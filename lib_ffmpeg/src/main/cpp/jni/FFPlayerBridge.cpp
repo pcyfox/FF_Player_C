@@ -38,6 +38,16 @@ Player *findPlayer(int id) {
     }
 }
 
+bool removePlayer(int id) {
+    auto i = playerCache.find(id);
+    if (i != playerCache.end()) {
+        playerCache.erase(i);
+        return true;
+    } else {
+        return false;
+    }
+}
+
 
 jint JNI_OnLoad(JavaVM *jvm, void *reserved) {
     JNIEnv *env = NULL;
@@ -170,9 +180,6 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_onSurfaceChange(JNIEnv *env, jobject thiz, 
 }
 
 
-
-
-
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug, int id) {
@@ -181,6 +188,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug
         auto *player = new Player(id);
         player->jPlayerObject = env->NewGlobalRef(thiz);
         player->SetDebug(isDebug);
+
         playerCache.insert(std::map<int, Player *>::value_type(id, player));
 
         jclass clazz = env->GetObjectClass(thiz);
@@ -291,5 +299,6 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_release(JNIEnv *env, jobject thiz, jint id)
     if (player == NULL) {
         return;
     }
+    removePlayer(id);
     delete player;
 }

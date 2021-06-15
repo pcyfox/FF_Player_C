@@ -26,9 +26,9 @@ public:
     pthread_t recorder_thread = 0;
     AsyncQueue<AVPacket> packetQueue;
     char *storeFile;
-    AVFormatContext *o_fmt_ctx = nullptr;
-    AVStream *inputVideoStream = nullptr;
-    AVStream *o_video_stream = nullptr;
+    AVFormatContext *o_fmt_ctx = NULL;
+    AVStream *inputVideoStream = NULL;
+    AVStream *o_video_stream = NULL;
     volatile enum RecordState recordState = UN_START_RECORD;
 
 public:

@@ -30,13 +30,13 @@ class PlayerInfo {
 
 public:
     int id{};
-    AMediaCodec *videoCodec = nullptr;
-    AMediaCodec *audioCodec = nullptr;
-    AVFormatContext *inputContext = nullptr;
-    AVFormatContext *outContext = nullptr;
-    AVStream *inputVideoStream = nullptr;
+    AMediaCodec *videoCodec = NULL;
+    AMediaCodec *audioCodec = NULL;
+    AVFormatContext *inputContext = NULL;
+    AVFormatContext *outContext = NULL;
+    AVStream *inputVideoStream = NULL;
     bool isOnlyRecorderNode = false;
-    char *resource = nullptr;
+    char *resource = NULL;
     int width{}, height{};
 
     AsyncQueue<AVPacket> packetQueue;
@@ -45,7 +45,7 @@ public:
     pthread_t deMux_thread = 0;
     pthread_t open_resource_thread = 0;
 
-    ANativeWindow *window = nullptr;
+    ANativeWindow *window = NULL;
     int windowWith{};
     int windowHeight{};
 
@@ -59,7 +59,7 @@ public:
 
     volatile enum PlayState playState = UN_USELESS;
 
-    void (*stateListener)(PlayState, int) = nullptr;
+    void (*stateListener)(PlayState, int) = NULL;
 
 
 public:
