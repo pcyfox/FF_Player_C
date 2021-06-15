@@ -8,6 +8,9 @@ PlayerInfo::PlayerInfo() {
     pthread_mutex_init(&mutex, nullptr);
     pthread_cond_init(&cond, nullptr);
     playState = UN_USELESS;
+    if (IS_DEBUG) {
+        av_log_set_level(AV_LOG_DEBUG);
+    }
     av_register_all();
     inputContext = avformat_alloc_context();
     if (!inputContext) {
@@ -18,6 +21,7 @@ PlayerInfo::PlayerInfo() {
 
 PlayerInfo::~PlayerInfo() {
     LOGW("-------PlayerInfo Delete Start---------");
+    playState = UN_USELESS;
     if (window) {
         ANativeWindow_release(window);
         window = nullptr;
@@ -37,6 +41,7 @@ PlayerInfo::~PlayerInfo() {
     if (inputContext != nullptr) {
         avformat_free_context(inputContext);
     }
+
     inputContext = nullptr;
     decode_thread = 0;
     deMux_thread = 0;

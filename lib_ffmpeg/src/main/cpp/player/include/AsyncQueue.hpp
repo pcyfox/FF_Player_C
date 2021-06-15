@@ -36,7 +36,7 @@ public:
 
     int putAvPacket(T *packet);
 
-    int getAvPacket(T *packet);
+    int getAvPacket(T **packet);
 
     int getQueueSize();
 
@@ -95,7 +95,8 @@ template<class _TYPE>
 int AsyncQueue<_TYPE>::putAvPacket(_TYPE *packet) {
     if (quit) { return PLAYER_RESULT_ERROR; }
     pthread_mutex_lock(&mutexPacket);
-    if (queuePacket.size() > 160) {
+    if (queuePacket.size() > 260) {
+        LOGE("AsyncQueue size is to large!");
         while (!queuePacket.empty()) {
             AVPacket *avPacket = queuePacket.front();
             queuePacket.pop();
@@ -111,17 +112,12 @@ int AsyncQueue<_TYPE>::putAvPacket(_TYPE *packet) {
 }
 
 template<class _TYPE>
-int AsyncQueue<_TYPE>::getAvPacket(_TYPE *packet) {
+int AsyncQueue<_TYPE>::getAvPacket(_TYPE **packet) {
     if (quit) { return PLAYER_RESULT_ERROR; }
     pthread_mutex_lock(&mutexPacket);
     if (queuePacket.size() > 0) {
-        AVPacket *avPacket = queuePacket.front();
-        if (av_packet_ref(packet, avPacket) == 0) {
-            queuePacket.pop();
-        }
-        av_packet_unref(avPacket);
-        av_packet_free(&avPacket);
-        avPacket = NULL;
+        *packet = queuePacket.front();
+        queuePacket.pop();
         pthread_mutex_unlock(&mutexPacket);
         return PLAYER_RESULT_OK;
     } else {

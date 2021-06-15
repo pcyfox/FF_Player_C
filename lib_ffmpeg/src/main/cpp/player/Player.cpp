@@ -77,7 +77,7 @@ int createVideoCodec(AMediaCodec **mMediaCodec, int width, int height, uint8_t *
          height,
          spsSize, ppsSize, mine);
 
-    if (width * height == 0) {
+    if (width * height <= 0) {
         LOGE("createAMediaCodec() not support video size");
         return PLAYER_RESULT_ERROR;
     }
@@ -346,7 +346,7 @@ void *RecordPkt(void *info) {
             LOGI("--------- record stop ,and write trailer over ---------");
             break;
         }
-        int ret = recorderInfo->packetQueue.getAvPacket(packet);
+        int ret = recorderInfo->packetQueue.getAvPacket(&packet);
         if (ret == PLAYER_RESULT_ERROR) {
             continue;
         }
@@ -366,6 +366,7 @@ void *RecordPkt(void *info) {
             /*write packet and auto free packet*/
             av_interleaved_write_frame(recorderInfo->o_fmt_ctx, packet);
             av_packet_unref(packet);
+            av_packet_free(&packet);
         }
     }
     LOGI("----------------- record work stop,start to delete recordInfo--------------");
@@ -376,7 +377,6 @@ void *RecordPkt(void *info) {
 void *Decode(void *info) {
     auto *playerInfo = (PlayerInfo *) info;
     AMediaCodec *codec = playerInfo->videoCodec;
-    AVPacket *packet = av_packet_alloc();
     while (true) {
         PlayState state = playerInfo->GetPlayState();
         if (state == PAUSE) {
@@ -386,12 +386,13 @@ void *Decode(void *info) {
             break;
         }
 
-        int ret = playerInfo->packetQueue.getAvPacket(packet);
+        AVPacket *packet = nullptr;
+        int ret = playerInfo->packetQueue.getAvPacket(&packet);
         if (ret == PLAYER_RESULT_OK) {
             uint8_t *data = packet->data;
             int length = packet->size;
             // 获取buffer的索引
-            ssize_t index = AMediaCodec_dequeueInputBuffer(codec, 500);
+            ssize_t index = AMediaCodec_dequeueInputBuffer(codec, 10000);
             if (index >= 0) {
                 size_t out_size;
                 uint8_t *inputBuf = AMediaCodec_getInputBuffer(codec, index, &out_size);
@@ -400,25 +401,45 @@ void *Decode(void *info) {
                     memset(inputBuf, 0, out_size);
                     // 将待解码的数据copy到硬件中
                     memcpy(inputBuf, data, length);
-                    av_packet_unref(packet);
                     int64_t pts = packet->pts;
-                    if (pts < 0 || !pts) {
+                    if (pts <= 0 || !pts) {
                         pts = getCurrentTime();
                     }
+
                     media_status_t status = AMediaCodec_queueInputBuffer(codec, index, 0, length,
                                                                          pts, 0);
                     if (status != AMEDIA_OK) {
                         LOGE("queue input buffer error status=%d", status);
                     }
                 }
+
+                av_packet_unref(packet);
+                av_packet_free(&packet);
             }
 
             AMediaCodecBufferInfo bufferInfo;
-            ssize_t status = AMediaCodec_dequeueOutputBuffer(codec, &bufferInfo, 100);
+            ssize_t status = AMediaCodec_dequeueOutputBuffer(codec, &bufferInfo, 10000);
+
             if (status >= 0) {
                 AMediaCodec_releaseOutputBuffer(codec, status, bufferInfo.size != 0);
                 if (bufferInfo.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
                     LOGE("video producer output EOS");
+                }
+
+                if (IS_DEBUG) {
+                    //size_t outsize = 0;
+                    //u_int8_t *outData = AMediaCodec_getOutputBuffer(codec, status, &outsize);
+                    auto formatType = AMediaCodec_getOutputFormat(codec);
+                    LOGD("Decode:format formatType to: %s\n", AMediaFormat_toString(formatType));
+                    int colorFormat = 0;
+                    int width = 0;
+                    int height = 0;
+                    AMediaFormat_getInt32(formatType, "color-format", &colorFormat);
+                    AMediaFormat_getInt32(formatType, "width", &width);
+                    AMediaFormat_getInt32(formatType, "height", &height);
+                    LOGD("Decode:format color-format : %d ,width ：%d, height :%d", colorFormat,
+                         width,
+                         height);
                 }
             } else if (status == AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED) {
                 LOGE("output buffers changed");
@@ -430,7 +451,7 @@ void *Decode(void *info) {
             }
         }
     }
-    LOGD("-------Decode Stop!---------");
+    LOGI("-------Decode Stop!---------");
     return nullptr;
 }
 
@@ -443,11 +464,13 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
     }
     int type = GetNALUType(packet);
     if (isDebug) {
-        LOGD("------ProcessPacket NALU type=%0x,flag=%d", type, packet->flags);
-        if (type == 0x67 && playerInfo->lastNALUType == type) {
-            LOGW("------ProcessPacket more than one SPS in this GOP");
-        }
+//        LOGD("------ProcessPacket NALU type=%0x,flag=%d", type, packet->flags);
+//        if (type == 0x67 && playerInfo->lastNALUType == type) {
+//            LOGW("------ProcessPacket more than one SPS in this GOP");
+//        }
 //        printCharsHex((char *) packet->data, 12, 6, "-------before------");
+
+        //  LOGD("ProcessPacket :pos=%ld,dts=%ld,pts=%ld,duration=%ld", packet->pos, packet->dts, packet->pts,packet->duration);
     }
 
 
@@ -470,22 +493,23 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
 
     playerInfo->lastNALUType = packet->flags;
 
+    //加入录制队列
     if (recorderInfo != nullptr) {
         RecordState state = recorderInfo->GetRecordState();
         if (state != RECORD_PREPARED && state != RECORD_PAUSE && state != RECORD_ERROR) {
-            AVPacket *copyPkt = nullptr;
-            copyPkt = av_packet_clone(packet);
+            // Create a new packet that references the same data as src
+            AVPacket *copyPkt = av_packet_clone(packet);
             if (copyPkt != nullptr) {
-                //加入录制队列
                 recorderInfo->packetQueue.putAvPacket(copyPkt);
             } else {
                 LOGE("ProcessPacket clone packet fail!");
             }
         }
     }
+
+    //加入解码队列
     if (playerInfo->GetPlayState() == STARTED &&
         !playerInfo->isOnlyRecorderNode) {
-        //加入解码队列
         playerInfo->packetQueue.putAvPacket(packet);
     }
     return PLAYER_RESULT_OK;
@@ -562,9 +586,10 @@ void *DeMux(void *info) {
              (unsigned int) delay);
     }
 
-    while ((state = playerInfo->GetPlayState()) != STOPPED ||
+    while (playerInfo != nullptr && (state = playerInfo->GetPlayState()) != STOPPED ||
            state == PAUSE) {
-        if (playerInfo->GetPlayState() == STOPPED) {
+
+        if (state == STOPPED || state == UN_USELESS) {
             LOGD("DeMux() stop,due to state-STOPPED!");
             break;
         }
@@ -573,16 +598,20 @@ void *DeMux(void *info) {
             recorderInfo->GetRecordState() == RECORD_PAUSE) {
             continue;
         }
-        AVPacket *i_pkt = nullptr;
-        i_pkt = av_packet_alloc();
+
+        AVPacket *i_pkt = av_packet_alloc();
         if (i_pkt == nullptr) {
             LOGE("DeMux fail,because alloc av packet fail!");
-            break;
+            return nullptr;
         }
+
         int ret = av_read_frame(playerInfo->inputContext, i_pkt);
-        if (ret == 0) {
+
+        if (ret == 0 && i_pkt->buf != nullptr) {
             if (i_pkt->stream_index == video_stream_index) {
                 ProcessPacket(i_pkt, i_av_codec_parameters, playerInfo, recorderInfo);
+            } else {
+                av_packet_free(&i_pkt);
             }
         } else if (ret == AVERROR_EOF) {
             av_packet_free(&i_pkt);
