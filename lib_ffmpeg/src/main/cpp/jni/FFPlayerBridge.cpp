@@ -69,7 +69,6 @@ void *ChangeState(void *p) {
         int ret = vm->AttachCurrentThread(&env, NULL);
         if (ret == 0 && env) {
             int state = params[1];
-            LOGI("changeState:id=%d,state=%d", id, state);
             env->CallVoidMethod(player->jPlayerObject, jMid_onStateChangeId, state);
         } else {
             LOGE("onStateChange() get jEnv error");
@@ -82,8 +81,6 @@ void *ChangeState(void *p) {
 
 
 const void *onStateChange(PlayState state, int id) {
-    LOGI("onStateChange() called with:playState=%d,id=%d", state, id);
-
     if (vm) {
         pthread_t thread = 0;
         int *params = (int *) malloc(sizeof(int));

@@ -1,7 +1,7 @@
 //
 // Created by Dwayne on 20/11/24.
 //
-
+#pragma once
 #ifndef AUDIO_PRACTICE_QUEUE_H
 #define AUDIO_PRACTICE_QUEUE_H
 

@@ -3,6 +3,7 @@
 //
 
 
+#pragma once
 #ifndef FF_PLAYER_PLAYER_INFO
 #define FF_PLAYER_PLAYER_INFO
 
@@ -35,7 +36,7 @@ public:
     AVFormatContext *inputContext = NULL;
     AVFormatContext *outContext = NULL;
     AVStream *inputVideoStream = NULL;
-    bool isOnlyRecorderNode = false;
+    bool isOnlyRecordMedia = false;
     char *resource = NULL;
     int width{}, height{};
 
@@ -57,7 +58,7 @@ public:
     const char *mine = "video/avc";
 public:
 
-    volatile enum PlayState playState = UN_USELESS;
+    volatile enum PlayState playState = UNINITIALIZED;
 
     void (*stateListener)(PlayState, int) = NULL;
 
@@ -68,7 +69,7 @@ public:
 
     ~PlayerInfo();
 
-    void SetPlayState(PlayState s) volatile;
+    void SetPlayState(PlayState s,bool  isNotify) volatile;
 
     PlayState GetPlayState();
 

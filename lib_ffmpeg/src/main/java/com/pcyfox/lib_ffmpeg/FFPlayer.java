@@ -123,11 +123,20 @@ public class FFPlayer {
     }
 
     public int start() {
+        if (state == PlayState.STARTED) {
+            return -1;
+        }
+        if (state == PlayState.EXECUTING) {
+            return -1;
+        }
         return start(id);
     }
 
 
     public int stop() {
+        if (state == PlayState.STOPPED) {
+            return -1;
+        }
         return stop(id);
     }
 

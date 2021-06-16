@@ -2,6 +2,7 @@
 // Created by LN on 2021/2/24.
 //
 
+#pragma once
 #ifndef TCTS_EDU_APP_RECODER_RECORDERINFO_H
 #define TCTS_EDU_APP_RECODER_RECORDERINFO_H
 

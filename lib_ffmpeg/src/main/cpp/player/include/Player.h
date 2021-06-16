@@ -1,12 +1,11 @@
 //
 // Created by LN on 2021/1/4.
 //
-
+#pragma once
 #ifndef PLAYER_PLAYER_H
 #define PLAYER_PLAYER_H
 
 #include <android/native_window_jni.h>
-#include "StateListener.h"
 
 #include <PlayerInfo.h>
 #include <RecorderInfo.h>

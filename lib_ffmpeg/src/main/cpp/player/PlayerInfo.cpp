@@ -7,7 +7,7 @@
 PlayerInfo::PlayerInfo() {
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&cond, NULL);
-    playState = UN_USELESS;
+    playState = UNINITIALIZED;
     if (IS_DEBUG) {
         av_log_set_level(AV_LOG_DEBUG);
     }
@@ -21,7 +21,7 @@ PlayerInfo::PlayerInfo() {
 
 PlayerInfo::~PlayerInfo() {
     LOGW("-------PlayerInfo Delete Start---------");
-    playState = UN_USELESS;
+    playState = UNINITIALIZED;
     if (window) {
         ANativeWindow_release(window);
         window = NULL;
@@ -50,12 +50,13 @@ PlayerInfo::~PlayerInfo() {
 }
 
 
-void PlayerInfo::SetPlayState(PlayState s) volatile {
+void PlayerInfo::SetPlayState(PlayState s, bool isNotify) volatile {
     playState = s;
-    if (stateListener) {
+    if (stateListener && isNotify) {
         stateListener(playState, id);
     }
-    LOGD("PlayerInfo SetPlayState() :%d", s);
+    LOGI("----------------->PlayerInfo SetPlayState() called with:state=%s,isNotify=%d", StateListener::PlayerStateToString(s).c_str(),
+         isNotify);
 }
 
 
