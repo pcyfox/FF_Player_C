@@ -43,6 +43,7 @@ class RecorderView : RelativeLayout {
         addView(sv)
         sv.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
         sv.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+
         audioRecorder.setRecorderCallback(object : RecorderContract.RecorderCallback {
             override fun onPrepareRecord() {
                 avRecorderCallback?.onPauseRecord()
