@@ -70,7 +70,7 @@ public class FFPlayer {
     }
 
 
-    public int onlyRecord(int id) {
+    public int onlyRecord() {
         Log.d(TAG, "onlyRecord() called with: id = [" + id + "]");
         return configPlayer(null, 0, 0, 1, id);
     }
@@ -79,7 +79,7 @@ public class FFPlayer {
     public int config(SurfaceView surfaceView, int w, int h, boolean isOnlyRecord) {
         Log.d(TAG, "config() called with: surfaceView = [" + surfaceView + "], w = [" + w + "], h = [" + h + "], isOnlyRecord = [" + isOnlyRecord + "]");
         if (isOnlyRecord) {
-            return onlyRecord(id);
+            return onlyRecord();
         }
 
         if (surfaceView == null || w * h == 0) {
