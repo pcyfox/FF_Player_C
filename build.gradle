@@ -10,6 +10,7 @@ buildscript {
             url 'http://repo.spring.io/libs-milestone/'
         }
         maven { url 'https://jitpack.io' }
+        jcenter()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.2.1'
@@ -24,6 +25,7 @@ allprojects {
         google()
         mavenCentral()
         maven { url 'https://jitpack.io' }
+        jcenter()
     }
 }
 
