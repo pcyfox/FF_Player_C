@@ -183,7 +183,7 @@ class RecorderView : RelativeLayout {
             TAG,
             "mux() called with: videoPath = $videoPath, audioPath = $audioPath, outPath = $outPath"
         )
-        return ffPlayer.mux(audioPath, videoPath, outPath) >= 0
+        return FFPlayer.mux(audioPath, videoPath, outPath) >= 0
     }
 
 

@@ -106,7 +106,7 @@ class MediaRecorderActivity : AppCompatActivity() {
             }
             Thread.sleep(100)
             val startMuxTime = SystemClock.uptimeMillis()
-            ffPlayer?.mux(audioPath, videoPath, destFile.absolutePath)
+            FFPlayer.mux(audioPath, videoPath, destFile.absolutePath)
             val time = (SystemClock.uptimeMillis() - startMuxTime) / 1000.0
             ToastUtils.showLong("合成结束! coast time=" + time + "s")
             Log.d(

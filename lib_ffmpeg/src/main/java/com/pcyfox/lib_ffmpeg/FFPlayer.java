@@ -175,7 +175,7 @@ public class FFPlayer {
         return resume(id);
     }
 
-    public int mux(String audioFile, String videoFile, String outFile) {
+    public static int mux(String audioFile, String videoFile, String outFile) {
         Log.d(TAG, "mux() called with: audioFile = [" + audioFile + "], videoFile = [" + videoFile + "], outFile = [" + outFile + "]");
         File video = new File(videoFile);
         if (!video.exists()) {
@@ -218,7 +218,7 @@ public class FFPlayer {
 
     public native int resume(int id);
 
-    private native int muxAV(String audioFile, String videoFile, String outFile);
+    private static native int muxAV(String audioFile, String videoFile, String outFile);
 
     //-------------for native-------------------------
 }

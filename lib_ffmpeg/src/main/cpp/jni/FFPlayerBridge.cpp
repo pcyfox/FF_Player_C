@@ -279,19 +279,6 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_setRecordState(JNIEnv *env, jobject thiz, j
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_pcyfox_lib_1ffmpeg_FFPlayer_muxAV(JNIEnv *env, jobject thiz, jstring audio_file,
-                                           jstring video_file, jstring out_file) {
-    char *audioFile = (char *) env->GetStringUTFChars(audio_file, 0);
-    char *videoFile = (char *) env->GetStringUTFChars(video_file, 0);
-    char *outFile = (char *) env->GetStringUTFChars(out_file, 0);
-    if (audioFile && videoFile && outFile) {
-        return static_cast<jint>(MuxAVFile(audioFile, videoFile, outFile));
-    } else {
-        return PLAYER_RESULT_ERROR;
-    }
-}
-extern "C"
-JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_resume(JNIEnv *env, jobject thiz, int id) {
     Player *player = findPlayer(id);
     if (player == NULL) {
@@ -333,3 +320,17 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_release(JNIEnv *env, jobject thiz, jint id)
     removePlayer(id);
     delete player;
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_pcyfox_lib_1ffmpeg_FFPlayer_muxAV(JNIEnv *env, jclass clazz, jstring audio_file,
+                                           jstring video_file, jstring out_file) {
+    char *audioFile = (char *) env->GetStringUTFChars(audio_file, 0);
+    char *videoFile = (char *) env->GetStringUTFChars(video_file, 0);
+    char *outFile = (char *) env->GetStringUTFChars(out_file, 0);
+    if (audioFile && videoFile && outFile) {
+        return static_cast<jint>(MuxAVFile(audioFile, videoFile, outFile));
+    } else {
+        return PLAYER_RESULT_ERROR;
+    }
+}
+
