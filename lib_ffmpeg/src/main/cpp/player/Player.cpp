@@ -303,7 +303,7 @@ void *RecordPkt(void *info) {
         /* create output context by file name*/
         avformat_alloc_output_context2(&(recorderInfo->o_fmt_ctx), NULL, NULL, file);
         if (!recorderInfo->o_fmt_ctx) {
-            recorderInfo->SetRecordState(RECORD_ERROR, recorderInfo->id);
+            recorderInfo->SetRecordState(RECORD_ERROR);
             LOGE("avformat_alloc_output_context  error ,file=%s ", file);
             return (void *) PLAYER_RESULT_ERROR;
         }
@@ -323,28 +323,28 @@ void *RecordPkt(void *info) {
                                           i_av_codec_parameters);
         recorderInfo->o_video_stream->codecpar->format = AV_PIX_FMT_YUV420P;
         if (ret < 0) {
-            recorderInfo->SetRecordState(RECORD_ERROR, recorderInfo->id);
+            recorderInfo->SetRecordState(RECORD_ERROR);
             LOGE("Failed to copy codec parameters\n");
             return (void *) PLAYER_RESULT_ERROR;
         }
         /*open file  pb:AVIOContext*/
         if (avio_open(&recorderInfo->o_fmt_ctx->pb, file, AVIO_FLAG_WRITE) < 0) {
             LOGE("open file ERROR,file=%s", file);
-            recorderInfo->SetRecordState(RECORD_ERROR, recorderInfo->id);
+            recorderInfo->SetRecordState(RECORD_ERROR);
             return (void *) PLAYER_RESULT_ERROR;
         }
         /*write file header*/
         if (avformat_write_header(recorderInfo->o_fmt_ctx, NULL) < 0) {
             LOGE("write file header ERROR");
-            recorderInfo->SetRecordState(RECORD_ERROR, recorderInfo->id);
+            recorderInfo->SetRecordState(RECORD_ERROR);
             return (void *) PLAYER_RESULT_ERROR;
         }
     } else {
         LOGW("RecordPkt() called,recorder state is not RECORD_START ");
     }
 
-    AVPacket *packet = av_packet_alloc();
     while (true) {
+        AVPacket *packet;
         RecordState recordState = recorderInfo->GetRecordState();
         if (recordState == RECORD_PAUSE) {
             continue;
@@ -367,7 +367,7 @@ void *RecordPkt(void *info) {
         if (recorderInfo->GetRecordState() == RECORD_START) {
             int type = packet->flags;
             if (type == 0x65 || type == 0x67) {
-                recorderInfo->SetRecordState(RECORDING, recorderInfo->id);
+                recorderInfo->SetRecordState(RECORDING);
                 LOGI("-----------------real start recording--------------");
             } else {
                 continue;
@@ -377,12 +377,10 @@ void *RecordPkt(void *info) {
             //---------------write pkt data to file-----------
             /*write packet and auto free packet*/
             av_interleaved_write_frame(recorderInfo->o_fmt_ctx, packet);
-            av_packet_unref(packet);
-            av_packet_free(&packet);
-            avformat_close_input(&recorderInfo->o_fmt_ctx);
-            recorderInfo->o_fmt_ctx = NULL;
-            LOGI("close output context!");
         }
+
+        av_packet_unref(packet);
+        av_packet_free(&packet);
     }
     LOGI("----------------- record work stop,start to delete recordInfo--------------");
     return (void *) PLAYER_RESULT_OK;
@@ -513,7 +511,8 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
         RecordState recordState = recorderInfo->GetRecordState();
         //还需要写入文件尾部信息
         if (recordState == RECORD_STOP ||
-            recordState == RECORD_START) {
+            recordState == RECORD_START ||
+            recordState == RECORDING) {
             // Create a new packet that references the same data as src
             AVPacket *copyPkt = av_packet_clone(packet);
             if (copyPkt != NULL) {
@@ -584,6 +583,8 @@ void *DeMux(void *param) {
     * since all input files are supposed to be identical (framerate, dimension, color format, ...)
     * we can safely set output codec values from first input file
     */
+
+    playerInfo->SetPlayState(STARTED, true);
     if (!playerInfo->isOnlyRecordMedia) {
         LOGI("--------------------DeMux() change state to STARTED----------------------");
         StartDecodeThread(playerInfo);
@@ -603,7 +604,6 @@ void *DeMux(void *param) {
              (unsigned int) delay);
     }
 
-    playerInfo->SetPlayState(STARTED, true);
     while ((state = playerInfo->GetPlayState()) != STOPPED) {
         if (state == UNINITIALIZED || state == ERROR) {
             playerInfo->packetQueue.clearAVPacket();
@@ -885,7 +885,7 @@ int Player::Stop() {
     }
     playerInfo->SetPlayState(STOPPED, false);
     if (recorderInfo != NULL) {
-        recorderInfo->SetRecordState(RECORD_STOP, playerId);
+        recorderInfo->SetRecordState(RECORD_STOP);
     }
     LOGI("Stop():start to stop recorde");
     //停止录制
@@ -908,7 +908,7 @@ int Player::PrepareRecorder(char *outPath) {
         }
     }
     recorderInfo->storeFile = outPath;
-    recorderInfo->SetRecordState(RECORD_PREPARED, playerId);
+    recorderInfo->SetRecordState(RECORD_PREPARED);
     return PLAYER_RESULT_OK;
 }
 
@@ -931,11 +931,11 @@ int Player::StartRecord() {
     }
 
     if (state == RECORD_PAUSE) {
-        recorderInfo->SetRecordState(RECORDING, playerId);
+        recorderInfo->SetRecordState(RECORDING);
         return PLAYER_RESULT_OK;
     }
     if (state == RECORD_PREPARED) {
-        recorderInfo->SetRecordState(RECORD_START, playerId);
+        recorderInfo->SetRecordState(RECORD_START);
         StartRecorderThread();
     } else {
         LOGE("start recorder in illegal state=%d", state);
@@ -948,7 +948,7 @@ int Player::StopRecord() {
     LOGI("------StopRecord() called------");
     if (recorderInfo != NULL &&
         recorderInfo->GetRecordState() >= RECORD_START) {
-        recorderInfo->SetRecordState(RECORD_STOP, playerId);
+        recorderInfo->SetRecordState(RECORD_STOP);
         return PLAYER_RESULT_OK;
     } else {
         return PLAYER_RESULT_ERROR;
@@ -959,7 +959,7 @@ int Player::StopRecord() {
 int Player::PauseRecord() {
     LOGI("------PauseRecord() called------");
     if (recorderInfo) {
-        recorderInfo->SetRecordState(RECORD_PAUSE, playerId);
+        recorderInfo->SetRecordState(RECORD_PAUSE);
         return PLAYER_RESULT_OK;
     } else {
         return PLAYER_RESULT_ERROR;
@@ -969,7 +969,7 @@ int Player::PauseRecord() {
 int Player::ResumeRecord() {
     LOGI("------ResumeRecord() called------");
     if (recorderInfo && recorderInfo->GetRecordState() == RECORD_PAUSE) {
-        recorderInfo->SetRecordState(RECORD_START, playerId);
+        recorderInfo->SetRecordState(RECORD_START);
         return PLAYER_RESULT_OK;
     } else {
         return PLAYER_RESULT_ERROR;

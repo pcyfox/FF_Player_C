@@ -38,7 +38,7 @@ private:
 public:
     ~RecorderInfo();
 
-    void SetRecordState(RecordState state, int id);
+    void SetRecordState(RecordState state );
 
     RecordState GetRecordState();
 
