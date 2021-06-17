@@ -33,12 +33,12 @@ public:
     AVStream *o_video_stream = NULL;
     volatile enum RecordState recordState = UN_START_RECORD;
 private:
-    void (*listener)(RecordState, int);
+    void (*listener)(RecordState, int) = NULL;
 
 public:
     ~RecorderInfo();
 
-    void SetRecordState(RecordState state );
+    void SetRecordState(RecordState state);
 
     RecordState GetRecordState();
 

@@ -17,7 +17,7 @@ RecorderInfo::~RecorderInfo() {
 void RecorderInfo::SetRecordState(RecordState state) {
     recordState = state;
     if (listener != NULL) {
-        listener(state, id);
+        listener(recordState, id);
     }
 }
 

@@ -380,7 +380,6 @@ void *RecordPkt(void *info) {
         }
 
         av_packet_unref(packet);
-        av_packet_free(&packet);
     }
     LOGI("----------------- record work stop,start to delete recordInfo--------------");
     return (void *) PLAYER_RESULT_OK;
