@@ -353,7 +353,7 @@ void *RecordPkt(void *info) {
             /*write file trailer*/
             LOGD("--------- recordState changed to stop ---------");
             av_write_trailer(recorderInfo->o_fmt_ctx);
-            avformat_free_context(recorderInfo->o_fmt_ctx);
+            avformat_close_input(&recorderInfo->o_fmt_ctx);
             recorderInfo->o_fmt_ctx = NULL;
             LOGI("--------- record stop ,and write trailer over ---------");
             break;
@@ -381,6 +381,7 @@ void *RecordPkt(void *info) {
 
         av_packet_unref(packet);
     }
+
     LOGI("----------------- record work stop,start to delete recordInfo--------------");
     return (void *) PLAYER_RESULT_OK;
 }

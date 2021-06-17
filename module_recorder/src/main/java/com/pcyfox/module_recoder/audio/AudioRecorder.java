@@ -65,12 +65,13 @@ public class AudioRecorder implements RecorderContract.Recorder {
     public void prepare(String outputFile, int channelCount, int sampleRate, int bitrate) {
         Log.d(TAG, "prepare() called with: outputFile = [" + outputFile + "], channelCount = [" + channelCount + "], sampleRate = [" + sampleRate + "], bitrate = [" + bitrate + "]");
         recordFile = new File(outputFile);
-        if (!recordFile.exists() && !recordFile.isFile()) {
+        if (!recordFile.exists()) {
             if (recorderCallback != null) {
                 recorderCallback.onError(new IllegalArgumentException("can't open file! "));
             }
             return;
         }
+
         recorder = new MediaRecorder();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
