@@ -73,7 +73,7 @@ class RecorderView : RelativeLayout {
 
 
     fun setOnStateChangeListener(listener: OnPlayStateChangeListener) {
-        ffPlayer.setOnStateChangeListener(listener)
+        ffPlayer.setOnPlayStateChangeListener(listener)
     }
 
     fun prepareRecorder(videoPath: String?, audioPath: String? = "") {
@@ -98,8 +98,8 @@ class RecorderView : RelativeLayout {
         if (TextUtils.isEmpty(videoPath) || TextUtils.isEmpty(audioPath)) {
             return false
         }
-        if (ffPlayer.state != PlayState.STARTED) {
-            Log.e(TAG, "startRecord() called fail,state=${ffPlayer.state}")
+        if (ffPlayer.playState != PlayState.STARTED) {
+            Log.e(TAG, "startRecord() called fail,state=${ffPlayer.playState}")
             return false
         }
         audioRecorder.startRecording()
@@ -112,8 +112,8 @@ class RecorderView : RelativeLayout {
         if (TextUtils.isEmpty(videoPath)) {
             return false
         }
-        if (ffPlayer.state != PlayState.STARTED) {
-            Log.d(TAG, "startRecordVideo() called fail,state=${ffPlayer.state}")
+        if (ffPlayer.playState != PlayState.STARTED) {
+            Log.d(TAG, "startRecordVideo() called fail,state=${ffPlayer.playState}")
             return false
         }
         return ffPlayer.startRecord() > 0

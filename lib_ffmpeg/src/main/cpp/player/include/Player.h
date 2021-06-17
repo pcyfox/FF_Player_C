@@ -17,6 +17,7 @@ class Player {
 
 public:
     Player(int id);
+
     ~Player();
 
 public:
@@ -24,6 +25,9 @@ public:
     int playerId;
     PlayerInfo *playerInfo = NULL;
     RecorderInfo *recorderInfo = NULL;
+
+    void (*playStateListener)(PlayState, RecordState recordState, int) = NULL;
+
 public:
 
     void SetDebug(bool isDebug);
@@ -56,7 +60,10 @@ public:
 
     int Stop(void);
 
-    void SetStateChangeListener(void (*listener)(PlayState, int id));
+    void SetPlayStateChangeListener(void (*listener)(PlayState playState, int id));
+
+    void SetRecordStateChangeListener(void (*listener)(RecordState playState, int id));
+
 
     int PauseRecord(void);
 
@@ -67,6 +74,7 @@ public:
     int ResumeRecord(void);
 
     int Release(void);
+
 };
 
 

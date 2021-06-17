@@ -303,7 +303,7 @@ void *RecordPkt(void *info) {
         /* create output context by file name*/
         avformat_alloc_output_context2(&(recorderInfo->o_fmt_ctx), NULL, NULL, file);
         if (!recorderInfo->o_fmt_ctx) {
-            recorderInfo->SetRecordState(RECORD_ERROR);
+            recorderInfo->SetRecordState(RECORD_ERROR, recorderInfo->id);
             LOGE("avformat_alloc_output_context  error ,file=%s ", file);
             return (void *) PLAYER_RESULT_ERROR;
         }
@@ -323,20 +323,20 @@ void *RecordPkt(void *info) {
                                           i_av_codec_parameters);
         recorderInfo->o_video_stream->codecpar->format = AV_PIX_FMT_YUV420P;
         if (ret < 0) {
-            recorderInfo->SetRecordState(RECORD_ERROR);
+            recorderInfo->SetRecordState(RECORD_ERROR, recorderInfo->id);
             LOGE("Failed to copy codec parameters\n");
             return (void *) PLAYER_RESULT_ERROR;
         }
         /*open file  pb:AVIOContext*/
         if (avio_open(&recorderInfo->o_fmt_ctx->pb, file, AVIO_FLAG_WRITE) < 0) {
             LOGE("open file ERROR,file=%s", file);
-            recorderInfo->SetRecordState(RECORD_ERROR);
+            recorderInfo->SetRecordState(RECORD_ERROR, recorderInfo->id);
             return (void *) PLAYER_RESULT_ERROR;
         }
         /*write file header*/
         if (avformat_write_header(recorderInfo->o_fmt_ctx, NULL) < 0) {
             LOGE("write file header ERROR");
-            recorderInfo->SetRecordState(RECORD_ERROR);
+            recorderInfo->SetRecordState(RECORD_ERROR, recorderInfo->id);
             return (void *) PLAYER_RESULT_ERROR;
         }
     } else {
@@ -367,7 +367,7 @@ void *RecordPkt(void *info) {
         if (recorderInfo->GetRecordState() == RECORD_START) {
             int type = packet->flags;
             if (type == 0x65 || type == 0x67) {
-                recorderInfo->SetRecordState(RECORDING);
+                recorderInfo->SetRecordState(RECORDING, recorderInfo->id);
                 LOGI("-----------------real start recording--------------");
             } else {
                 continue;
@@ -586,7 +586,6 @@ void *DeMux(void *param) {
     */
     if (!playerInfo->isOnlyRecordMedia) {
         LOGI("--------------------DeMux() change state to STARTED----------------------");
-        playerInfo->SetPlayState(STARTED, true);
         StartDecodeThread(playerInfo);
     }
 
@@ -595,6 +594,7 @@ void *DeMux(void *param) {
     PlayState state;
 
     float delay = 0;
+
     if (isLocalFile(playerInfo->resource)) {
         float fps = playerInfo->inputVideoStream->avg_frame_rate.num /
                     playerInfo->inputVideoStream->avg_frame_rate.den;
@@ -603,6 +603,7 @@ void *DeMux(void *param) {
              (unsigned int) delay);
     }
 
+    playerInfo->SetPlayState(STARTED, true);
     while ((state = playerInfo->GetPlayState()) != STOPPED) {
         if (state == UNINITIALIZED || state == ERROR) {
             playerInfo->packetQueue.clearAVPacket();
@@ -787,10 +788,6 @@ int Player::OnWindowChange(ANativeWindow *window, int w, int h) {
 }
 
 
-void Player::SetStateChangeListener(void (*listener)(PlayState, int)) {
-    playerInfo->SetStateListener(listener);
-}
-
 int Player::Start() {
     LOGI("--------Play()  start-------");
     if (playerInfo == NULL) {
@@ -888,7 +885,7 @@ int Player::Stop() {
     }
     playerInfo->SetPlayState(STOPPED, false);
     if (recorderInfo != NULL) {
-        recorderInfo->SetRecordState(RECORD_STOP);
+        recorderInfo->SetRecordState(RECORD_STOP, playerId);
     }
     LOGI("Stop():start to stop recorde");
     //停止录制
@@ -905,12 +902,13 @@ int Player::PrepareRecorder(char *outPath) {
     if (recorderInfo == NULL) {
         LOGI("---------PrepareRecorder()  new RecorderInfo ");
         recorderInfo = new RecorderInfo;
+        recorderInfo->id = playerId;
         if (playerInfo != NULL) {
             recorderInfo->inputVideoStream = playerInfo->inputVideoStream;
         }
     }
     recorderInfo->storeFile = outPath;
-    recorderInfo->SetRecordState(RECORD_PREPARED);
+    recorderInfo->SetRecordState(RECORD_PREPARED, playerId);
     return PLAYER_RESULT_OK;
 }
 
@@ -933,11 +931,11 @@ int Player::StartRecord() {
     }
 
     if (state == RECORD_PAUSE) {
-        recorderInfo->SetRecordState(RECORDING);
+        recorderInfo->SetRecordState(RECORDING, playerId);
         return PLAYER_RESULT_OK;
     }
     if (state == RECORD_PREPARED) {
-        recorderInfo->SetRecordState(RECORD_START);
+        recorderInfo->SetRecordState(RECORD_START, playerId);
         StartRecorderThread();
     } else {
         LOGE("start recorder in illegal state=%d", state);
@@ -950,7 +948,7 @@ int Player::StopRecord() {
     LOGI("------StopRecord() called------");
     if (recorderInfo != NULL &&
         recorderInfo->GetRecordState() >= RECORD_START) {
-        recorderInfo->SetRecordState(RECORD_STOP);
+        recorderInfo->SetRecordState(RECORD_STOP, playerId);
         return PLAYER_RESULT_OK;
     } else {
         return PLAYER_RESULT_ERROR;
@@ -961,7 +959,7 @@ int Player::StopRecord() {
 int Player::PauseRecord() {
     LOGI("------PauseRecord() called------");
     if (recorderInfo) {
-        recorderInfo->SetRecordState(RECORD_PAUSE);
+        recorderInfo->SetRecordState(RECORD_PAUSE, playerId);
         return PLAYER_RESULT_OK;
     } else {
         return PLAYER_RESULT_ERROR;
@@ -971,7 +969,7 @@ int Player::PauseRecord() {
 int Player::ResumeRecord() {
     LOGI("------ResumeRecord() called------");
     if (recorderInfo && recorderInfo->GetRecordState() == RECORD_PAUSE) {
-        recorderInfo->SetRecordState(RECORD_START);
+        recorderInfo->SetRecordState(RECORD_START, playerId);
         return PLAYER_RESULT_OK;
     } else {
         return PLAYER_RESULT_ERROR;
@@ -1007,6 +1005,20 @@ Player::~Player() {
     Release();
     LOGE("player delete over!");
 }
+
+
+void Player::SetRecordStateChangeListener(void (*listener)(RecordState, int)) {
+    if (recorderInfo) {
+        recorderInfo->SetStateListener(listener);
+    }
+}
+
+void Player::SetPlayStateChangeListener(void (*listener)(PlayState, int)) {
+    if (playerInfo) {
+        playerInfo->SetStateListener(listener);
+    }
+}
+
 
 
 

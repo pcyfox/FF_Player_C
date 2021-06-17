@@ -14,10 +14,17 @@ RecorderInfo::~RecorderInfo() {
     LOGD("delete RecorderInfo over!");
 }
 
-void RecorderInfo::SetRecordState(RecordState state) {
+void RecorderInfo::SetRecordState(RecordState state, int id) {
     recordState = state;
+    if (listener != NULL) {
+        listener(state, id);
+    }
 }
 
 RecordState RecorderInfo::GetRecordState() {
     return recordState;
+}
+
+void RecorderInfo::SetStateListener(void (*l)(RecordState, int)) {
+    listener = l;
 }

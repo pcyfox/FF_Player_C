@@ -56,10 +56,9 @@ public:
     int8_t lastNALUType = 0;
 
     const char *mine = "video/avc";
-public:
-
     volatile enum PlayState playState = UNINITIALIZED;
 
+private:
     void (*stateListener)(PlayState, int) = NULL;
 
 
@@ -69,7 +68,7 @@ public:
 
     ~PlayerInfo();
 
-    void SetPlayState(PlayState s,bool  isNotify) volatile;
+    void SetPlayState(PlayState s, bool isNotify) volatile;
 
     PlayState GetPlayState();
 

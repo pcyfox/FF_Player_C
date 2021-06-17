@@ -24,6 +24,7 @@ extern "C" {
 
 class RecorderInfo {
 public:
+    int id;
     pthread_t recorder_thread = 0;
     AsyncQueue<AVPacket> packetQueue;
     char *storeFile;
@@ -31,13 +32,17 @@ public:
     AVStream *inputVideoStream = NULL;
     AVStream *o_video_stream = NULL;
     volatile enum RecordState recordState = UN_START_RECORD;
+private:
+    void (*listener)(RecordState, int);
 
 public:
     ~RecorderInfo();
 
-    void SetRecordState(RecordState state);
+    void SetRecordState(RecordState state, int id);
 
     RecordState GetRecordState();
+
+    void SetStateListener(void (*listener)(RecordState, int));
 };
 
 

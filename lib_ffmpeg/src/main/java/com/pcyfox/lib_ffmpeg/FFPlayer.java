@@ -19,16 +19,26 @@ public class FFPlayer {
         System.loadLibrary("ff_player");
     }
 
-    private PlayState state;
+    private PlayState playState;
+    private RecodeState recodeState;
 
-    private OnPlayStateChangeListener onStateChangeListener;
+    private OnPlayStateChangeListener onPlayStateChangeListener;
+    private OnRecordStateChangeListener onRecordStateChangeListener;
 
-    public void setOnStateChangeListener(OnPlayStateChangeListener onStateChangeListener) {
-        this.onStateChangeListener = onStateChangeListener;
+    public void setOnPlayStateChangeListener(OnPlayStateChangeListener onPlayStateChangeListener) {
+        this.onPlayStateChangeListener = onPlayStateChangeListener;
     }
 
-    public PlayState getState() {
-        return state;
+    public void setOnRecordStateChangeListener(OnRecordStateChangeListener onRecordStateChangeListener) {
+        this.onRecordStateChangeListener = onRecordStateChangeListener;
+    }
+
+    public PlayState getPlayState() {
+        return playState;
+    }
+
+    public RecodeState getRecodeState() {
+        return recodeState;
     }
 
     public int getId() {
@@ -61,9 +71,21 @@ public class FFPlayer {
         //Log.d(TAG, "onPlayerStateChange() called with: state = [" + state + "]");
         for (PlayState s : PlayState.values()) {
             if (state == s.ordinal()) {
-                this.state = s;
-                if (onStateChangeListener != null) {
-                    onStateChangeListener.onStateChange(s);
+                this.playState = s;
+                if (onPlayStateChangeListener != null) {
+                    onPlayStateChangeListener.onStateChange(s);
+                }
+            }
+        }
+    }
+
+    public void onRecorderStateChange(int state) {
+        Log.d(TAG, "onRecorderStateChange() called with: state = [" + state + "]");
+        for (RecodeState s : RecodeState.values()) {
+            if (state == s.ordinal()) {
+                recodeState = s;
+                if (onRecordStateChangeListener != null) {
+                    onRecordStateChangeListener.onStateChange(s);
                 }
             }
         }
@@ -123,10 +145,10 @@ public class FFPlayer {
     }
 
     public int start() {
-        if (state == PlayState.STARTED) {
+        if (playState == PlayState.STARTED) {
             return -1;
         }
-        if (state == PlayState.EXECUTING) {
+        if (playState == PlayState.EXECUTING) {
             return -1;
         }
         return start(id);
@@ -134,7 +156,7 @@ public class FFPlayer {
 
 
     public int stop() {
-        if (state == PlayState.STOPPED) {
+        if (playState == PlayState.STOPPED) {
             return -1;
         }
         return stop(id);
@@ -142,7 +164,7 @@ public class FFPlayer {
 
     public void release() {
         release(id);
-        state = PlayState.RELEASE;
+        playState = PlayState.RELEASE;
     }
 
     public int pause() {
