@@ -1,6 +1,6 @@
 package com.pcyfox.lib_ffmpeg;
 
-public enum RecodeState {
+public enum RecordState {
     UN_START_RECORD,
     RECORD_ERROR,
     RECORD_PREPARED,

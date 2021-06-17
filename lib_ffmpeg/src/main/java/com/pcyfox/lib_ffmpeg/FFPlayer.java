@@ -20,7 +20,7 @@ public class FFPlayer {
     }
 
     private PlayState playState;
-    private RecodeState recodeState;
+    private RecordState recodeState;
 
     private OnPlayStateChangeListener onPlayStateChangeListener;
     private OnRecordStateChangeListener onRecordStateChangeListener;
@@ -37,7 +37,7 @@ public class FFPlayer {
         return playState;
     }
 
-    public RecodeState getRecodeState() {
+    public RecordState getRecodeState() {
         return recodeState;
     }
 
@@ -81,7 +81,7 @@ public class FFPlayer {
 
     public void onRecorderStateChange(int state) {
         Log.d(TAG, "onRecorderStateChange() called with: state = [" + state + "]");
-        for (RecodeState s : RecodeState.values()) {
+        for (RecordState s : RecordState.values()) {
             if (state == s.ordinal()) {
                 recodeState = s;
                 if (onRecordStateChangeListener != null) {
