@@ -24,10 +24,10 @@ class TestRecorderActivity : AppCompatActivity() {
 
 
     // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
-    private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
+    //.private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
     //private var url = "http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8I"
 
-    //private var url = "/storage/emulated/0/test.mp4"
+    private var url = "/storage/emulated/0/test.mp4"
     //private var url = "/storage/emulated/0/video.h264"
     //private val url = "/storage/emulated/0/test/20210602_15_23_31/1/out.mp4"
     private var recordCount = 0
