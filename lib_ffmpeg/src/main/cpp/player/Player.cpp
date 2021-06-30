@@ -35,30 +35,41 @@ static bool isDebug = IS_DEBUG;
 #define head_P  0x61
 
 //H.264:AVCC->AnnexB
-static int H264_mp4toannexb_filter(AVPacket *pkt, AVCodecParameters *codecpar) {
+static AVBSFContext *H264_mp4toannexb_filter(AVPacket *pkt, AVCodecParameters *codecpar) {
 // 1 获取相应的比特流过滤器
     // FLV/MP4/MKV等结构中，h264需要h264_mp4toannexb处理。添加SPS/PPS等信息。
     // FLV封装时，可以把多个NALU放在一个VIDEO TAG中,结构为4B NALU长度+NALU1+4B NALU长度+NALU2+...,
     // 需要做的处理把4B长度换成00000001或者000001
     // annexb模式: startcode 00000001 AVCC模式: 无startcode (mp4 flv mkv)
-    const AVBitStreamFilter *bsfilter = av_bsf_get_by_name("h264_mp4toannexb");
-    AVBSFContext *bsf_ctx = NULL;
-    // 2 初始化过滤器上下文
-    av_bsf_alloc(bsfilter, &bsf_ctx); //AVBSFContext;
-    // 3 添加解码器属性
-    avcodec_parameters_copy(bsf_ctx->par_in, codecpar);
-    av_bsf_init(bsf_ctx);
+    int ret = -1;
+    static AVBSFContext *bsf_ctx = NULL;
+    if (bsf_ctx == NULL) {
+        const AVBitStreamFilter *bsfilter = av_bsf_get_by_name("h264_mp4toannexb");
+        if (!bsfilter) {
+            return NULL;
+        }
 
+        // 2 初始化过滤器上下文
+        ret = av_bsf_alloc(bsfilter, &bsf_ctx); //AVBSFContext;
+        if (ret != 0) {
+            return NULL;
+        }
+        // 3 添加解码器属性
+        avcodec_parameters_copy(bsf_ctx->par_in, codecpar);
+        ret = av_bsf_init(bsf_ctx);
+        if (ret != 0) {
+            av_bsf_free(&bsf_ctx);
+        }
+    }
     // 4 发送和接受
     // bitstreamfilter内部去维护内存空间
     if (av_bsf_send_packet(bsf_ctx, pkt) != 0) {
         LOGE("av_bsf_send_packet fail");
-        return PLAYER_RESULT_ERROR;
+        return NULL;
     }
     while (av_bsf_receive_packet(bsf_ctx, pkt) == 0) {
-        return PLAYER_RESULT_OK;
     }
-    return PLAYER_RESULT_OK;
+    return bsf_ctx;
 }
 
 static int GetStartCodeLen(const unsigned char *pkt) {
@@ -514,7 +525,8 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
     //The main difference between these media types is the presence of start codes in the bitstream.
     // If the subtype is MEDIASUBTYPE_AVC1, the bitstream does not contain start codes.
     if (type < 0) {//MEDIASUBTYPE_AVC1
-        H264_mp4toannexb_filter(packet, playerInfo->inputVideoStream->codecpar);
+        playerInfo->bsf_ctx = H264_mp4toannexb_filter(packet,
+                                                      playerInfo->inputVideoStream->codecpar);
         if (isDebug) {
             printCharsHex((char *) packet->data, 22, 16, "-------after------");
         }
@@ -1005,7 +1017,6 @@ int Player::Release() {
         delete recorderInfo;
         recorderInfo = NULL;
     }
-
     LOGD("Release() over!");
     return PLAYER_RESULT_OK;
 }

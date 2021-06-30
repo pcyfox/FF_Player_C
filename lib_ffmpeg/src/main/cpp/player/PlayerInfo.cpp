@@ -22,6 +22,9 @@ PlayerInfo::PlayerInfo() {
 PlayerInfo::~PlayerInfo() {
     LOGW("-------PlayerInfo Delete Start---------");
     playState = UNINITIALIZED;
+    if (bsf_ctx) {
+        av_bsf_free(&bsf_ctx);
+    }
     if (window) {
         ANativeWindow_release(window);
         window = NULL;
@@ -55,7 +58,8 @@ void PlayerInfo::SetPlayState(PlayState s, bool isNotify) volatile {
     if (stateListener && isNotify) {
         stateListener(playState, id);
     }
-    LOGI("----------------->PlayerInfo SetPlayState() called with:state=%s,isNotify=%d", StateListener::PlayerStateToString(s).c_str(),
+    LOGI("----------------->PlayerInfo SetPlayState() called with:state=%s,isNotify=%d",
+         StateListener::PlayerStateToString(s).c_str(),
          isNotify);
 }
 

@@ -31,6 +31,7 @@ class PlayerInfo {
 
 public:
     int id{};
+    AVBSFContext *bsf_ctx = NULL;
     AMediaCodec *videoCodec = NULL;
     AMediaCodec *audioCodec = NULL;
     AVFormatContext *inputContext = NULL;
