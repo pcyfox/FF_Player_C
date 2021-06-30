@@ -27,14 +27,17 @@
 #ifndef AVUTIL_HASH_H
 #define AVUTIL_HASH_H
 
+#include <stddef.h>
 #include <stdint.h>
+
+#include "version.h"
 
 /**
  * @defgroup lavu_hash Hash Functions
  * @ingroup lavu_crypto
  * Hash functions useful in multimedia.
  *
- * Hash functions are widely used in multimedia, from ERROR checking and
+ * Hash functions are widely used in multimedia, from error checking and
  * concealment to internal regression testing. libavutil has efficient
  * implementations of a variety of hash functions that may be useful for
  * FFmpeg and other multimedia applications.
@@ -116,9 +119,9 @@ struct AVHashContext;
 /**
  * Allocate a hash context for the algorithm specified by name.
  *
- * @return  >= 0 for success, a negative ERROR code for failure
+ * @return  >= 0 for success, a negative error code for failure
  *
- * @note The context is not INITIALIZED after a call to this function; you must
+ * @note The context is not initialized after a call to this function; you must
  * call av_hash_init() to do so.
  */
 int av_hash_alloc(struct AVHashContext **ctx, const char *name);
@@ -179,7 +182,11 @@ void av_hash_init(struct AVHashContext *ctx);
  * @param[in]     src Data to be added to the hash context
  * @param[in]     len Size of the additional data
  */
+#if FF_API_CRYPTO_SIZE_T
 void av_hash_update(struct AVHashContext *ctx, const uint8_t *src, int len);
+#else
+void av_hash_update(struct AVHashContext *ctx, const uint8_t *src, size_t len);
+#endif
 
 /**
  * Finalize a hash context and compute the actual hash value.

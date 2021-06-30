@@ -35,7 +35,7 @@ enum AVHMACType {
     AV_HMAC_SHA1,
     AV_HMAC_SHA224,
     AV_HMAC_SHA256,
-    AV_HMAC_SHA384 = 12,
+    AV_HMAC_SHA384,
     AV_HMAC_SHA512,
 };
 
@@ -74,7 +74,7 @@ void av_hmac_update(AVHMAC *ctx, const uint8_t *data, unsigned int len);
  * @param ctx    The HMAC context
  * @param out    The output buffer to write the digest into
  * @param outlen The length of the out buffer, in bytes
- * @return       The number of bytes written to out, or a negative ERROR code.
+ * @return       The number of bytes written to out, or a negative error code.
  */
 int av_hmac_final(AVHMAC *ctx, uint8_t *out, unsigned int outlen);
 
@@ -87,7 +87,7 @@ int av_hmac_final(AVHMAC *ctx, uint8_t *out, unsigned int outlen);
  * @param keylen The length of the key, in bytes
  * @param out    The output buffer to write the digest into
  * @param outlen The length of the out buffer, in bytes
- * @return       The number of bytes written to out, or a negative ERROR code.
+ * @return       The number of bytes written to out, or a negative error code.
  */
 int av_hmac_calc(AVHMAC *ctx, const uint8_t *data, unsigned int len,
                  const uint8_t *key, unsigned int keylen,

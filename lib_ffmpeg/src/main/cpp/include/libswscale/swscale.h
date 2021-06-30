@@ -151,7 +151,7 @@ struct SwsContext *sws_alloc_context(void);
  * Initialize the swscaler context sws_context.
  *
  * @return zero or positive value on success, a negative value on
- * ERROR
+ * error
  */
 av_warn_unused_result
 int sws_init_context(struct SwsContext *sws_context, SwsFilter *srcFilter, SwsFilter *dstFilter);
@@ -179,7 +179,7 @@ void sws_freeContext(struct SwsContext *swsContext);
  *              For SWS_GAUSS param[0] tunes the exponent and thus cutoff
  *              frequency
  *              For SWS_LANCZOS param[0] tunes the width of the window function
- * @return a pointer to an allocated context, or NULL in case of ERROR
+ * @return a pointer to an allocated context, or NULL in case of error
  * @note this function is to be removed after a saner alternative is
  *       written
  */

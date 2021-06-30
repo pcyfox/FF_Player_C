@@ -62,7 +62,7 @@ void av_fifo_free(AVFifoBuffer *f);
 void av_fifo_freep(AVFifoBuffer **f);
 
 /**
- * Reset the AVFifoBuffer to the playState right after av_fifo_alloc, in particular it is emptied.
+ * Reset the AVFifoBuffer to the state right after av_fifo_alloc, in particular it is emptied.
  * @param f AVFifoBuffer to reset
  */
 void av_fifo_reset(AVFifoBuffer *f);

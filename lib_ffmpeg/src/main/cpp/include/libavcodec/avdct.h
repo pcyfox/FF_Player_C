@@ -67,11 +67,15 @@ typedef struct AVDCT {
                        ptrdiff_t line_size);
 
     int bits_per_sample;
+
+    void (*get_pixels_unaligned)(int16_t *block /* align 16 */,
+                       const uint8_t *pixels,
+                       ptrdiff_t line_size);
 } AVDCT;
 
 /**
  * Allocates a AVDCT context.
- * This needs to be INITIALIZED with avcodec_dct_init() after optionally
+ * This needs to be initialized with avcodec_dct_init() after optionally
  * configuring it with AVOptions.
  *
  * To free it use av_free()

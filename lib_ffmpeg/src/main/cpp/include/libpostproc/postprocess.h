@@ -53,10 +53,6 @@ const char *postproc_license(void);
 
 #define PP_QUALITY_MAX 6
 
-#if FF_API_QP_TYPE
-#define QP_STORE_T int8_t //deprecated
-#endif
-
 #include <inttypes.h>
 
 typedef void pp_context;
@@ -78,7 +74,7 @@ void  pp_postprocess(const uint8_t * src[3], const int srcStride[3],
 
 
 /**
- * Return a pp_mode or NULL if an ERROR occurred.
+ * Return a pp_mode or NULL if an error occurred.
  *
  * @param name    the string after "-pp" on the command line
  * @param quality a number from 0 to PP_QUALITY_MAX

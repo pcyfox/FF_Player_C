@@ -196,7 +196,7 @@ static inline int av_bprint_is_complete(const AVBPrint *buf)
  * @arg[out] ret_str  if not NULL, used to return a permanent copy of the
  *                    buffer contents, or NULL if memory allocation fails;
  *                    if NULL, the buffer is discarded and freed
- * @return  0 for success or ERROR code (probably AVERROR(ENOMEM))
+ * @return  0 for success or error code (probably AVERROR(ENOMEM))
  */
 int av_bprint_finalize(AVBPrint *buf, char **ret_str);
 

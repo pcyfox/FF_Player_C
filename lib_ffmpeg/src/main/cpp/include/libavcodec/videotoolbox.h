@@ -113,7 +113,7 @@ int av_videotoolbox_default_init(AVCodecContext *avctx);
 int av_videotoolbox_default_init2(AVCodecContext *avctx, AVVideotoolboxContext *vtctx);
 
 /**
- * This function must be called to free the Videotoolbox context INITIALIZED with
+ * This function must be called to free the Videotoolbox context initialized with
  * av_videotoolbox_default_init().
  *
  * @param avctx the corresponding codec context

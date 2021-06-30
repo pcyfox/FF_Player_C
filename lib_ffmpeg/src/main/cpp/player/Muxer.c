@@ -318,5 +318,5 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
     LOGIX(LOG_TAG, "mux file over! ret=%d", ret);
     LOGDX(LOG_TAG, "start to mux file audio path=%s,video path=%s,dest path=%s", audio_srcPath,
           video_srcPath, destPath);
-    return ret;
+    return ret >= 0 ? PLAYER_RESULT_OK : PLAYER_RESULT_ERROR;
 }

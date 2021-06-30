@@ -108,7 +108,7 @@ void *av_tree_find(const struct AVTreeNode *root, void *key,
  *            to that of Standard C's qsort
  * @return If no insertion happened, the found element; if an insertion or
  *         removal happened, then either key or NULL will be returned.
- *         Which one it is depends on the tree playState and the implementation. You
+ *         Which one it is depends on the tree state and the implementation. You
  *         should make no assumptions that it's one or the other in the code.
  */
 void *av_tree_insert(struct AVTreeNode **rootp, void *key,

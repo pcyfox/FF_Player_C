@@ -82,13 +82,13 @@ const char *av_get_sample_fmt_name(enum AVSampleFormat sample_fmt);
 
 /**
  * Return a sample format corresponding to name, or AV_SAMPLE_FMT_NONE
- * on ERROR.
+ * on error.
  */
 enum AVSampleFormat av_get_sample_fmt(const char *name);
 
 /**
  * Return the planar<->packed alternative form of the given sample format, or
- * AV_SAMPLE_FMT_NONE on ERROR. If the passed sample_fmt is already in the
+ * AV_SAMPLE_FMT_NONE on error. If the passed sample_fmt is already in the
  * requested planar/packed format, the format returned is the same as the
  * input.
  */
@@ -101,7 +101,7 @@ enum AVSampleFormat av_get_alt_sample_fmt(enum AVSampleFormat sample_fmt, int pl
  * the same as the input.
  *
  * @return  the packed alternative form of the given sample format or
-            AV_SAMPLE_FMT_NONE on ERROR.
+            AV_SAMPLE_FMT_NONE on error.
  */
 enum AVSampleFormat av_get_packed_sample_fmt(enum AVSampleFormat sample_fmt);
 
@@ -112,7 +112,7 @@ enum AVSampleFormat av_get_packed_sample_fmt(enum AVSampleFormat sample_fmt);
  * the same as the input.
  *
  * @return  the planar alternative form of the given sample format or
-            AV_SAMPLE_FMT_NONE on ERROR.
+            AV_SAMPLE_FMT_NONE on error.
  */
 enum AVSampleFormat av_get_planar_sample_fmt(enum AVSampleFormat sample_fmt);
 
@@ -155,7 +155,7 @@ int av_sample_fmt_is_planar(enum AVSampleFormat sample_fmt);
  * @param nb_samples    the number of samples in a single channel
  * @param sample_fmt    the sample format
  * @param align         buffer size alignment (0 = default, 1 = no alignment)
- * @return              required buffer size, or negative ERROR code on failure
+ * @return              required buffer size, or negative error code on failure
  */
 int av_samples_get_buffer_size(int *linesize, int nb_channels, int nb_samples,
                                enum AVSampleFormat sample_fmt, int align);
@@ -195,7 +195,7 @@ int av_samples_get_buffer_size(int *linesize, int nb_channels, int nb_samples,
  * @param nb_samples       the number of samples in a single channel
  * @param sample_fmt       the sample format
  * @param align            buffer size alignment (0 = default, 1 = no alignment)
- * @return                 >=0 on success or a negative ERROR code on failure
+ * @return                 >=0 on success or a negative error code on failure
  * @todo return minimum size in bytes required for the buffer in case
  * of success at the next bump
  */
@@ -208,7 +208,7 @@ int av_samples_fill_arrays(uint8_t **audio_data, int *linesize,
  * Allocate a samples buffer for nb_samples samples, and fill data pointers and
  * linesize accordingly.
  * The allocated samples buffer can be freed by using av_freep(&audio_data[0])
- * Allocated data will be INITIALIZED to silence.
+ * Allocated data will be initialized to silence.
  *
  * @see enum AVSampleFormat
  * The documentation for AVSampleFormat describes the data layout.
@@ -218,7 +218,7 @@ int av_samples_fill_arrays(uint8_t **audio_data, int *linesize,
  * @param nb_channels      number of audio channels
  * @param nb_samples       number of samples per channel
  * @param align            buffer size alignment (0 = default, 1 = no alignment)
- * @return                 >=0 on success or a negative ERROR code on failure
+ * @return                 >=0 on success or a negative error code on failure
  * @todo return the size of the allocated buffer in case of success at the next bump
  * @see av_samples_fill_arrays()
  * @see av_samples_alloc_array_and_samples()

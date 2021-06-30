@@ -61,7 +61,7 @@ void av_audio_fifo_free(AVAudioFifo *af);
  * @param sample_fmt  sample format
  * @param channels    number of channels
  * @param nb_samples  initial allocation size, in samples
- * @return            newly allocated AVAudioFifo, or NULL on ERROR
+ * @return            newly allocated AVAudioFifo, or NULL on error
  */
 AVAudioFifo *av_audio_fifo_alloc(enum AVSampleFormat sample_fmt, int channels,
                                  int nb_samples);

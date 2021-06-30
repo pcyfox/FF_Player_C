@@ -201,9 +201,9 @@ int64_t av_compare_mod(uint64_t a, uint64_t b, uint64_t mod);
  * timestamp to a different time base. Compared to a simple av_rescale_q()
  * call, this function is robust against possible inconsistent frame durations.
  *
- * The `last` parameter is a playState variable that must be preserved for all
+ * The `last` parameter is a state variable that must be preserved for all
  * subsequent calls for the same stream. For the first call, `*last` should be
- * INITIALIZED to #AV_NOPTS_VALUE.
+ * initialized to #AV_NOPTS_VALUE.
  *
  * @param[in]     in_tb    Input time base
  * @param[in]     in_ts    Input timestamp
@@ -212,7 +212,7 @@ int64_t av_compare_mod(uint64_t a, uint64_t b, uint64_t mod);
  * @param[in]     duration Duration till the next call to this function (i.e.
  *                         duration of the current packet/frame)
  * @param[in,out] last     Pointer to a timestamp expressed in terms of
- *                         `fs_tb`, acting as a playState variable
+ *                         `fs_tb`, acting as a state variable
  * @param[in]     out_tb   Output timebase
  * @return        Timestamp expressed in terms of `out_tb`
  *

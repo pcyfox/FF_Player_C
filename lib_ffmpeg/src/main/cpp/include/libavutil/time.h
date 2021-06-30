@@ -49,7 +49,7 @@ int av_gettime_relative_is_monotonic(void);
  * system timer.
  *
  * @param  usec Number of microseconds to sleep.
- * @return zero on success or (negative) ERROR code.
+ * @return zero on success or (negative) error code.
  */
 int av_usleep(unsigned usec);
 

@@ -70,7 +70,7 @@
  *                       NULL);                // log_ctx
  * @endcode
  *
- * Once all values have been set, it must be INITIALIZED with swr_init(). If
+ * Once all values have been set, it must be initialized with swr_init(). If
  * you need to change the conversion parameters, you can change the parameters
  * using @ref AVOptions, as described above in the first example; or by using
  * swr_alloc_set_opts(), but with the first argument the allocated context.
@@ -125,10 +125,6 @@
 #include "libavutil/samplefmt.h"
 
 #include "libswresample/version.h"
-
-#if LIBSWRESAMPLE_VERSION_MAJOR < 1
-#define SWR_CH_MAX 32   ///< Maximum number of channels
-#endif
 
 /**
  * @name Option constants
@@ -206,7 +202,7 @@ const AVClass *swr_get_class(void);
  * with swr_alloc_set_opts()) before calling swr_init().
  *
  * @see swr_alloc_set_opts(), swr_init(), swr_free()
- * @return NULL on ERROR, allocated context otherwise
+ * @return NULL on error, allocated context otherwise
  */
 struct SwrContext *swr_alloc(void);
 
@@ -218,16 +214,16 @@ struct SwrContext *swr_alloc(void);
  * @see av_opt_set_dict()
  *
  * @param[in,out]   s Swr context to initialize
- * @return AVERROR ERROR code in case of failure.
+ * @return AVERROR error code in case of failure.
  */
 int swr_init(struct SwrContext *s);
 
 /**
- * Check whether an swr context has been INITIALIZED or not.
+ * Check whether an swr context has been initialized or not.
  *
  * @param[in]       s Swr context to check
  * @see swr_init()
- * @return positive if it has been INITIALIZED, 0 if not INITIALIZED
+ * @return positive if it has been initialized, 0 if not initialized
  */
 int swr_is_initialized(struct SwrContext *s);
 
@@ -249,7 +245,7 @@ int swr_is_initialized(struct SwrContext *s);
  * @param log_ctx         parent logging context, can be NULL
  *
  * @see swr_init(), swr_free()
- * @return NULL on ERROR, allocated context otherwise
+ * @return NULL on error, allocated context otherwise
  */
 struct SwrContext *swr_alloc_set_opts(struct SwrContext *s,
                                       int64_t out_ch_layout, enum AVSampleFormat out_sample_fmt, int out_sample_rate,
@@ -305,7 +301,7 @@ void swr_close(struct SwrContext *s);
  * @param in        input buffers, only the first one need to be set in case of packed audio
  * @param in_count  number of input samples available in one channel
  *
- * @return number of samples output per channel, negative value on ERROR
+ * @return number of samples output per channel, negative value on error
  */
 int swr_convert(struct SwrContext *s, uint8_t **out, int out_count,
                                 const uint8_t **in , int in_count);
@@ -321,7 +317,7 @@ int swr_convert(struct SwrContext *s, uint8_t **out, int out_count,
  *              in this case the output timestamps will match output sample numbers.
  *              See ffmpeg-resampler(1) for the two modes of compensation.
  *
- * @param s[in]     INITIALIZED Swr context
+ * @param s[in]     initialized Swr context
  * @param pts[in]   timestamp for the next input sample, INT64_MIN if unknown
  * @see swr_set_compensation(), swr_drop_output(), and swr_inject_silence() are
  *      function used internally for timestamp compensation.
@@ -342,12 +338,12 @@ int64_t swr_next_pts(struct SwrContext *s, int64_t pts);
  * Activate resampling compensation ("soft" compensation). This function is
  * internally called when needed in swr_next_pts().
  *
- * @param[in,out] s             allocated Swr context. If it is not INITIALIZED,
+ * @param[in,out] s             allocated Swr context. If it is not initialized,
  *                              or SWR_FLAG_RESAMPLE is not set, swr_init() is
  *                              called with the flag set.
  * @param[in]     sample_delta  delta in PTS per sample
  * @param[in]     compensation_distance number of samples to compensate for
- * @return    >= 0 on success, AVERROR ERROR codes if:
+ * @return    >= 0 on success, AVERROR error codes if:
  *            @li @c s is NULL,
  *            @li @c compensation_distance is less than 0,
  *            @li @c compensation_distance is 0 but sample_delta is not,
@@ -359,10 +355,10 @@ int swr_set_compensation(struct SwrContext *s, int sample_delta, int compensatio
 /**
  * Set a customized input channel mapping.
  *
- * @param[in,out] s           allocated Swr context, not yet INITIALIZED
+ * @param[in,out] s           allocated Swr context, not yet initialized
  * @param[in]     channel_map customized input channel mapping (array of channel
  *                            indexes, -1 for a muted channel)
- * @return >= 0 on success, or AVERROR ERROR code in case of failure.
+ * @return >= 0 on success, or AVERROR error code in case of failure.
  */
 int swr_set_channel_mapping(struct SwrContext *s, const int *channel_map);
 
@@ -399,11 +395,11 @@ int swr_build_matrix(uint64_t in_layout, uint64_t out_layout,
 /**
  * Set a customized remix matrix.
  *
- * @param s       allocated Swr context, not yet INITIALIZED
+ * @param s       allocated Swr context, not yet initialized
  * @param matrix  remix coefficients; matrix[i + stride * o] is
  *                the weight of input channel i in output channel o
  * @param stride  offset between lines of the matrix
- * @return  >= 0 on success, or AVERROR ERROR code in case of failure.
+ * @return  >= 0 on success, or AVERROR error code in case of failure.
  */
 int swr_set_matrix(struct SwrContext *s, const double *matrix, int stride);
 
@@ -469,7 +465,7 @@ int64_t swr_get_delay(struct SwrContext *s, int64_t base);
 /**
  * Find an upper bound on the number of samples that the next swr_convert
  * call will output, if called with in_samples of input samples. This
- * depends on the internal playState, and anything changing the internal playState
+ * depends on the internal state, and anything changing the internal state
  * (like further swr_convert() calls) will may change the number of samples
  * swr_get_out_samples() returns for the same number of input samples.
  *
@@ -480,7 +476,7 @@ int64_t swr_get_delay(struct SwrContext *s, int64_t base);
  *       to all functions like swr_convert() even if swr_get_out_samples()
  *       indicates that less would be used.
  * @returns an upper bound on the number of samples that the next swr_convert
- *          will output or a negative value to indicate an ERROR
+ *          will output or a negative value to indicate an error
  */
 int swr_get_out_samples(struct SwrContext *s, int in_samples);
 

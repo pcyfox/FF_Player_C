@@ -114,7 +114,7 @@
  *      libavcodec exports generic options, while its priv_data field exports
  *      codec-specific options). In such a case, it is possible to set up the
  *      parent struct to export a child's options. To do that, simply
- *      implement AVClass.child_next() and AVClass.child_class_next() in the
+ *      implement AVClass.child_next() and AVClass.child_class_iterate() in the
  *      parent struct's AVClass.
  *      Assuming that the test_struct from above now also contains a
  *      child_struct field:
@@ -143,23 +143,25 @@
  *              return t->child_struct;
  *          return NULL
  *      }
- *      const AVClass child_class_next(const AVClass *prev)
+ *      const AVClass child_class_iterate(void **iter)
  *      {
- *          return prev ? NULL : &child_class;
+ *          const AVClass *c = *iter ? NULL : &child_class;
+ *          *iter = (void*)(uintptr_t)c;
+ *          return c;
  *      }
  *      @endcode
- *      Putting child_next() and child_class_next() as defined above into
+ *      Putting child_next() and child_class_iterate() as defined above into
  *      test_class will now make child_struct's options accessible through
  *      test_struct (again, proper setup as described above needs to be done on
  *      child_struct right after it is created).
  *
  *      From the above example it might not be clear why both child_next()
- *      and child_class_next() are needed. The distinction is that child_next()
- *      iterates over actually existing objects, while child_class_next()
+ *      and child_class_iterate() are needed. The distinction is that child_next()
+ *      iterates over actually existing objects, while child_class_iterate()
  *      iterates over all possible child classes. E.g. if an AVCodecContext
- *      was INITIALIZED to use a codec which has private options, then its
+ *      was initialized to use a codec which has private options, then its
  *      child_next() will return AVCodecContext.priv_data and finish
- *      iterating. OTOH child_class_next() on AVCodecContext.av_class will
+ *      iterating. OTOH child_class_iterate() on AVCodecContext.av_class will
  *      iterate over all available codecs with private options.
  *
  * @subsection avoptions_implement_named_constants Named constants
@@ -194,8 +196,8 @@
  * For enumerating there are basically two cases. The first is when you want to
  * get all options that may potentially exist on the struct and its children
  * (e.g.  when constructing documentation). In that case you should call
- * av_opt_child_class_next() recursively on the parent struct's AVClass.  The
- * second case is when you have an already INITIALIZED struct with all its
+ * av_opt_child_class_iterate() recursively on the parent struct's AVClass.  The
+ * second case is when you have an already initialized struct with all its
  * children and you want to get all options that can be actually written or read
  * from it. In that case you should call av_opt_child_next() recursively (and
  * av_opt_next() on each result).
@@ -229,15 +231,15 @@ enum AVOptionType{
     AV_OPT_TYPE_BINARY,  ///< offset must point to a pointer immediately followed by an int for the length
     AV_OPT_TYPE_DICT,
     AV_OPT_TYPE_UINT64,
-    AV_OPT_TYPE_CONST = 128,
-    AV_OPT_TYPE_IMAGE_SIZE = MKBETAG('S','I','Z','E'), ///< offset must point to two consecutive integers
-    AV_OPT_TYPE_PIXEL_FMT  = MKBETAG('P','F','M','T'),
-    AV_OPT_TYPE_SAMPLE_FMT = MKBETAG('S','F','M','T'),
-    AV_OPT_TYPE_VIDEO_RATE = MKBETAG('V','R','A','T'), ///< offset must point to AVRational
-    AV_OPT_TYPE_DURATION   = MKBETAG('D','U','R',' '),
-    AV_OPT_TYPE_COLOR      = MKBETAG('C','O','L','R'),
-    AV_OPT_TYPE_CHANNEL_LAYOUT = MKBETAG('C','H','L','A'),
-    AV_OPT_TYPE_BOOL           = MKBETAG('B','O','O','L'),
+    AV_OPT_TYPE_CONST,
+    AV_OPT_TYPE_IMAGE_SIZE, ///< offset must point to two consecutive integers
+    AV_OPT_TYPE_PIXEL_FMT,
+    AV_OPT_TYPE_SAMPLE_FMT,
+    AV_OPT_TYPE_VIDEO_RATE, ///< offset must point to AVRational
+    AV_OPT_TYPE_DURATION,
+    AV_OPT_TYPE_COLOR,
+    AV_OPT_TYPE_CHANNEL_LAYOUT,
+    AV_OPT_TYPE_BOOL,
 };
 
 /**
@@ -275,9 +277,6 @@ typedef struct AVOption {
     int flags;
 #define AV_OPT_FLAG_ENCODING_PARAM  1   ///< a generic parameter which can be set by the user for muxing or encoding
 #define AV_OPT_FLAG_DECODING_PARAM  2   ///< a generic parameter which can be set by the user for demuxing or decoding
-#if FF_API_OPT_TYPE_METADATA
-#define AV_OPT_FLAG_METADATA        4   ///< some data extracted or inserted into the file like title, comment, ...
-#endif
 #define AV_OPT_FLAG_AUDIO_PARAM     8
 #define AV_OPT_FLAG_VIDEO_PARAM     16
 #define AV_OPT_FLAG_SUBTITLE_PARAM  32
@@ -290,7 +289,11 @@ typedef struct AVOption {
  * This flag only makes sense when AV_OPT_FLAG_EXPORT is also set.
  */
 #define AV_OPT_FLAG_READONLY        128
+#define AV_OPT_FLAG_BSF_PARAM       (1<<8) ///< a generic parameter which can be set by the user for bit stream filtering
+#define AV_OPT_FLAG_RUNTIME_PARAM   (1<<15) ///< a generic parameter which can be set by the user at runtime
 #define AV_OPT_FLAG_FILTERING_PARAM (1<<16) ///< a generic parameter which can be set by the user for filtering
+#define AV_OPT_FLAG_DEPRECATED      (1<<17) ///< set if option is deprecated, users should refer to AVOption.help text for more information
+#define AV_OPT_FLAG_CHILD_CONSTS    (1<<18) ///< set if option constants can also reside in child objects
 //FIXME think about enc-audio, ... style flags
 
     /**
@@ -410,9 +413,9 @@ void av_opt_set_defaults2(void *s, int mask, int flags);
  * @param pairs_sep a 0-terminated list of characters used to separate
  * two pairs from each other
  * @return the number of successfully set key/value pairs, or a negative
- * value corresponding to an AVERROR code in case of ERROR:
+ * value corresponding to an AVERROR code in case of error:
  * AVERROR(EINVAL) if opts cannot be parsed,
- * the ERROR code issued by av_opt_set() if a key/value pair
+ * the error code issued by av_opt_set() if a key/value pair
  * cannot be set
  */
 int av_set_options_string(void *ctx, const char *opts,
@@ -436,9 +439,9 @@ int av_set_options_string(void *ctx, const char *opts,
  * @param pairs_sep    a 0-terminated list of characters used to separate
  *                     two pairs from each other, for example ':' or ','
  * @return  the number of successfully set key=value pairs, or a negative
- *          value corresponding to an AVERROR code in case of ERROR:
+ *          value corresponding to an AVERROR code in case of error:
  *          AVERROR(EINVAL) if opts cannot be parsed,
- *          the ERROR code issued by av_set_string3() if a key/value pair
+ *          the error code issued by av_set_string3() if a key/value pair
  *          cannot be set
  *
  * Options names must use only the following characters: a-z A-Z 0-9 - . / _
@@ -512,7 +515,7 @@ int av_opt_set_dict2(void *obj, struct AVDictionary **options, int search_flags)
  * @param rval         parsed value; must be freed using av_free()
  *
  * @return  >=0 for success, or a negative value corresponding to an
- *          AVERROR code in case of ERROR; in particular:
+ *          AVERROR code in case of error; in particular:
  *          AVERROR(EINVAL) if no key is present
  *
  */
@@ -645,13 +648,26 @@ const AVOption *av_opt_next(const void *obj, const AVOption *prev);
  */
 void *av_opt_child_next(void *obj, void *prev);
 
+#if FF_API_CHILD_CLASS_NEXT
 /**
  * Iterate over potential AVOptions-enabled children of parent.
  *
  * @param prev result of a previous call to this function or NULL
  * @return AVClass corresponding to next potential child or NULL
+ *
+ * @deprecated use av_opt_child_class_iterate
  */
+attribute_deprecated
 const AVClass *av_opt_child_class_next(const AVClass *parent, const AVClass *prev);
+#endif
+
+/**
+ * Iterate over potential AVOptions-enabled children of parent.
+ *
+ * @param iter a pointer where iteration state is stored.
+ * @return AVClass corresponding to next potential child or NULL
+ */
+const AVClass *av_opt_child_class_iterate(const AVClass *parent, void **iter);
 
 /**
  * @defgroup opt_set_funcs Option setting functions
@@ -670,11 +686,14 @@ const AVClass *av_opt_child_class_next(const AVClass *parent, const AVClass *pre
  * scalars or named flags separated by '+' or '-'. Prefixing a flag
  * with '+' causes it to be set without affecting the other flags;
  * similarly, '-' unsets a flag.
+ * If the field is of a dictionary type, it has to be a ':' separated list of
+ * key=value parameters. Values containing ':' special characters must be
+ * escaped.
  * @param search_flags flags passed to av_opt_find2. I.e. if AV_OPT_SEARCH_CHILDREN
  * is passed here, then the option may be set on a child of obj.
  *
  * @return 0 if the value has been set, or an AVERROR code in case of
- * ERROR:
+ * error:
  * AVERROR_OPTION_NOT_FOUND if no matching option exists
  * AVERROR(ERANGE) if the value is out of range
  * AVERROR(EINVAL) if the value is not valid
@@ -725,14 +744,15 @@ int av_opt_set_dict_val(void *obj, const char *name, const AVDictionary *val, in
  * @param[in] search_flags flags passed to av_opt_find2. I.e. if AV_OPT_SEARCH_CHILDREN
  * is passed here, then the option may be found in a child of obj.
  * @param[out] out_val value of the option will be written here
- * @return >=0 on success, a negative ERROR code otherwise
+ * @return >=0 on success, a negative error code otherwise
  */
 /**
  * @note the returned string will be av_malloc()ed and must be av_free()ed by the caller
  *
- * @note if AV_OPT_ALLOW_NULL is set in search_flags in av_opt_get, and the option has
- * AV_OPT_TYPE_STRING or AV_OPT_TYPE_BINARY and is set to NULL, *out_val will be set
- * to NULL instead of an allocated empty string.
+ * @note if AV_OPT_ALLOW_NULL is set in search_flags in av_opt_get, and the
+ * option is of type AV_OPT_TYPE_STRING, AV_OPT_TYPE_BINARY or AV_OPT_TYPE_DICT
+ * and is set to NULL, *out_val will be set to NULL instead of an allocated
+ * empty string.
  */
 int av_opt_get         (void *obj, const char *name, int search_flags, uint8_t   **out_val);
 int av_opt_get_int     (void *obj, const char *name, int search_flags, int64_t    *out_val);
@@ -789,7 +809,7 @@ int av_opt_query_ranges(AVOptionRanges **, void *obj, const char *key, int flags
  *
  * @param dest Object to copy from
  * @param src  Object to copy into
- * @return 0 on success, negative on ERROR
+ * @return 0 on success, negative on error
  */
 int av_opt_copy(void *dest, const void *src);
 
@@ -812,14 +832,14 @@ int av_opt_query_ranges_default(AVOptionRanges **, void *obj, const char *key, i
 /**
  * Check if given option is set to its default value.
  *
- * Options o must belong to the obj. This function must not be called to check child's options playState.
+ * Options o must belong to the obj. This function must not be called to check child's options state.
  * @see av_opt_is_set_to_default_by_name().
  *
  * @param obj  AVClass object to check option on
  * @param o    option to be checked
  * @return     >0 when option is set to its default,
  *              0 when option is not set its default,
- *             <0 on ERROR
+ *             <0 on error
  */
 int av_opt_is_set_to_default(void *obj, const AVOption *o);
 
@@ -831,7 +851,7 @@ int av_opt_is_set_to_default(void *obj, const AVOption *o);
  * @param search_flags combination of AV_OPT_SEARCH_*
  * @return             >0 when option is set to its default,
  *                     0 when option is not set its default,
- *                     <0 on ERROR
+ *                     <0 on error
  */
 int av_opt_is_set_to_default_by_name(void *obj, const char *name, int search_flags);
 
@@ -854,7 +874,7 @@ int av_opt_is_set_to_default_by_name(void *obj, const char *name, int search_fla
  *                           Buffer must be freed by the caller when is no longer needed.
  * @param[in]  key_val_sep   character used to separate key from value
  * @param[in]  pairs_sep     character used to separate two pairs from each other
- * @return                   >= 0 on success, negative on ERROR
+ * @return                   >= 0 on success, negative on error
  * @warning Separators cannot be neither '\\' nor '\0'. They also cannot be the same.
  */
 int av_opt_serialize(void *obj, int opt_flags, int flags, char **buffer,

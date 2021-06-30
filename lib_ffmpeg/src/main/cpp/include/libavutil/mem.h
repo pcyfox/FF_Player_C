@@ -33,6 +33,7 @@
 #include "attributes.h"
 #include "error.h"
 #include "avutil.h"
+#include "version.h"
 
 /**
  * @addtogroup lavu_mem
@@ -49,6 +50,10 @@
  * dealing with memory consistently possible on all platforms.
  *
  * @{
+ */
+
+#if FF_API_DECLARE_ALIGNED
+/**
  *
  * @defgroup lavu_mem_macros Alignment Macros
  * Helper macros for declaring aligned variables.
@@ -74,6 +79,19 @@
  */
 
 /**
+ * @def DECLARE_ASM_ALIGNED(n,t,v)
+ * Declare an aligned variable appropriate for use in inline assembly code.
+ *
+ * @code{.c}
+ * DECLARE_ASM_ALIGNED(16, uint64_t, pw_08) = UINT64_C(0x0008000800080008);
+ * @endcode
+ *
+ * @param n Minimum alignment in bytes
+ * @param t Type of the variable (or array element)
+ * @param v Name of the variable
+ */
+
+/**
  * @def DECLARE_ASM_CONST(n,t,v)
  * Declare a static constant aligned variable appropriate for use in inline
  * assembly code.
@@ -89,31 +107,30 @@
 
 #if defined(__INTEL_COMPILER) && __INTEL_COMPILER < 1110 || defined(__SUNPRO_C)
     #define DECLARE_ALIGNED(n,t,v)      t __attribute__ ((aligned (n))) v
+    #define DECLARE_ASM_ALIGNED(n,t,v)  t __attribute__ ((aligned (n))) v
     #define DECLARE_ASM_CONST(n,t,v)    const t __attribute__ ((aligned (n))) v
-#elif defined(__TI_COMPILER_VERSION__)
-    #define DECLARE_ALIGNED(n,t,v)                      \
-        AV_PRAGMA(DATA_ALIGN(v,n))                      \
-        t __attribute__((aligned(n))) v
-    #define DECLARE_ASM_CONST(n,t,v)                    \
-        AV_PRAGMA(DATA_ALIGN(v,n))                      \
-        static const t __attribute__((aligned(n))) v
 #elif defined(__DJGPP__)
     #define DECLARE_ALIGNED(n,t,v)      t __attribute__ ((aligned (FFMIN(n, 16)))) v
+    #define DECLARE_ASM_ALIGNED(n,t,v)  t av_used __attribute__ ((aligned (FFMIN(n, 16)))) v
     #define DECLARE_ASM_CONST(n,t,v)    static const t av_used __attribute__ ((aligned (FFMIN(n, 16)))) v
 #elif defined(__GNUC__) || defined(__clang__)
     #define DECLARE_ALIGNED(n,t,v)      t __attribute__ ((aligned (n))) v
+    #define DECLARE_ASM_ALIGNED(n,t,v)  t av_used __attribute__ ((aligned (n))) v
     #define DECLARE_ASM_CONST(n,t,v)    static const t av_used __attribute__ ((aligned (n))) v
 #elif defined(_MSC_VER)
     #define DECLARE_ALIGNED(n,t,v)      __declspec(align(n)) t v
+    #define DECLARE_ASM_ALIGNED(n,t,v)  __declspec(align(n)) t v
     #define DECLARE_ASM_CONST(n,t,v)    __declspec(align(n)) static const t v
 #else
     #define DECLARE_ALIGNED(n,t,v)      t v
+    #define DECLARE_ASM_ALIGNED(n,t,v)  t v
     #define DECLARE_ASM_CONST(n,t,v)    static const t v
 #endif
 
 /**
  * @}
  */
+#endif
 
 /**
  * @defgroup lavu_mem_attrs Function Attributes
@@ -206,12 +223,7 @@ void *av_mallocz(size_t size) av_malloc_attrib av_alloc_size(1);
  *         be allocated
  * @see av_malloc()
  */
-av_alloc_size(1, 2) static inline void *av_malloc_array(size_t nmemb, size_t size)
-{
-    if (!size || nmemb >= INT_MAX / size)
-        return NULL;
-    return av_malloc(nmemb * size);
-}
+av_alloc_size(1, 2) void *av_malloc_array(size_t nmemb, size_t size);
 
 /**
  * Allocate a memory block for an array with av_mallocz().
@@ -226,12 +238,7 @@ av_alloc_size(1, 2) static inline void *av_malloc_array(size_t nmemb, size_t siz
  * @see av_mallocz()
  * @see av_malloc_array()
  */
-av_alloc_size(1, 2) static inline void *av_mallocz_array(size_t nmemb, size_t size)
-{
-    if (!size || nmemb >= INT_MAX / size)
-        return NULL;
-    return av_mallocz(nmemb * size);
-}
+av_alloc_size(1, 2) void *av_mallocz_array(size_t nmemb, size_t size);
 
 /**
  * Non-inlined equivalent of av_mallocz_array().
@@ -276,7 +283,7 @@ void *av_realloc(void *ptr, size_t size) av_alloc_size(2);
  * @param[in]     size Size in bytes for the memory block to be allocated or
  *                     reallocated
  *
- * @return Zero on success, an AVERROR ERROR code on failure
+ * @return Zero on success, an AVERROR error code on failure
  *
  * @warning Unlike av_malloc(), the allocated memory is not guaranteed to be
  *          correctly aligned.
@@ -333,12 +340,12 @@ av_alloc_size(2, 3) void *av_realloc_array(void *ptr, size_t nmemb, size_t size)
  * @param[in]     nmemb Number of elements
  * @param[in]     size  Size of the single element
  *
- * @return Zero on success, an AVERROR ERROR code on failure
+ * @return Zero on success, an AVERROR error code on failure
  *
  * @warning Unlike av_malloc(), the allocated memory is not guaranteed to be
  *          correctly aligned.
  */
-av_alloc_size(2, 3) int av_reallocp_array(void *ptr, size_t nmemb, size_t size);
+int av_reallocp_array(void *ptr, size_t nmemb, size_t size);
 
 /**
  * Reallocate the given buffer if it is not large enough, otherwise do nothing.
@@ -362,13 +369,13 @@ av_alloc_size(2, 3) int av_reallocp_array(void *ptr, size_t nmemb, size_t size);
  * @endcode
  *
  * @param[in,out] ptr      Already allocated buffer, or `NULL`
- * @param[in,out] size     Pointer to current size of buffer `ptr`. `*size` is
- *                         changed to `min_size` in case of success or 0 in
- *                         case of failure
- * @param[in]     min_size New size of buffer `ptr`
+ * @param[in,out] size     Pointer to the size of buffer `ptr`. `*size` is
+ *                         updated to the new allocated size, in particular 0
+ *                         in case of failure.
+ * @param[in]     min_size Desired minimal size of buffer `ptr`
  * @return `ptr` if the buffer is large enough, a pointer to newly reallocated
  *         buffer if the buffer was not large enough, or `NULL` in case of
- *         ERROR
+ *         error
  * @see av_realloc()
  * @see av_fast_malloc()
  */
@@ -378,7 +385,7 @@ void *av_fast_realloc(void *ptr, unsigned int *size, size_t min_size);
  * Allocate a buffer, reusing the given one if large enough.
  *
  * Contrary to av_fast_realloc(), the current buffer contents might not be
- * preserved and on ERROR the old buffer is freed, thus no special handling to
+ * preserved and on error the old buffer is freed, thus no special handling to
  * avoid memleaks is necessary.
  *
  * `*ptr` is allowed to be `NULL`, in which case allocation always happens if
@@ -396,10 +403,10 @@ void *av_fast_realloc(void *ptr, unsigned int *size, size_t min_size);
  * @param[in,out] ptr      Pointer to pointer to an already allocated buffer.
  *                         `*ptr` will be overwritten with pointer to new
  *                         buffer on success or `NULL` on failure
- * @param[in,out] size     Pointer to current size of buffer `*ptr`. `*size` is
- *                         changed to `min_size` in case of success or 0 in
- *                         case of failure
- * @param[in]     min_size New size of buffer `*ptr`
+ * @param[in,out] size     Pointer to the size of buffer `*ptr`. `*size` is
+ *                         updated to the new allocated size, in particular 0
+ *                         in case of failure.
+ * @param[in]     min_size Desired minimal size of buffer `*ptr`
  * @see av_realloc()
  * @see av_fast_mallocz()
  */
@@ -417,10 +424,10 @@ void av_fast_malloc(void *ptr, unsigned int *size, size_t min_size);
  * @param[in,out] ptr      Pointer to pointer to an already allocated buffer.
  *                         `*ptr` will be overwritten with pointer to new
  *                         buffer on success or `NULL` on failure
- * @param[in,out] size     Pointer to current size of buffer `*ptr`. `*size` is
- *                         changed to `min_size` in case of success or 0 in
- *                         case of failure
- * @param[in]     min_size New size of buffer `*ptr`
+ * @param[in,out] size     Pointer to the size of buffer `*ptr`. `*size` is
+ *                         updated to the new allocated size, in particular 0
+ *                         in case of failure.
+ * @param[in]     min_size Desired minimal size of buffer `*ptr`
  * @see av_fast_malloc()
  */
 void av_fast_mallocz(void *ptr, unsigned int *size, size_t min_size);
@@ -611,7 +618,7 @@ void av_dynarray_add(void *tab_ptr, int *nb_ptr, void *elem);
  * Add an element to a dynamic array.
  *
  * Function has the same functionality as av_dynarray_add(),
- * but it doesn't free memory on fails. It returns ERROR code
+ * but it doesn't free memory on fails. It returns error code
  * instead and leave current buffer untouched.
  *
  * @return >=0 on success, negative otherwise

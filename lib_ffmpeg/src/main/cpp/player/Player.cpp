@@ -57,15 +57,13 @@ AVStream *findVideoStream(AVFormatContext *i_fmt_ctx) {
 }
 
 int GetNALUType(AVPacket *packet) {
-    int nalu_type = -1;
+    int type = -1;
     const uint8_t *buf = packet->data;
     int len = GetStartCodeLen(buf);
-    if (len == 3) {
-        nalu_type = buf[3] & 0xFF;
-    } else if (len == 4) {
-        nalu_type = buf[4] & 0xFF;
+    if ((len == 3 || len == 4) && packet->size > len) {
+        type = buf[len] & 0xFF;
     }
-    return nalu_type;
+    return type;
 }
 
 
@@ -255,7 +253,6 @@ void *OpenResource(void *info) {
         }
     } else {
         LOGE("OpenResource():can't open source: %s ,msg:%s \n", url, av_err2str(ret));
-        avformat_close_input(&playerInfo->inputContext);
         playerInfo->inputContext = NULL;
         playerInfo->SetPlayState(ERROR, true);
         return (void *) PLAYER_RESULT_ERROR;
@@ -334,8 +331,9 @@ void *RecordPkt(void *info) {
             return (void *) PLAYER_RESULT_ERROR;
         }
         /*write file header*/
-        if (avformat_write_header(recorderInfo->o_fmt_ctx, NULL) < 0) {
-            LOGE("write file header ERROR");
+        ret = avformat_write_header(recorderInfo->o_fmt_ctx, NULL);
+        if (ret < 0) {
+            LOGE("record video write file header error,ret=%d", ret);
             recorderInfo->SetRecordState(RECORD_ERROR);
             return (void *) PLAYER_RESULT_ERROR;
         }
@@ -478,29 +476,22 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
     }
     int type = GetNALUType(packet);
     if (isDebug) {
-//        LOGD("------ProcessPacket NALU type=%0x,flag=%d", type, packet->flags);
-//        if (type == 0x67 && playerInfo->lastNALUType == type) {
-//            LOGW("------ProcessPacket more than one SPS in this GOP");
-//        }
-//        printCharsHex((char *) packet->data, 12, 6, "-------before------");
-
-        //  LOGD("ProcessPacket :pos=%ld,dts=%ld,pts=%ld,duration=%ld", packet->pos, packet->dts, packet->pts,packet->duration);
-    }
-
-    //try to add start codes
-    if (type < 0) {
-        auto *fullData = (uint8_t *) calloc(sizeof(uint8_t), packet->size + 5);
-        fullData[3] = head_4;
-        if (packet->flags == 1) {
-            fullData[4] = head_I;
-        } else {
-            fullData[4] = head_P;
+        LOGD("------ProcessPacket NALU type=%0x,flag=%d", type, packet->flags);
+        if (type == 0x67 && playerInfo->lastNALUType == type) {
+            LOGW("------ProcessPacket more than one SPS in this GOP");
         }
-        memcpy(fullData + 5, packet->data, packet->size);
-        packet->data = fullData;
-        packet->size = packet->size + 5;
-        printCharsHex((char *) packet->data, 22, 16, "-------after------");
-    } else {
+        printCharsHex((char *) packet->data, 22, 18, "-------before------");
+        LOGD("ProcessPacket :pos=%ld,dts=%ld,pts=%ld,duration=%ld", packet->pos, packet->dts,
+             packet->pts, packet->duration);
+    }
+    //H264的打包类型有AVC1、H264 、X264 、x264
+    //The main difference between these media types is the presence of start codes in the bitstream.
+    // If the subtype is MEDIASUBTYPE_AVC1, the bitstream does not contain start codes.
+    if (type < 0) {//MEDIASUBTYPE_AVC1
+        if (isDebug) {
+            printCharsHex((char *) packet->data, 22, 16, "-------after------");
+        }
+    } else {//MEDIASUBTYPE_H264
         packet->flags = type;
     }
 
@@ -509,7 +500,7 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
     //加入录制队列
     if (recorderInfo != NULL) {
         RecordState recordState = recorderInfo->GetRecordState();
-        //还需要写入文件尾部信息
+        //还需要写入文件尾部信h264息
         if (recordState == RECORD_STOP ||
             recordState == RECORD_START ||
             recordState == RECORDING) {
@@ -1018,6 +1009,7 @@ void Player::SetPlayStateChangeListener(void (*listener)(PlayState, int)) {
         playerInfo->SetStateListener(listener);
     }
 }
+
 
 
 

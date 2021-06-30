@@ -71,8 +71,8 @@ public class AudioRecorder implements RecorderContract.Recorder {
             }
             return;
         }
-
         recorder = new MediaRecorder();
+        recorder.reset();
         recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
         recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
         recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
@@ -165,11 +165,10 @@ public class AudioRecorder implements RecorderContract.Recorder {
             stopRecordingTimer();
             try {
                 recorder.stop();
-                recorder.reset();
+                recorder.release();
             } catch (RuntimeException e) {
                 e.printStackTrace();
             }
-            recorder.release();
             if (recorderCallback != null) {
                 recorderCallback.onStopRecord(recordFile);
             }

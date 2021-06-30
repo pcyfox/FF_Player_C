@@ -39,7 +39,7 @@
 #define AV_LZO_OUTPUT_FULL     2
 /// a reference to previously decoded data was wrong
 #define AV_LZO_INVALID_BACKPTR 4
-/// a non-specific ERROR in the compressed bitstream
+/// a non-specific error in the compressed bitstream
 #define AV_LZO_ERROR           8
 /** @} */
 
@@ -52,7 +52,7 @@
  * @param outlen size of output buffer, number of bytes left are returned here
  * @param in input buffer
  * @param inlen size of input buffer, number of bytes left are returned here
- * @return 0 on success, otherwise a combination of the ERROR flags above
+ * @return 0 on success, otherwise a combination of the error flags above
  *
  * Make sure all buffers are appropriately padded, in must provide
  * AV_LZO_INPUT_PADDING, out must provide AV_LZO_OUTPUT_PADDING additional bytes.

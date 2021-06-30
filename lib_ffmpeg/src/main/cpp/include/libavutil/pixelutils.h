@@ -43,7 +43,7 @@ typedef int (*av_pixelutils_sad_fn)(const uint8_t *src1, ptrdiff_t stride1,
  *                alignment.
  * @param log_ctx context used for logging, can be NULL
  *
- * @return a pointer to the SAD function or NULL in case of ERROR (because of
+ * @return a pointer to the SAD function or NULL in case of error (because of
  *         invalid parameters)
  */
 av_pixelutils_sad_fn av_pixelutils_get_sad_fn(int w_bits, int h_bits,

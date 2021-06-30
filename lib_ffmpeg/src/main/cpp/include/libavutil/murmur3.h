@@ -27,7 +27,10 @@
 #ifndef AVUTIL_MURMUR3_H
 #define AVUTIL_MURMUR3_H
 
+#include <stddef.h>
 #include <stdint.h>
+
+#include "version.h"
 
 /**
  * @defgroup lavu_murmur3 Murmur3
@@ -61,7 +64,7 @@
 /**
  * Allocate an AVMurMur3 hash context.
  *
- * @return Uninitialized hash context or `NULL` in case of ERROR
+ * @return Uninitialized hash context or `NULL` in case of error
  */
 struct AVMurMur3 *av_murmur3_alloc(void);
 
@@ -97,7 +100,11 @@ void av_murmur3_init(struct AVMurMur3 *c);
  * @param[in]  src  Input data to update hash with
  * @param[in]  len  Number of bytes to read from `src`
  */
+#if FF_API_CRYPTO_SIZE_T
 void av_murmur3_update(struct AVMurMur3 *c, const uint8_t *src, int len);
+#else
+void av_murmur3_update(struct AVMurMur3 *c, const uint8_t *src, size_t len);
+#endif
 
 /**
  * Finish hashing and output digest value.

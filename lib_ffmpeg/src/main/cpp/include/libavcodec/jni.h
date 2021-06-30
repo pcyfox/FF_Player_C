@@ -27,7 +27,7 @@
  * Manually set a Java virtual machine which will be used to retrieve the JNI
  * environment. Once a Java VM is set it cannot be changed afterwards, meaning
  * you can call multiple times av_jni_set_java_vm with the same Java VM pointer
- * however it will ERROR out if you try to set a different Java VM.
+ * however it will error out if you try to set a different Java VM.
  *
  * @param vm Java virtual machine
  * @param log_ctx context used for logging, can be NULL

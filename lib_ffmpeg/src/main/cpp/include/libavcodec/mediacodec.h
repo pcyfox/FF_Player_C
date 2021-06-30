@@ -60,7 +60,7 @@ AVMediaCodecContext *av_mediacodec_alloc_context(void);
 int av_mediacodec_default_init(AVCodecContext *avctx, AVMediaCodecContext *ctx, void *surface);
 
 /**
- * This function must be called to free the MediaCodec context INITIALIZED with
+ * This function must be called to free the MediaCodec context initialized with
  * av_mediacodec_default_init().
  *
  * @param avctx codec context
@@ -84,5 +84,18 @@ typedef struct MediaCodecBuffer AVMediaCodecBuffer;
  * @return 0 on success, < 0 otherwise
  */
 int av_mediacodec_release_buffer(AVMediaCodecBuffer *buffer, int render);
+
+/**
+ * Release a MediaCodec buffer and render it at the given time to the surface
+ * that is associated with the decoder. The timestamp must be within one second
+ * of the current java/lang/System#nanoTime() (which is implemented using
+ * CLOCK_MONOTONIC on Android). See the Android MediaCodec documentation
+ * of android/media/MediaCodec#releaseOutputBuffer(int,long) for more details.
+ *
+ * @param buffer the buffer to render
+ * @param time timestamp in nanoseconds of when to render the buffer
+ * @return 0 on success, < 0 otherwise
+ */
+int av_mediacodec_render_buffer_at_time(AVMediaCodecBuffer *buffer, int64_t time);
 
 #endif /* AVCODEC_MEDIACODEC_H */

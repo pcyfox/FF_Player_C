@@ -35,7 +35,7 @@ typedef struct AVExpr AVExpr;
  * Note, this is significantly slower than av_expr_eval().
  *
  * @param res a pointer to a double where is put the result value of
- * the expression, or NAN in case of ERROR
+ * the expression, or NAN in case of error
  * @param s expression as a zero terminated string, for example "1+2^3+5*5+sin(2/3)"
  * @param const_names NULL terminated array of zero terminated strings of constant identifiers, for example {"PI", "E", 0}
  * @param const_values a zero terminated array of values for the identifiers from const_names
@@ -85,6 +85,30 @@ int av_expr_parse(AVExpr **expr, const char *s,
  * @return the value of the expression
  */
 double av_expr_eval(AVExpr *e, const double *const_values, void *opaque);
+
+/**
+ * Track the presence of variables and their number of occurrences in a parsed expression
+ *
+ * @param counter a zero-initialized array where the count of each variable will be stored
+ * @param size size of array
+ * @return 0 on success, a negative value indicates that no expression or array was passed
+ * or size was zero
+ */
+int av_expr_count_vars(AVExpr *e, unsigned *counter, int size);
+
+/**
+ * Track the presence of user provided functions and their number of occurrences
+ * in a parsed expression.
+ *
+ * @param counter a zero-initialized array where the count of each function will be stored
+ *                if you passed 5 functions with 2 arguments to av_expr_parse()
+ *                then for arg=2 this will use upto 5 entries.
+ * @param size size of array
+ * @param arg number of arguments the counted functions have
+ * @return 0 on success, a negative value indicates that no expression or array was passed
+ * or size was zero
+ */
+int av_expr_count_func(AVExpr *e, unsigned *counter, int size, int arg);
 
 /**
  * Free a parsed expression previously created with av_expr_parse().

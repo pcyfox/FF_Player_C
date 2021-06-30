@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.view.View
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.blankj.utilcode.constant.PermissionConstants
 import com.blankj.utilcode.util.PermissionUtils
@@ -24,8 +25,10 @@ class TestRecorderActivity : AppCompatActivity() {
 
     // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
     private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
+    //private var url = "http://ivi.bupt.edu.cn/hls/cctv1hd.m3u8I"
 
-    //private val url = "/storage/emulated/0/test.mp4"
+    //private var url = "/storage/emulated/0/test.mp4"
+    //private var url = "/storage/emulated/0/video.h264"
     //private val url = "/storage/emulated/0/test/20210602_15_23_31/1/out.mp4"
     private var recordCount = 0
     private var startTime = ""
@@ -44,9 +47,11 @@ class TestRecorderActivity : AppCompatActivity() {
             url = inputUrl
         }
         startTime = TimeUtils.getNowString(TimeUtils.getSafeDateFormat("yyyyMMdd_HH_mm_ss"))
+
     }
 
     private fun initView() {
+        et_url.setText(url)
         rv_record.run {
             setOnStateChangeListener { state ->
                 Log.d(TAG, "initView() called with: state = $state")
@@ -96,6 +101,7 @@ class TestRecorderActivity : AppCompatActivity() {
 
     fun onClick(v: View) {
         rv_record.run {
+            url = et_url.text.toString()
             when (v.id) {
                 R.id.btn_play -> {
                     recordCount++

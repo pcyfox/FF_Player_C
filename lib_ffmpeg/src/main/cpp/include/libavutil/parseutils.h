@@ -44,7 +44,7 @@
  * @param[in] log_offset log level offset which is applied to the log
  * level of log_ctx
  * @param[in] log_ctx parent logging context
- * @return >= 0 on success, a negative ERROR code otherwise
+ * @return >= 0 on success, a negative error code otherwise
  */
 int av_parse_ratio(AVRational *q, const char *str, int max,
                    int log_offset, void *log_ctx);
@@ -61,7 +61,7 @@ int av_parse_ratio(AVRational *q, const char *str, int max,
  * height value
  * @param[in] str the string to parse: it has to be a string in the format
  * width x height or a valid video size abbreviation.
- * @return >= 0 on success, a negative ERROR code otherwise
+ * @return >= 0 on success, a negative error code otherwise
  */
 int av_parse_video_size(int *width_ptr, int *height_ptr, const char *str);
 
@@ -72,7 +72,7 @@ int av_parse_video_size(int *width_ptr, int *height_ptr, const char *str);
  * frame rate
  * @param[in] str the string to parse: it has to be a string in the format
  * rate_num / rate_den, a float number or a valid video rate abbreviation
- * @return >= 0 on success, a negative ERROR code otherwise
+ * @return >= 0 on success, a negative error code otherwise
  */
 int av_parse_video_rate(AVRational *rate, const char *str);
 

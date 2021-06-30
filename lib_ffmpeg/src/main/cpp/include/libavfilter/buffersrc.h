@@ -106,7 +106,7 @@ typedef struct AVBufferSrcParameters {
     AVBufferRef *hw_frames_ctx;
 
     /**
-     * Audio only, the audio sampling rate in samples per secon.
+     * Audio only, the audio sampling rate in samples per second.
      */
     int sample_rate;
 
@@ -145,7 +145,7 @@ int av_buffersrc_parameters_set(AVFilterContext *ctx, AVBufferSrcParameters *par
  * function will make a new reference to it. Otherwise the frame data will be
  * copied.
  *
- * @return 0 on success, a negative AVERROR on ERROR
+ * @return 0 on success, a negative AVERROR on error
  *
  * This function is equivalent to av_buffersrc_add_frame_flags() with the
  * AV_BUFFERSRC_FLAG_KEEP_REF flag.
@@ -159,10 +159,10 @@ int av_buffersrc_write_frame(AVFilterContext *ctx, const AVFrame *frame);
  * @param ctx   an instance of the buffersrc filter
  * @param frame frame to be added. If the frame is reference counted, this
  * function will take ownership of the reference(s) and reset the frame.
- * Otherwise the frame data will be copied. If this function returns an ERROR,
+ * Otherwise the frame data will be copied. If this function returns an error,
  * the input frame is not touched.
  *
- * @return 0 on success, a negative AVERROR on ERROR.
+ * @return 0 on success, a negative AVERROR on error.
  *
  * @note the difference between this function and av_buffersrc_write_frame() is
  * that av_buffersrc_write_frame() creates a new reference to the input frame,
@@ -181,7 +181,7 @@ int av_buffersrc_add_frame(AVFilterContext *ctx, AVFrame *frame);
  * ownership of the reference(s) and reset the frame. This can be controlled
  * using the flags.
  *
- * If this function returns an ERROR, the input frame is not touched.
+ * If this function returns an error, the input frame is not touched.
  *
  * @param buffer_src  pointer to a buffer source context
  * @param frame       a frame, or NULL to mark EOF
@@ -193,6 +193,14 @@ av_warn_unused_result
 int av_buffersrc_add_frame_flags(AVFilterContext *buffer_src,
                                  AVFrame *frame, int flags);
 
+/**
+ * Close the buffer source after EOF.
+ *
+ * This is similar to passing NULL to av_buffersrc_add_frame_flags()
+ * except it takes the timestamp of the EOF, i.e. the timestamp of the end
+ * of the last frame.
+ */
+int av_buffersrc_close(AVFilterContext *ctx, int64_t pts, unsigned flags);
 
 /**
  * @}
