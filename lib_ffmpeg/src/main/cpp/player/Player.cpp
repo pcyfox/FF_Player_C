@@ -34,42 +34,26 @@ static bool isDebug = IS_DEBUG;
 #define head_I  0x65
 #define head_P  0x61
 
+
 //H.264:AVCC->AnnexB
-static AVBSFContext *H264_mp4toannexb_filter(AVPacket *pkt, AVCodecParameters *codecpar) {
+static int H264_mp4toannexb_filter(AVBSFContext *bsf_ctx, AVPacket *pkt) {
 // 1 获取相应的比特流过滤器
     // FLV/MP4/MKV等结构中，h264需要h264_mp4toannexb处理。添加SPS/PPS等信息。
     // FLV封装时，可以把多个NALU放在一个VIDEO TAG中,结构为4B NALU长度+NALU1+4B NALU长度+NALU2+...,
     // 需要做的处理把4B长度换成00000001或者000001
     // annexb模式: startcode 00000001 AVCC模式: 无startcode (mp4 flv mkv)
-    int ret = -1;
-    static AVBSFContext *bsf_ctx = NULL;
-    if (bsf_ctx == NULL) {
-        const AVBitStreamFilter *bsfilter = av_bsf_get_by_name("h264_mp4toannexb");
-        if (!bsfilter) {
-            return NULL;
-        }
-
-        // 2 初始化过滤器上下文
-        ret = av_bsf_alloc(bsfilter, &bsf_ctx); //AVBSFContext;
-        if (ret != 0) {
-            return NULL;
-        }
-        // 3 添加解码器属性
-        avcodec_parameters_copy(bsf_ctx->par_in, codecpar);
-        ret = av_bsf_init(bsf_ctx);
-        if (ret != 0) {
-            av_bsf_free(&bsf_ctx);
-        }
-    }
     // 4 发送和接受
     // bitstreamfilter内部去维护内存空间
     if (av_bsf_send_packet(bsf_ctx, pkt) != 0) {
+        return PLAYER_RESULT_ERROR;
         LOGE("av_bsf_send_packet fail");
-        return NULL;
     }
-    while (av_bsf_receive_packet(bsf_ctx, pkt) == 0) {
-    }
-    return bsf_ctx;
+    int ret = -1;
+    while ((ret = av_bsf_receive_packet(bsf_ctx, pkt)) != 0) {
+        LOGD("av_bsf_receive_packet,ret=%d", ret);
+    };
+    LOGD("av_bsf_receive_packet,ret=%d", ret);
+    return PLAYER_RESULT_OK;
 }
 
 static int GetStartCodeLen(const unsigned char *pkt) {
@@ -153,6 +137,10 @@ int createVideoCodec(AMediaCodec **mMediaCodec, int width, int height, uint8_t *
     }
     return PLAYER_RESULT_OK;
 }
+
+
+
+
 
 
 void *OpenResource(void *info) {
@@ -525,8 +513,18 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
     //The main difference between these media types is the presence of start codes in the bitstream.
     // If the subtype is MEDIASUBTYPE_AVC1, the bitstream does not contain start codes.
     if (type < 0) {//MEDIASUBTYPE_AVC1
-        playerInfo->bsf_ctx = H264_mp4toannexb_filter(packet,
-                                                      playerInfo->inputVideoStream->codecpar);
+        if (playerInfo->bsf_ctx == NULL) {
+            const AVBitStreamFilter *bsfilter = av_bsf_get_by_name("h264_mp4toannexb");
+            if (!bsfilter) {
+                return PLAYER_RESULT_ERROR;
+            }
+            // 2 初始化过滤器上下文
+            av_bsf_alloc(bsfilter, &playerInfo->bsf_ctx); //AVBSFContext;
+            // 3 添加解码器属性
+            avcodec_parameters_copy(playerInfo->bsf_ctx->par_in, codecpar);
+            av_bsf_init(playerInfo->bsf_ctx);
+        }
+        H264_mp4toannexb_filter(playerInfo->bsf_ctx, packet);
         if (isDebug) {
             printCharsHex((char *) packet->data, 22, 16, "-------after------");
         }
@@ -534,7 +532,8 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
         packet->flags = type;
     }
 
-    playerInfo->lastNALUType = packet->flags;
+    playerInfo->
+            lastNALUType = packet->flags;
 
     //加入录制队列
     if (recorderInfo != NULL) {
@@ -546,17 +545,23 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
             // Create a new packet that references the same data as src
             AVPacket *copyPkt = av_packet_clone(packet);
             if (copyPkt != NULL) {
-                recorderInfo->packetQueue.putAvPacket(copyPkt);
+                recorderInfo->packetQueue.
+                        putAvPacket(copyPkt);
             } else {
                 LOGE("ProcessPacket clone packet fail!");
             }
         }
     }
 
-    //加入解码队列
-    if (playerInfo->GetPlayState() == STARTED &&
+//加入解码队列
+    if (playerInfo->
+
+            GetPlayState()
+
+        == STARTED &&
         !playerInfo->isOnlyRecordMedia) {
-        playerInfo->packetQueue.putAvPacket(packet);
+        playerInfo->packetQueue.
+                putAvPacket(packet);
     }
     return PLAYER_RESULT_OK;
 }
@@ -625,9 +630,8 @@ void *DeMux(void *param) {
     PlayState state;
 
     float delay = 0;
-
     if (isLocalFile(playerInfo->resource)) {
-        float fps = playerInfo->inputVideoStream->avg_frame_rate.num /
+        float fps = (1.0f * playerInfo->inputVideoStream->avg_frame_rate.num) /
                     playerInfo->inputVideoStream->avg_frame_rate.den;
         delay = 1.0f / fps * 1000000;
         LOGI("--------------------Start DeMux----------------------FPS:%f,span=%d", fps,
@@ -657,6 +661,9 @@ void *DeMux(void *param) {
         if (ret == 0 && i_pkt->buf != NULL) {
             if (i_pkt->stream_index == video_stream_index) {
                 ProcessPacket(i_pkt, i_av_codec_parameters, playerInfo, recorderInfo);
+                if (delay > 0) {
+                    av_usleep((unsigned int) delay);
+                }
             } else {
                 av_packet_free(&i_pkt);
             }
@@ -667,9 +674,6 @@ void *DeMux(void *param) {
         } else {
             av_packet_free(&i_pkt);
             LOGE("DeMux:ERROR!,ret=%d", ret);
-        }
-        if (delay > 0) {
-            av_usleep((unsigned int) delay);
         }
     }
 

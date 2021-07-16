@@ -37,7 +37,7 @@ class RecorderView : RelativeLayout {
     private val TAG = "RecorderView"
     private val ffPlayer: FFPlayer = FFPlayer(hashCode())
     private val audioRecorder = AudioRecorder.getInstance()
-    private var avRecorderCallback: AVRecorderCallback? = null
+    var avRecorderCallback: AVRecorderCallback? = null
     override fun onFinishInflate() {
         super.onFinishInflate()
         addView(sv)
@@ -164,9 +164,11 @@ class RecorderView : RelativeLayout {
         return ffPlayer.stop() > 0
     }
 
-    fun release(){
-       ffPlayer.release()
+    fun release() {
+        stop()
+        ffPlayer.release()
     }
+
     fun pause(): Boolean {
         pauseRecord()
         return ffPlayer.pause() > 0
