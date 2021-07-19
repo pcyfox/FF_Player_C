@@ -918,12 +918,14 @@ int Player::Stop() {
         return PLAYER_RESULT_ERROR;
     }
     playerInfo->SetPlayState(STOPPED, false);
+
     if (recorderInfo != NULL) {
         recorderInfo->SetRecordState(RECORD_STOP);
     }
     LOGI("Stop():start to stop recorde");
     //停止录制
     StopRecord();
+    playerInfo->SetPlayState(STOPPED, true);
     LOGD("--------Stop Over------");
     return PLAYER_RESULT_OK;
 }

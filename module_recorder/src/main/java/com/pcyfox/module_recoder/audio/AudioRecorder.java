@@ -165,12 +165,12 @@ public class AudioRecorder implements RecorderContract.Recorder {
             stopRecordingTimer();
             try {
                 recorder.stop();
+                if (recorderCallback != null) {
+                    recorderCallback.onStopRecord(recordFile);
+                }
                 recorder.release();
             } catch (RuntimeException e) {
                 e.printStackTrace();
-            }
-            if (recorderCallback != null) {
-                recorderCallback.onStopRecord(recordFile);
             }
             recordFile = null;
             isPrepared = false;

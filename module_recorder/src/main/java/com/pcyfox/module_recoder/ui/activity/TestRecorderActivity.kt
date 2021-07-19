@@ -12,6 +12,7 @@ import com.blankj.utilcode.util.TimeUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.pcyfox.lib_ffmpeg.PlayState
 import com.pcyfox.module_recoder.R
+import com.pcyfox.module_recoder.ui.view.AVRecorderCallback
 import kotlinx.android.synthetic.main.recorder_activity_test.*
 import java.io.File
 
@@ -26,6 +27,7 @@ class TestRecorderActivity : AppCompatActivity() {
     // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
     //private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
     private var url = "rtmp://58.200.131.2:1935/livetv/gdtv"
+
     //private var url = "/storage/emulated/0/test.mp4"
     //private var url = "/storage/emulated/0/video.h264"
     //private val url = "/storage/emulated/0/test/20210602_15_23_31/1/out.mp4"
@@ -52,6 +54,26 @@ class TestRecorderActivity : AppCompatActivity() {
     private fun initView() {
         et_url.setText(url)
         rv_record.run {
+            avRecorderCallback = object : AVRecorderCallback {
+                override fun onPrepareRecord() {
+                }
+
+                override fun onStartRecord(audio: File?, video: File?) {
+                }
+
+                override fun onPauseRecord() {
+                }
+
+                override fun onRecordProgress(mills: Long, amp: Int) {
+                    Log.d(TAG, "onRecordProgress() called with: mills = $mills, amp = $amp")
+                }
+
+                override fun onStopRecord(audio: File?, video: File?) {
+                }
+
+                override fun onError(throwable: Exception?) {
+                }
+            }
             setOnStateChangeListener { state ->
                 Log.d(TAG, "initView() called with: state = $state")
                 when (state) {

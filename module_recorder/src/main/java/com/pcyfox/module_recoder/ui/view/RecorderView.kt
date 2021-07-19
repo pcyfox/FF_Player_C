@@ -38,37 +38,12 @@ class RecorderView : RelativeLayout {
     private val ffPlayer: FFPlayer = FFPlayer(hashCode())
     private val audioRecorder = AudioRecorder.getInstance()
     var avRecorderCallback: AVRecorderCallback? = null
+
     override fun onFinishInflate() {
         super.onFinishInflate()
         addView(sv)
         sv.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
         sv.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-
-        audioRecorder.setRecorderCallback(object : RecorderContract.RecorderCallback {
-            override fun onPrepareRecord() {
-                avRecorderCallback?.onPauseRecord()
-            }
-
-            override fun onStartRecord(output: File?) {
-                avRecorderCallback?.onStartRecord(output, File(videoPath))
-            }
-
-            override fun onPauseRecord() {
-                avRecorderCallback?.onPauseRecord()
-            }
-
-            override fun onRecordProgress(mills: Long, amp: Int) {
-                avRecorderCallback?.onRecordProgress(mills, amp)
-            }
-
-            override fun onStopRecord(output: File?) {
-                avRecorderCallback?.onStopRecord(output, File(videoPath))
-            }
-
-            override fun onError(throwable: Exception?) {
-                avRecorderCallback?.onError(throwable)
-            }
-        })
     }
 
 
@@ -102,6 +77,32 @@ class RecorderView : RelativeLayout {
             Log.e(TAG, "startRecord() called fail,state=${ffPlayer.playState}")
             return false
         }
+
+        audioRecorder.setRecorderCallback(object : RecorderContract.RecorderCallback {
+            override fun onPrepareRecord() {
+                avRecorderCallback?.onPauseRecord()
+            }
+
+            override fun onStartRecord(output: File?) {
+                avRecorderCallback?.onStartRecord(output, File(videoPath))
+            }
+
+            override fun onPauseRecord() {
+                avRecorderCallback?.onPauseRecord()
+            }
+
+            override fun onRecordProgress(mills: Long, amp: Int) {
+                avRecorderCallback?.onRecordProgress(mills, amp)
+            }
+
+            override fun onStopRecord(output: File?) {
+                avRecorderCallback?.onStopRecord(output, File(videoPath))
+            }
+
+            override fun onError(throwable: Exception?) {
+                avRecorderCallback?.onError(throwable)
+            }
+        })
         audioRecorder.startRecording()
         return ffPlayer.startRecord() > 0
     }
