@@ -38,7 +38,7 @@ class RecorderView : RelativeLayout {
     private val ffPlayer: FFPlayer = FFPlayer(hashCode())
     private val audioRecorder = AudioRecorder.getInstance()
     var avRecorderCallback: AVRecorderCallback? = null
-
+    var listener: OnPlayStateChangeListener? = null
     override fun onFinishInflate() {
         super.onFinishInflate()
         addView(sv)
@@ -48,8 +48,11 @@ class RecorderView : RelativeLayout {
 
 
     fun setOnStateChangeListener(listener: OnPlayStateChangeListener) {
+        this.listener = listener
         ffPlayer.setOnPlayStateChangeListener(listener)
     }
+
+    fun getPlayState() = ffPlayer.playState
 
     fun prepareRecorder(videoPath: String?, audioPath: String? = "") {
         Log.d(TAG, "prepareRecorder() called with: videoPath = $videoPath, audioPath = $audioPath")
