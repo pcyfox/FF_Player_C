@@ -29,3 +29,8 @@ RecordState RecorderInfo::GetRecordState() {
 void RecorderInfo::SetStateListener(void (*l)(RecordState, int)) {
     listener = l;
 }
+
+RecorderInfo::RecorderInfo() {
+    packetQueue.tag="RecorderInfo";
+
+}

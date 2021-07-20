@@ -28,6 +28,7 @@ public:
     pthread_mutex_t mutexPacket;
     pthread_cond_t condPacket;
     volatile bool quit = false;
+    char *tag = "";
 
 public:
     AsyncQueue();
@@ -96,7 +97,7 @@ int AsyncQueue<_TYPE>::putAvPacket(_TYPE *packet) {
     if (quit) { return PLAYER_RESULT_ERROR; }
     pthread_mutex_lock(&mutexPacket);
     if (queuePacket.size() > 260) {
-        LOGE("AsyncQueue size is to large!");
+        LOGE("%s,AsyncQueue size is to large!", tag);
         while (!queuePacket.empty()) {
             AVPacket *avPacket = queuePacket.front();
             queuePacket.pop();
