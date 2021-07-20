@@ -8,6 +8,7 @@
 RecorderInfo::~RecorderInfo() {
     LOGD("start to delete RecorderInfo ");
     if (o_fmt_ctx != NULL) {
+        packetQueue.clearAVPacket();
         avformat_free_context(o_fmt_ctx);
         o_fmt_ctx = NULL;
     }

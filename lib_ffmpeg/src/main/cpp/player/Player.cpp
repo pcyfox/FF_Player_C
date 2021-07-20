@@ -25,7 +25,7 @@ extern "C" {
 //clang -g -o pvlib  ParseVideo.c `pkg-config --libs libavutil libavformat`
 
 static bool isDebug = IS_DEBUG;
-
+static bool isNeedRelease = false;
 #define head_1  0x00
 #define head_2  0x00
 #define head_3  0x00
@@ -76,6 +76,17 @@ AVStream *findVideoStream(AVFormatContext *i_fmt_ctx) {
         return i_fmt_ctx->streams[index];
     }
 }
+void StartRelease(PlayerInfo *playerInfo, RecorderInfo *recorderInfo) {
+    if (playerInfo) {
+        delete playerInfo;
+        playerInfo = NULL;
+    }
+    if (recorderInfo) {
+        delete recorderInfo;
+        recorderInfo = NULL;
+    }
+}
+
 
 int GetNALUType(AVPacket *packet) {
     int type = -1;
@@ -137,10 +148,6 @@ int createVideoCodec(AMediaCodec **mMediaCodec, int width, int height, uint8_t *
     }
     return PLAYER_RESULT_OK;
 }
-
-
-
-
 
 
 void *OpenResource(void *info) {
@@ -406,6 +413,11 @@ void *RecordPkt(void *info) {
     }
 
     LOGI("----------------- record work stop,start to delete recordInfo--------------");
+    recorderInfo->packetQueue.clearAVPacket();
+
+    if (isNeedRelease) {
+        StartRelease(NULL, recorderInfo);
+    }
     return (void *) PLAYER_RESULT_OK;
 }
 
@@ -554,15 +566,8 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
     }
 
 //加入解码队列
-    if (playerInfo->
-
-            GetPlayState()
-
-        == STARTED &&
-        !playerInfo->isOnlyRecordMedia) {
-        playerInfo->packetQueue.
-                putAvPacket(packet);
-    }
+    if (playerInfo->GetPlayState() == STARTED &&
+        !playerInfo->isOnlyRecordMedia) { playerInfo->packetQueue.putAvPacket(packet); }
     return PLAYER_RESULT_OK;
 }
 
@@ -598,7 +603,6 @@ static bool isLocalFile(char *url) {
     LOGD("isLocalFile:url=%s,isFile=%d", url, isFile);
     return isFile;
 }
-
 
 void *DeMux(void *param) {
     auto *player = (Player *) param;
@@ -686,6 +690,10 @@ void *DeMux(void *param) {
 
     playerInfo->SetPlayState(STOPPED, true);
     LOGI("-----------DeMux stop over! ----------------");
+    playerInfo->packetQueue.clearAVPacket();
+    if (isNeedRelease) {
+        StartRelease(playerInfo, NULL);
+    }
     static int num = 1;
     return NULL;
 }
@@ -722,6 +730,7 @@ void Player::StartOpenResourceThread(char *res) {
 int Player::InitPlayerInfo() {
     LOGD("InitPlayerInfo() called");
     if (!playerInfo) {
+        isNeedRelease=false;
         playerInfo = new PlayerInfo;
         playerInfo->id = playerId;
     } else {
@@ -908,25 +917,22 @@ int Player::Resume() {
 
 
 int Player::Stop() {
-    LOGI("--------Stop()  called-------");
     if (playerInfo == NULL) {
-        LOGE("playerInfo is NULL");
+        LOGE("Stop() called with playerInfo is NULL");
         return PLAYER_RESULT_ERROR;
     }
-    if (playerInfo->GetPlayState() != STARTED && playerInfo->GetPlayState() != PAUSE) {
+    PlayState state = playerInfo->GetPlayState();
+    LOGI("--------Stop()  called,state=%d-------", state);
+    if (state == PREPARED || state == STARTED || state == PAUSE) {
+        playerInfo->SetPlayState(STOPPED, false);
+        LOGI("Stop():start to stop recorde");
+        //停止录制
+        StopRecord();
+        playerInfo->SetPlayState(STOPPED, true);
+    } else {
         LOGE("player is not start!");
         return PLAYER_RESULT_ERROR;
     }
-    playerInfo->SetPlayState(STOPPED, false);
-
-    if (recorderInfo != NULL) {
-        recorderInfo->SetRecordState(RECORD_STOP);
-    }
-    LOGI("Stop():start to stop recorde");
-    //停止录制
-    StopRecord();
-    playerInfo->SetPlayState(STOPPED, true);
-    LOGD("--------Stop Over------");
     return PLAYER_RESULT_OK;
 }
 
@@ -983,7 +989,7 @@ int Player::StartRecord() {
 int Player::StopRecord() {
     LOGI("------StopRecord() called------");
     if (recorderInfo != NULL &&
-        recorderInfo->GetRecordState() >= RECORD_START) {
+        recorderInfo->GetRecordState() >= RECORD_PREPARED) {
         recorderInfo->SetRecordState(RECORD_STOP);
         return PLAYER_RESULT_OK;
     } else {
@@ -1015,17 +1021,11 @@ int Player::ResumeRecord() {
 int Player::Release() {
     LOGD("Release() called!");
     Stop();
-    if (playerInfo) {
-        delete playerInfo;
-        playerInfo = NULL;
-    }
-    if (recorderInfo) {
-        delete recorderInfo;
-        recorderInfo = NULL;
-    }
+    isNeedRelease = true;
     LOGD("Release() over!");
     return PLAYER_RESULT_OK;
 }
+
 
 void Player::SetDebug(bool debug) {
     LOGD("SetDebug() called with %d", debug);

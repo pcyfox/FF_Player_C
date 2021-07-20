@@ -25,8 +25,8 @@ class TestRecorderActivity : AppCompatActivity() {
 
 
     // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
-    //private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
-    private var url = "rtmp://58.200.131.2:1935/livetv/gdtv"
+    private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
+    //private var url = "rtmp://58.200.131.2:1935/livetv/gdtv"
 
     //private var url = "/storage/emulated/0/test.mp4"
     //private var url = "/storage/emulated/0/video.h264"
@@ -53,6 +53,9 @@ class TestRecorderActivity : AppCompatActivity() {
 
     private fun initView() {
         et_url.setText(url)
+        btn_play.postDelayed({
+            btn_play.performClick()
+        }, 200)
         rv_record.run {
             avRecorderCallback = object : AVRecorderCallback {
                 override fun onPrepareRecord() {
@@ -188,6 +191,12 @@ class TestRecorderActivity : AppCompatActivity() {
                 Log.e(TAG, "mux() called fail!")
             }
         }.start()
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        rv_record.release()
     }
 
 }

@@ -318,7 +318,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_release(JNIEnv *env, jobject thiz, jint id)
         return;
     }
     removePlayer(id);
-    delete player;
+    player->Release();
 }
 extern "C"
 JNIEXPORT jint JNICALL
