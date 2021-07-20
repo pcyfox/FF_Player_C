@@ -4,6 +4,7 @@
 #pragma once
 #ifndef TCTS_EDU_APP_RECODER_STATELISTENER_H
 #define TCTS_EDU_APP_RECODER_STATELISTENER_H
+
 #include <string>
 
 enum PlayState {
@@ -26,10 +27,9 @@ enum RecordState {
     RECORD_START,
     RECORDING,
     RECORD_PAUSE,
-    RECORD_STOP
+    RECORD_STOP,
+    RECORDER_RELEASE,
 };
-
-
 
 
 class StateListener {
@@ -37,7 +37,7 @@ class StateListener {
 public:
     static void onStateChange(PlayState state);
 
-    static std::string PlayerStateToString(int state) ;
+    static std::string PlayerStateToString(int state);
 
 
 };

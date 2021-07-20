@@ -169,7 +169,9 @@ class RecorderView : RelativeLayout {
     }
 
     fun release() {
-        stop()
+        if (getPlayState() != PlayState.STOPPED) {
+            Log.w(TAG, "release() called not in stopped state!maybe cause crash")
+        }
         ffPlayer.release()
     }
 

@@ -83,6 +83,11 @@ class TestRecorderActivity : AppCompatActivity() {
                     PlayState.PREPARED -> {
                         play()
                     }
+                    PlayState.STOPPED -> {
+                        if (isFinishing || isDestroyed) {
+                            rv_record.release()
+                        }
+                    }
                     else -> {
                     }
                 }
@@ -179,6 +184,7 @@ class TestRecorderActivity : AppCompatActivity() {
 
     }
 
+
     private fun mux() {
         Thread {
             Log.d(TAG, "mux() called start")
@@ -193,10 +199,13 @@ class TestRecorderActivity : AppCompatActivity() {
         }.start()
     }
 
+    override fun onStop() {
+        super.onStop()
+    }
 
     override fun onDestroy() {
         super.onDestroy()
-        rv_record.release()
+        rv_record.stop()
     }
 
 }
