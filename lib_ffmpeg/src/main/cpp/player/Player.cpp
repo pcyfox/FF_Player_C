@@ -380,6 +380,7 @@ void *RecordPkt(void *info) {
             break;
         }
         if (recordState == RECORD_PAUSE) {
+            recorderInfo->packetQueue.clearAVPacket();
             continue;
         }
         if (recordState == RECORD_STOP) {
@@ -431,6 +432,7 @@ void *Decode(void *info) {
     while (true) {
         PlayState state = playerInfo->GetPlayState();
         if (state == PAUSE) {
+            playerInfo->packetQueue.clearAVPacket();
             continue;
         }
         if (state != STARTED || state == ERROR) {
@@ -956,13 +958,12 @@ int Player::PrepareRecorder(char *outPath) {
 }
 
 int Player::StartRecord() {
-    LOGI("------StartRecord() called----------");
     if (!playerInfo || !recorderInfo) {
         LOGE("------StartRecord() player init or recorder not prepare");
         return PLAYER_RESULT_ERROR;
     }
     RecordState state = recorderInfo->GetRecordState();
-
+    LOGI("------StartRecord() called state=%d----------", state);
     if (state == RECORDING || state == RECORDER_RELEASE) {
         LOGE("------StartRecord() recorder is recording!");
         return PLAYER_RESULT_ERROR;
@@ -1001,10 +1002,11 @@ int Player::StopRecord() {
 
 int Player::PauseRecord() {
     LOGI("------PauseRecord() called------");
-    if (recorderInfo) {
+    if (recorderInfo && recorderInfo->GetRecordState() != RECORD_START) {
         recorderInfo->SetRecordState(RECORD_PAUSE);
         return PLAYER_RESULT_OK;
     } else {
+        LOGE("PauseRecord() called fail in error state");
         return PLAYER_RESULT_ERROR;
     }
 }

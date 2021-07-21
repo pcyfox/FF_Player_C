@@ -176,7 +176,6 @@ class RecorderView : RelativeLayout {
     }
 
     fun pause(): Boolean {
-        pauseRecord()
         return ffPlayer.pause() > 0
     }
 

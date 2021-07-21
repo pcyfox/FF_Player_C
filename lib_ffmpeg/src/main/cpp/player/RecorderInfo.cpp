@@ -16,6 +16,7 @@ RecorderInfo::~RecorderInfo() {
 }
 
 void RecorderInfo::SetRecordState(RecordState state) {
+    LOGI("SetRecordState state=%d", state);
     recordState = state;
     if (listener != NULL) {
         listener(recordState, id);
@@ -31,6 +32,6 @@ void RecorderInfo::SetStateListener(void (*l)(RecordState, int)) {
 }
 
 RecorderInfo::RecorderInfo() {
-    packetQueue.tag="RecorderInfo";
+    packetQueue.tag = "RecorderInfo";
 
 }
