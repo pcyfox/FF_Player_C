@@ -179,10 +179,14 @@ public class FFPlayer {
     }
 
     public int resume() {
-        if (surfaceView!= null && w * h > 0) {
+        return resume(id);
+    }
+
+
+    public void resumeWindow() {
+        if (surfaceView != null && w * h > 0) {
             onSurfaceChange(surfaceView.getHolder().getSurface(), w, h, id);
         }
-        return resume(id);
     }
 
     public static int mux(String audioFile, String videoFile, String outFile) {

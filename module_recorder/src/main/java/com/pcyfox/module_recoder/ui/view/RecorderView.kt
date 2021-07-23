@@ -31,6 +31,7 @@ class RecorderView : RelativeLayout {
         defStyleRes: Int
     ) : super(context, attrs, defStyleAttr, defStyleRes)
 
+    private var isVisibleChanged = false
     private val sv = SurfaceView(context)
     private var videoPath = ""
     private var audioPath = ""
@@ -180,6 +181,10 @@ class RecorderView : RelativeLayout {
     }
 
     fun resume(): Boolean {
+        if (isVisibleChanged) {
+            ffPlayer.resumeWindow()
+            isVisibleChanged = false
+        }
         return ffPlayer.resume() > 0
     }
 
@@ -205,6 +210,12 @@ class RecorderView : RelativeLayout {
             Log.e(TAG, "mux fail,access file error!")
             false
         }
+    }
+
+    override fun onVisibilityAggregated(isVisible: Boolean) {
+        Log.d(TAG, "onVisibilityAggregated() called with: isVisible = $isVisible")
+        isVisibleChanged = true
+        super.onVisibilityAggregated(isVisible)
     }
 
 

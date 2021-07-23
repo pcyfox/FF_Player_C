@@ -149,8 +149,10 @@ class TestRecorderActivity : AppCompatActivity() {
                 }
                 R.id.btn_pause -> {
                     pause()
+                    visibility = View.INVISIBLE
                 }
                 R.id.btn_resume -> {
+                    visibility = View.VISIBLE
                     resume()
                 }
 
