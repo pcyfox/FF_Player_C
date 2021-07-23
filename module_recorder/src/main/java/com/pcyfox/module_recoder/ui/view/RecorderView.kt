@@ -182,12 +182,13 @@ class RecorderView : RelativeLayout {
 
     fun resume(): Boolean {
         if (isVisibleChanged) {
-            ffPlayer.resumeWindow()
             isVisibleChanged = false
         }
         return ffPlayer.resume() > 0
     }
-
+    fun resumeWindow(){
+        ffPlayer.resumeWindow()
+    }
 
     @WorkerThread
     fun mux(videoPath: String, audioPath: String, outPath: String): Boolean {

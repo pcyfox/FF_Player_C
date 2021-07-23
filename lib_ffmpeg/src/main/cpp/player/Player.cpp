@@ -549,8 +549,7 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
         packet->flags = type;
     }
 
-    playerInfo->
-            lastNALUType = packet->flags;
+    playerInfo->lastNALUType = packet->flags;
 
     //加入录制队列
     if (recorderInfo != NULL) {
@@ -570,7 +569,7 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
         }
     }
 
-//加入解码队列
+    //加入解码队列
     if (playerInfo->GetPlayState() == STARTED &&
         !playerInfo->isOnlyRecordMedia) { playerInfo->packetQueue.putAvPacket(packet); }
     return PLAYER_RESULT_OK;
@@ -654,9 +653,11 @@ void *DeMux(void *param) {
             break;
         }
 
-        if (state == PAUSE && (recorderInfo != NULL) &&
-            recorderInfo->GetRecordState() == RECORD_PAUSE) {
-            continue;
+        if (state == PAUSE) {
+            playerInfo->packetQueue.clearAVPacket();
+            if ((recorderInfo != NULL) && recorderInfo->GetRecordState() == RECORD_PAUSE) {
+                continue;
+            }
         }
 
         AVPacket *i_pkt = av_packet_alloc();
@@ -686,16 +687,28 @@ void *DeMux(void *param) {
 
     if (playerInfo->inputContext != NULL) {
         LOGI("-----------DeMux close ----------------");
-        avformat_close_input(&playerInfo->inputContext);
-        playerInfo->inputContext = NULL;
+        avformat_close_input(&playerInfo
+                ->inputContext);
+        playerInfo->
+                inputContext = NULL;
         LOGI("close input context!");
     }
 
-    playerInfo->SetPlayState(STOPPED, true);
+    playerInfo->
+            SetPlayState(STOPPED,
+                         true);
     LOGI("-----------DeMux stop over! ----------------");
-    playerInfo->packetQueue.clearAVPacket();
-    if (playerInfo->GetPlayState() == RELEASE) {
-        StartRelease(playerInfo, NULL);
+    playerInfo->packetQueue.
+
+            clearAVPacket();
+
+    if (playerInfo->
+
+            GetPlayState()
+
+        == RELEASE) {
+        StartRelease(playerInfo,
+                     NULL);
     }
     static int num = 1;
     return NULL;
