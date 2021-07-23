@@ -664,9 +664,7 @@ void *DeMux(void *param) {
             LOGE("DeMux fail,because alloc av packet fail!");
             return NULL;
         }
-
         int ret = av_read_frame(playerInfo->inputContext, i_pkt);
-
         if (ret == 0 && i_pkt->buf != NULL) {
             if (i_pkt->stream_index == video_stream_index) {
                 ProcessPacket(i_pkt, i_av_codec_parameters, playerInfo, recorderInfo);
@@ -807,7 +805,7 @@ int Player::OnWindowDestroy(ANativeWindow *window) {
     return PLAYER_RESULT_OK;
 }
 
-int Player::OnWindowChange(ANativeWindow *window, int w, int h) {
+int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
     LOGI("--------OnWindowChange() called with w=%d,h=%d", w, h);
     if (playerInfo && playerInfo->GetPlayState() == PAUSE) {
         playerInfo->window = window;

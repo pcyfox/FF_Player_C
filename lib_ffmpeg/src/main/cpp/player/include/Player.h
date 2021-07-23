@@ -46,7 +46,7 @@ public:
 
     int Configure(ANativeWindow *window, int w, int h, bool isOnly);
 
-    int OnWindowChange(ANativeWindow *window, int w, int h);
+    int OnWindowChange(ANativeWindow *window, int w, int h) const;
 
     int OnWindowDestroy(ANativeWindow *window);
 

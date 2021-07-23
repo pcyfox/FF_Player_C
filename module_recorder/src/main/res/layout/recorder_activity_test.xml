@@ -35,14 +35,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <EditText
-                android:padding="6dp"
-                android:background="@android:color/background_light"
-                android:textColor="@android:color/holo_blue_light"
-                android:id="@+id/et_url"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="url" />
 
             <Button
                 android:id="@+id/btn_start"
@@ -135,6 +127,15 @@
                 android:text="mux AV"
                 android:textSize="16dp" />
 
+            <EditText
+                android:layout_gravity="end"
+                android:padding="6dp"
+                android:background="@android:color/background_light"
+                android:textColor="@android:color/holo_blue_light"
+                android:id="@+id/et_url"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="url" />
         </LinearLayout>
 
     </ScrollView>

@@ -19,6 +19,10 @@ public class FFPlayer {
         System.loadLibrary("ff_player");
     }
 
+    private SurfaceView surfaceView;
+    private int w = 0;
+    private int h = 0;
+
     private PlayState playState;
     private RecordState recodeState;
 
@@ -103,6 +107,9 @@ public class FFPlayer {
         if (isOnlyRecord) {
             return onlyRecord();
         }
+        this.surfaceView = surfaceView;
+        this.w = w;
+        this.h = h;
 
         if (surfaceView == null || w * h == 0) {
             Log.e(TAG, "config() called with: surfaceView = [" + surfaceView + "], w = [" + w + "], h = [" + h + "], isOnlyRecord = [" + isOnlyRecord + "]");
@@ -172,6 +179,9 @@ public class FFPlayer {
     }
 
     public int resume() {
+        if (surfaceView!= null && w * h > 0) {
+            onSurfaceChange(surfaceView.getHolder().getSurface(), w, h, id);
+        }
         return resume(id);
     }
 
