@@ -1,5 +1,6 @@
 package com.pcyfox.module_recoder.ui.activity
 
+import android.media.MediaFormat
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -23,10 +24,12 @@ class TestRecorderActivity : AppCompatActivity() {
         private val storeDir = Environment.getExternalStorageDirectory().absolutePath + "/test/"
     }
 
-
+    /**
+     *
+     */
     // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
-    private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
-    //private var url = "rtmp://58.200.131.2:1935/livetv/gdtv"
+   // private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
+    private var url = "rtmp://58.200.131.2:1935/livetv/hunantv"
 
     //private var url = "/storage/emulated/0/test.mp4"
     //private var url = "/storage/emulated/0/video.h264"
@@ -188,6 +191,7 @@ class TestRecorderActivity : AppCompatActivity() {
 
 
     private fun mux() {
+        MediaFormat.MIMETYPE_AUDIO_AAC
         Thread {
             Log.d(TAG, "mux() called start")
             val ret = rv_record.mux(getOutFile().absolutePath)

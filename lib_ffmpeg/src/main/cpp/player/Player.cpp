@@ -66,8 +66,8 @@ static int GetStartCodeLen(const unsigned char *pkt) {
 }
 
 
-AVStream *findVideoStream(AVFormatContext *i_fmt_ctx) {
-    int index = av_find_best_stream(i_fmt_ctx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
+AVStream *findStream(AVFormatContext *i_fmt_ctx, AVMediaType type) {
+    int index = av_find_best_stream(i_fmt_ctx, type, -1, -1, NULL, 0);
     if (index == AVERROR_STREAM_NOT_FOUND) {
         LOGE("not find video stream!,streams number=%d", i_fmt_ctx->nb_streams);
         return NULL;
@@ -149,6 +149,27 @@ int createVideoCodec(AMediaCodec **mMediaCodec, int width, int height, uint8_t *
     return PLAYER_RESULT_OK;
 }
 
+int createAudioCodec(AMediaCodec **mMediaCodec, const char *mine) {
+
+    if (!*mMediaCodec) {
+        AMediaCodec *mediaCodec = AMediaCodec_createDecoderByType(mine);
+        if (!mediaCodec) {
+            LOGE("createAMediaCodec() fail!");
+            return PLAYER_RESULT_ERROR;
+        } else {
+            LOGI("createAMediaCodec() success!");
+        }
+        *mMediaCodec = mediaCodec;
+    } else {
+        AMediaCodec_flush(*mMediaCodec);
+        AMediaCodec_stop(*mMediaCodec);
+    }
+
+    AMediaFormat *videoFormat = AMediaFormat_new();
+    AMediaFormat_setString(videoFormat, "mime", mine);
+    return PLAYER_RESULT_OK;
+}
+
 
 void *OpenResource(void *info) {
     if (info == NULL) {
@@ -193,11 +214,26 @@ void *OpenResource(void *info) {
         //输出多媒体文件信息,第二个参数是流的索引值（默认0），第三个参数，0:输入流，1:输出流
         //    av_dump_format(fmt_ctx, 0, url, 0);
 
-        playerInfo->inputVideoStream = findVideoStream(playerInfo->inputContext);
+        playerInfo->inputVideoStream = findStream(playerInfo->inputContext, AVMEDIA_TYPE_VIDEO);
         if (playerInfo->inputVideoStream == NULL) {
             playerInfo->SetPlayState(ERROR, true);
             return (void *) PLAYER_RESULT_ERROR;
         }
+
+        if (playerInfo->isOpenAudio) {
+            playerInfo->inputAudioStream = findStream(playerInfo->inputContext, AVMEDIA_TYPE_AUDIO);
+            if (playerInfo->inputAudioStream) {
+                LOGI("find audio stream!");
+                AVCodecID codec_id = playerInfo->inputAudioStream->codecpar->codec_id;
+                if (AV_CODEC_ID_AAC == codec_id) {
+                   // createAudioCodec(&playerInfo->audioCodec, "audio/mp4a-latm");
+                }else{
+                    LOGE("not support audio type:%d", codec_id);
+                }
+
+            }
+        }
+
 
         //is H264?
         if (playerInfo->inputVideoStream->codecpar->codec_id != AV_CODEC_ID_H264) {
@@ -654,7 +690,6 @@ void *DeMux(void *param) {
         }
 
         if (state == PAUSE) {
-            playerInfo->packetQueue.clearAVPacket();
             if ((recorderInfo != NULL) && recorderInfo->GetRecordState() == RECORD_PAUSE) {
                 continue;
             }
@@ -926,6 +961,7 @@ int Player::Resume() {
         LOGE("--------Pause()  called fail, player not pause------");
         return PLAYER_RESULT_ERROR;
     }
+    //  playerInfo->packetQueue.clearAVPacket();
     playerInfo->SetPlayState(STARTED, true);
     return PLAYER_RESULT_OK;
 }

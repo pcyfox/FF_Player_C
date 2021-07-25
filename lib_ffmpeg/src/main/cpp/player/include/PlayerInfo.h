@@ -37,6 +37,7 @@ public:
     AVFormatContext *inputContext = NULL;
     AVFormatContext *outContext = NULL;
     AVStream *inputVideoStream = NULL;
+    AVStream *inputAudioStream = NULL;
     bool isOnlyRecordMedia = false;
     char *resource = NULL;
     int width{}, height{};
@@ -55,6 +56,8 @@ public:
     pthread_cond_t cond{};
 
     int8_t lastNALUType = 0;
+
+    bool isOpenAudio = true;
 
     const char *mine = "video/avc";
     volatile enum PlayState playState = UNINITIALIZED;
