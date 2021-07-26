@@ -437,7 +437,7 @@ void *RecordPkt(void *info) {
         int ret = recorderInfo->packetQueue.getAvPacket(&packet);
 
         if (ret == PLAYER_RESULT_ERROR) {
-            LOGW("-----------------record,not found pkt in queue--------------");
+            //LOGW("-----------------record,not found pkt in queue--------------");
             continue;
         }
 
@@ -611,6 +611,8 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
             } else {
                 LOGE("ProcessPacket clone packet fail!");
             }
+        } else{
+            LOGE("ProcessPacket recorder is not in right stata!");
         }
     }
 
