@@ -437,6 +437,7 @@ void *RecordPkt(void *info) {
         int ret = recorderInfo->packetQueue.getAvPacket(&packet);
 
         if (ret == PLAYER_RESULT_ERROR) {
+            LOGW("-----------------record,not found pkt in queue--------------");
             continue;
         }
 
@@ -448,6 +449,7 @@ void *RecordPkt(void *info) {
                 recorderInfo->SetRecordState(RECORDING);
                 LOGI("-----------------real start recording--------------");
             } else {
+                LOGW("-----------------record ,current is not key frame--------------");
                 continue;
             }
         }
@@ -605,8 +607,7 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
             // Create a new packet that references the same data as src
             AVPacket *copyPkt = av_packet_clone(packet);
             if (copyPkt != NULL) {
-                recorderInfo->packetQueue.
-                        putAvPacket(copyPkt);
+                recorderInfo->packetQueue.putAvPacket(copyPkt);
             } else {
                 LOGE("ProcessPacket clone packet fail!");
             }
