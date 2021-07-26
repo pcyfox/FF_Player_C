@@ -115,7 +115,6 @@ public class FFPlayer {
             Log.e(TAG, "config() called with: surfaceView = [" + surfaceView + "], w = [" + w + "], h = [" + h + "], isOnlyRecord = [" + isOnlyRecord + "]");
             return -1;
         }
-
         configPlayer(surfaceView.getHolder().getSurface(), w, h, 0, id);
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
@@ -171,6 +170,7 @@ public class FFPlayer {
 
     public void release() {
         release(id);
+        onRecordStateChangeListener=null;
         playState = PlayState.RELEASE;
     }
 

@@ -24,13 +24,6 @@ class RecorderView : RelativeLayout {
         attrs
     )
 
-    constructor(
-        context: Context?,
-        attrs: AttributeSet?,
-        defStyleAttr: Int,
-        defStyleRes: Int
-    ) : super(context, attrs, defStyleAttr, defStyleRes)
-
     private var isVisibleChanged = false
     private val sv = SurfaceView(context)
     private var videoPath = ""
@@ -179,6 +172,7 @@ class RecorderView : RelativeLayout {
             Log.w(TAG, "release() called not in stopped state!maybe cause crash")
         }
         ffPlayer.release()
+        listener = null
     }
 
     fun pause(): Boolean {
