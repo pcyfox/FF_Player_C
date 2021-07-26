@@ -611,8 +611,6 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
             } else {
                 LOGE("ProcessPacket clone packet fail!");
             }
-        } else{
-            LOGE("ProcessPacket recorder is not in right stata!");
         }
     }
 
@@ -658,7 +656,6 @@ static bool isLocalFile(char *url) {
 void *DeMux(void *param) {
     auto *player = (Player *) param;
     PlayerInfo *playerInfo = player->playerInfo;
-    RecorderInfo *recorderInfo = player->recorderInfo;
     if (playerInfo == NULL) {
         LOGE("Player is not init");
         return NULL;
@@ -699,7 +696,7 @@ void *DeMux(void *param) {
             LOGD("DeMux() stop,due to state-STOPPED!");
             break;
         }
-
+        RecorderInfo *recorderInfo = player->recorderInfo;
         if (state == PAUSE) {
             if ((recorderInfo != NULL) && recorderInfo->GetRecordState() == RECORD_PAUSE) {
                 continue;
@@ -748,13 +745,8 @@ void *DeMux(void *param) {
 
             clearAVPacket();
 
-    if (playerInfo->
-
-            GetPlayState()
-
-        == RELEASE) {
-        StartRelease(playerInfo,
-                     NULL);
+    if (playerInfo->GetPlayState() == RELEASE) {
+        StartRelease(playerInfo, NULL);
     }
     static int num = 1;
     return NULL;
