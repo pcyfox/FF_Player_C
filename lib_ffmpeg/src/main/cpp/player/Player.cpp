@@ -399,7 +399,7 @@ void *RecordPkt(void *info) {
             LOGE("open file ERROR,file=%s", file);
             recorderInfo->SetRecordState(RECORD_ERROR);
             return (void *) PLAYER_RESULT_ERROR;
-        } else{
+        } else {
             LOGI("open file success,file=%s", file);
         }
         /*write file header*/
@@ -435,6 +435,7 @@ void *RecordPkt(void *info) {
             break;
         }
         int ret = recorderInfo->packetQueue.getAvPacket(&packet);
+
         if (ret == PLAYER_RESULT_ERROR) {
             continue;
         }
@@ -442,7 +443,8 @@ void *RecordPkt(void *info) {
         //等待关键帧或sps、pps的出现
         if (recorderInfo->GetRecordState() == RECORD_START) {
             int type = packet->flags;
-            if (type == 0x65 || type == 0x67) {
+            if (type == 0x65 || type == 0x67 || type == 0x68 || type == 24 || type == 25 ||
+                type == 26 || type == 27) {
                 recorderInfo->SetRecordState(RECORDING);
                 LOGI("-----------------real start recording--------------");
             } else {

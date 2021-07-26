@@ -30,6 +30,7 @@ std::string StateListener::PlayerStateToString(int state) {
             return "RELEASE";
         case EXECUTING:
             return "EXECUTING";
+        default: "";
     }
 
     return "UN KNOW";
