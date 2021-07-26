@@ -28,8 +28,8 @@ class TestRecorderActivity : AppCompatActivity() {
      *
      */
     // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
-   // private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
-    private var url = "rtmp://58.200.131.2:1935/livetv/hunantv"
+   private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
+   // private var url = "rtmp://58.200.131.2:1935/livetv/hunantv"
 
     //private var url = "/storage/emulated/0/test.mp4"
     //private var url = "/storage/emulated/0/video.h264"
@@ -112,9 +112,8 @@ class TestRecorderActivity : AppCompatActivity() {
         val f = File(getRootPath().absolutePath + "/$fileName")
         if (f.exists()) {
             f.delete()
-        } else {
-            f.createNewFile()
         }
+        //f.createNewFile()
         return f
     }
 

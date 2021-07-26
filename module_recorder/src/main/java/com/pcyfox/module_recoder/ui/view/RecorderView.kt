@@ -63,6 +63,11 @@ class RecorderView : RelativeLayout {
         }
         if (!audioPath.isNullOrEmpty()) {
             this.audioPath = audioPath
+            File(audioPath).run {
+                if (!exists()) {
+                    createNewFile()
+                }
+            }
             audioRecorder.prepare(
                 audioPath,
                 MediaConstants.DEFAULT_CHANNEL_COUNT,
@@ -186,7 +191,8 @@ class RecorderView : RelativeLayout {
         }
         return ffPlayer.resume() > 0
     }
-    fun resumeWindow(){
+
+    fun resumeWindow() {
         ffPlayer.resumeWindow()
     }
 

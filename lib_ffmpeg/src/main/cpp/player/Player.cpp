@@ -226,8 +226,8 @@ void *OpenResource(void *info) {
                 LOGI("find audio stream!");
                 AVCodecID codec_id = playerInfo->inputAudioStream->codecpar->codec_id;
                 if (AV_CODEC_ID_AAC == codec_id) {
-                   // createAudioCodec(&playerInfo->audioCodec, "audio/mp4a-latm");
-                }else{
+                    // createAudioCodec(&playerInfo->audioCodec, "audio/mp4a-latm");
+                } else {
                     LOGE("not support audio type:%d", codec_id);
                 }
 
@@ -377,10 +377,12 @@ void *RecordPkt(void *info) {
         * we can safely set output codec values from first input file
         */
         AVCodecParameters *i_av_codec_parameters = recorderInfo->inputVideoStream->codecpar;
-
         recorderInfo->o_video_stream = avformat_new_stream(recorderInfo->o_fmt_ctx, NULL);
         if (!recorderInfo->o_video_stream) {
+            LOGE("record fail,not found video stream!");
             return (void *) PLAYER_RESULT_ERROR;
+        } else {
+            LOGI("found video stream!");
         }
 
         recorderInfo->o_video_stream->codecpar->codec_tag = 0;
@@ -397,6 +399,8 @@ void *RecordPkt(void *info) {
             LOGE("open file ERROR,file=%s", file);
             recorderInfo->SetRecordState(RECORD_ERROR);
             return (void *) PLAYER_RESULT_ERROR;
+        } else{
+            LOGI("open file success,file=%s", file);
         }
         /*write file header*/
         ret = avformat_write_header(recorderInfo->o_fmt_ctx, NULL);
@@ -404,6 +408,8 @@ void *RecordPkt(void *info) {
             LOGE("record video write file header error,ret=%d", ret);
             recorderInfo->SetRecordState(RECORD_ERROR);
             return (void *) PLAYER_RESULT_ERROR;
+        } else {
+            LOGI("record video write file header success!");
         }
     } else {
         LOGW("RecordPkt() called,recorder state is not RECORD_START ");
@@ -453,8 +459,8 @@ void *RecordPkt(void *info) {
     }
 
     LOGI("----------------- record work stop,start to delete recordInfo--------------");
-    recorderInfo->packetQueue.clearAVPacket();
 
+    recorderInfo->packetQueue.clearAVPacket();
     if (recorderInfo->GetRecordState() == RECORDER_RELEASE) {
         StartRelease(NULL, recorderInfo);
     }
