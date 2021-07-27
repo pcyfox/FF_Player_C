@@ -116,7 +116,8 @@ public class FFPlayer {
             return -1;
         }
         configPlayer(surfaceView.getHolder().getSurface(), w, h, 0, id);
-        surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+
+        SurfaceHolder.Callback callback = new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
                 Log.d(TAG, "surfaceCreated() called with: holder = [" + holder + "]");
@@ -134,7 +135,9 @@ public class FFPlayer {
                 Log.d(TAG, "surfaceDestroyed() called with: holder = [" + holder + "]");
 
             }
-        });
+        };
+        surfaceView.getHolder().addCallback(callback);
+        surfaceView.setTag(callback);
         return 1;
     }
 
@@ -170,8 +173,13 @@ public class FFPlayer {
 
     public void release() {
         release(id);
-        onRecordStateChangeListener=null;
+        onRecordStateChangeListener = null;
         playState = PlayState.RELEASE;
+        if (surfaceView != null && surfaceView.getTag() instanceof SurfaceHolder.Callback) {
+            surfaceView.getHolder().removeCallback((SurfaceHolder.Callback) surfaceView.getTag());
+            surfaceView.removeCallbacks(() -> {
+            });
+        }
     }
 
     public int pause() {
