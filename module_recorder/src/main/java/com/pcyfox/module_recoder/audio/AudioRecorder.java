@@ -182,6 +182,17 @@ public class AudioRecorder implements RecorderContract.Recorder {
         }
     }
 
+
+    public void release() {
+        stopRecording();
+        if (recorder != null) {
+            recorder.release();
+            recorder = null;
+        }
+        recorderCallback = null;
+
+    }
+
     private void startRecordingTimer() {
         timerProgress = new Timer();
         timerProgress.schedule(new TimerTask() {

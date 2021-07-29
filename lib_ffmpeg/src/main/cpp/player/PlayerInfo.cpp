@@ -49,6 +49,7 @@ PlayerInfo::~PlayerInfo() {
     decode_thread = 0;
     deMux_thread = 0;
     open_resource_thread = 0;
+    stateListener = NULL;
     LOGW("-------PlayerInfo Delete Over---------");
 }
 
@@ -58,7 +59,8 @@ void PlayerInfo::SetPlayState(PlayState s, bool isNotify) volatile {
     if (stateListener && isNotify) {
         stateListener(playState, id);
     }
-    LOGI("----------------->PlayerInfo SetPlayState() called with:state=%s,isNotify=%d",StateListener::PlayerStateToString(s).c_str(),isNotify);
+    LOGI("----------------->PlayerInfo SetPlayState() called with:state=%s,isNotify=%d",
+         StateListener::PlayerStateToString(s).c_str(), isNotify);
 }
 
 
