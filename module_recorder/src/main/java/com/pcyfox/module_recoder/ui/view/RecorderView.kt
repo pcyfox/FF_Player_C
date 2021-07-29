@@ -40,20 +40,6 @@ class RecorderView : RelativeLayout {
         addView(sv)
         sv.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
         sv.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-        ffPlayer.setOnRecordStateChangeListener {
-            Log.d(TAG, "record StateChange state=$it")
-            if (isOnlyRecordeVideo) {
-                return@setOnRecordStateChangeListener
-            }
-            when (it) {
-                RecordState.RECORDING -> audioRecorder.startRecording()
-                RecordState.RECORD_PAUSE -> audioRecorder.pauseRecording()
-                RecordState.RECORD_STOP -> audioRecorder.stopRecording()
-                RecordState.RECORD_RESUME -> audioRecorder.startRecording()
-                else -> {
-                }
-            }
-        }
     }
 
 
@@ -70,6 +56,21 @@ class RecorderView : RelativeLayout {
         Log.d(TAG, "prepareRecorder() called with: videoPath = $videoPath, audioPath = $audioPath")
         if (!videoPath.isNullOrEmpty()) {
             this.videoPath = videoPath
+            ffPlayer.setOnRecordStateChangeListener {
+                Log.d(TAG, "record StateChange state=$it")
+                if (isOnlyRecordeVideo) {
+                    return@setOnRecordStateChangeListener
+                }
+                when (it) {
+                    RecordState.RECORDING -> audioRecorder.startRecording()
+                    RecordState.RECORD_PAUSE -> audioRecorder.pauseRecording()
+                    RecordState.RECORD_STOP -> audioRecorder.stopRecording()
+                    RecordState.RECORD_RESUME -> audioRecorder.startRecording()
+                    else -> {
+                    }
+                }
+            }
+
             ffPlayer.prepareRecorder(videoPath)
         }
         if (!audioPath.isNullOrEmpty()) {
@@ -86,6 +87,7 @@ class RecorderView : RelativeLayout {
                 MediaConstants.DEFAULT_RECORD_ENCODING_BITRATE
             )
         }
+
     }
 
     fun startRecord(isOnlyRecordeVideo: Boolean = false): Boolean {
