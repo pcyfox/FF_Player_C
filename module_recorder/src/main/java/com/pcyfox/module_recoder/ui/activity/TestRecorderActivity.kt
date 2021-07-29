@@ -114,7 +114,7 @@ class TestRecorderActivity : AppCompatActivity() {
         if (f.exists()) {
             f.delete()
         }
-        //f.createNewFile()
+        f.createNewFile()
         return f
     }
 

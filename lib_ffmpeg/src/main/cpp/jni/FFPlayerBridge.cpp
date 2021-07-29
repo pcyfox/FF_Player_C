@@ -263,16 +263,18 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_setRecordState(JNIEnv *env, jobject thiz, j
         return PLAYER_RESULT_ERROR;
     }
     switch (state) {
-        case 0:
+        case RECORD_START:
             return player->StartRecord();
-        case 1:
+        case RECORD_PAUSE:
             return player->PauseRecord();
-        case 2:
+        case RECORD_RESUME:
             return player->ResumeRecord();
-        case -1:
+        case RECORD_STOP:
             return player->StopRecord();
+        default: {
+            return -1;
+        }
     }
-    return 0;
 }
 /**
  * RUN ON WORK THREAD
@@ -317,6 +319,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_release(JNIEnv *env, jobject thiz, jint id)
     if (player == NULL) {
         return;
     }
+    env->DeleteGlobalRef(player->jPlayerObject);
     removePlayer(id);
     player->Release();
 }

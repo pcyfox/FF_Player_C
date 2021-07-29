@@ -71,5 +71,6 @@ android {
 }
 
 dependencies {
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
     implementation project(path: ':module_recorder')
 }

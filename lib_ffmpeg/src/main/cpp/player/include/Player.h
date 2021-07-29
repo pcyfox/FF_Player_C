@@ -32,11 +32,11 @@ public:
 
     void SetDebug(bool isDebug);
 
-    void StartRecorderThread();
+    void StartRecorderThread() const;
 
     void StartDeMuxThread();
 
-    void StartOpenResourceThread(char *res);
+    void StartOpenResourceThread(char *res) const;
 
     int InitPlayerInfo();
 
@@ -54,26 +54,26 @@ public:
 
     int Play(void);
 
-    int Pause(int delay);
+    int Pause(int delay) const;
 
-    int Resume(void);
+    int Resume(void) const;
 
-    int Stop(void);
+    int Stop(void) const;
 
     void SetPlayStateChangeListener(void (*listener)(PlayState playState, int id));
 
     void SetRecordStateChangeListener(void (*listener)(RecordState playState, int id));
 
 
-    int PauseRecord(void);
+    int PauseRecord(void) const;
 
-    int StopRecord(void);
+    int StopRecord(void) const;
 
     int StartRecord(void);
 
-    int ResumeRecord(void);
+    int ResumeRecord(void) const;
 
-    int Release(void);
+    int Release(void) const;
 
 };
 

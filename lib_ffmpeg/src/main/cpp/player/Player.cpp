@@ -628,7 +628,7 @@ void StartDecodeThread(PlayerInfo *playerInfo) {
     pthread_detach(playerInfo->decode_thread);
 }
 
-void Player::StartRecorderThread() {
+void Player::StartRecorderThread() const {
     if (playerInfo != NULL && recorderInfo != NULL) {
         recorderInfo->inputVideoStream = playerInfo->inputVideoStream;
     } else {
@@ -765,7 +765,7 @@ void Player::StartDeMuxThread() {
     pthread_detach(playerInfo->deMux_thread);
 }
 
-void Player::StartOpenResourceThread(char *res) {
+void Player::StartOpenResourceThread(char *res) const {
     if (!res) {
         LOGE("StartOpenResourceThread() fail,res is null");
         return;
@@ -942,7 +942,7 @@ int Player::Play() {
 }
 
 
-int Player::Pause(int delay) {
+int Player::Pause(int delay) const {
     LOGI("--------Pause()  called-------");
     if (playerInfo == NULL) {
         return PLAYER_RESULT_ERROR;
@@ -955,7 +955,7 @@ int Player::Pause(int delay) {
     return PLAYER_RESULT_OK;
 }
 
-int Player::Resume() {
+int Player::Resume() const {
     LOGI("--------Resume()  called-------");
     if (playerInfo == NULL) {
         return PLAYER_RESULT_ERROR;
@@ -970,7 +970,7 @@ int Player::Resume() {
 }
 
 
-int Player::Stop() {
+int Player::Stop() const {
     if (playerInfo == NULL) {
         LOGE("Stop() called with playerInfo is NULL");
         return PLAYER_RESULT_ERROR;
@@ -1024,21 +1024,18 @@ int Player::StartRecord() {
         return PLAYER_RESULT_ERROR;
     }
 
-    if (state == RECORD_PAUSE) {
-        recorderInfo->SetRecordState(RECORDING);
-        return PLAYER_RESULT_OK;
-    }
     if (state == RECORD_PREPARED) {
         recorderInfo->SetRecordState(RECORD_START);
         StartRecorderThread();
     } else {
         LOGE("start recorder in illegal state=%d", state);
+        recorderInfo->SetRecordState(RECORD_ERROR);
         return PLAYER_RESULT_ERROR;
     }
     return PLAYER_RESULT_OK;
 }
 
-int Player::StopRecord() {
+int Player::StopRecord() const {
     LOGI("------StopRecord() called------");
     if (recorderInfo != NULL &&
         recorderInfo->GetRecordState() >= RECORD_PREPARED) {
@@ -1050,7 +1047,7 @@ int Player::StopRecord() {
 }
 
 
-int Player::PauseRecord() {
+int Player::PauseRecord() const {
     LOGI("------PauseRecord() called------");
     if (recorderInfo && recorderInfo->GetRecordState() != RECORD_START) {
         recorderInfo->SetRecordState(RECORD_PAUSE);
@@ -1061,23 +1058,22 @@ int Player::PauseRecord() {
     }
 }
 
-int Player::ResumeRecord() {
+int Player::ResumeRecord() const {
     LOGI("------ResumeRecord() called------");
     if (recorderInfo && recorderInfo->GetRecordState() == RECORD_PAUSE) {
-        recorderInfo->SetRecordState(RECORD_START);
+        recorderInfo->SetRecordState(RECORDING);
         return PLAYER_RESULT_OK;
     } else {
         return PLAYER_RESULT_ERROR;
     }
 }
 
-int Player::Release() {
+int Player::Release() const {
     LOGD("Release() called!");
     if (playerInfo->GetPlayState() == STOPPED) {
         StartRelease(playerInfo, recorderInfo);
         return PLAYER_RESULT_OK;
     }
-
     playerInfo->SetPlayState(RELEASE, true);
     if (recorderInfo != NULL) {
         recorderInfo->SetRecordState(RECORDER_RELEASE);

@@ -55,19 +55,19 @@ public class FFPlayer {
     }
 
     public int startRecord() {
-        return setRecordState(0, id);
+        return setRecordState(RecordState.RECORD_START.ordinal(), id);
     }
 
     public int pauseRecord() {
-        return setRecordState(1, id);
+        return setRecordState(RecordState.RECORD_PAUSE.ordinal(), id);
     }
 
     public int resumeRecord() {
-        return setRecordState(2, id);
+        return setRecordState(RecordState.RECORD_RESUME.ordinal(), id);
     }
 
     public int stopRecord() {
-        return setRecordState(-1, id);
+        return setRecordState(RecordState.RECORD_STOP.ordinal(), id);
     }
 
     //for call in native
@@ -174,12 +174,18 @@ public class FFPlayer {
     public void release() {
         release(id);
         onRecordStateChangeListener = null;
+        onPlayStateChangeListener = null;
         playState = PlayState.RELEASE;
-        if (surfaceView != null && surfaceView.getTag() instanceof SurfaceHolder.Callback) {
-            surfaceView.getHolder().removeCallback((SurfaceHolder.Callback) surfaceView.getTag());
+        if (surfaceView != null) {
+            if (surfaceView.getTag() instanceof SurfaceHolder.Callback) {
+                surfaceView.getHolder().removeCallback((SurfaceHolder.Callback) surfaceView.getTag());
+            }
+            surfaceView.getHolder().getSurface().release();
             surfaceView.removeCallbacks(() -> {
             });
+            surfaceView = null;
         }
+
     }
 
     public int pause() {

@@ -27,6 +27,7 @@ enum RecordState {
     RECORD_START,
     RECORDING,
     RECORD_PAUSE,
+    RECORD_RESUME,
     RECORD_STOP,
     RECORDER_RELEASE,
 };
