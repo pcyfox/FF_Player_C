@@ -91,6 +91,7 @@ class RecorderView : RelativeLayout {
     }
 
     fun startRecord(isOnlyRecordeVideo: Boolean = false): Boolean {
+        this.isOnlyRecordeVideo = isOnlyRecordeVideo
         Log.d(TAG, "startRecord() called with: videoPath = $videoPath, audioPath = $audioPath")
         if (TextUtils.isEmpty(videoPath) || TextUtils.isEmpty(audioPath)) {
             return false
