@@ -40,12 +40,6 @@ class RecorderView : RelativeLayout {
         addView(sv)
         sv.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
         sv.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-    }
-
-
-    fun setOnStateChangeListener(listener: OnPlayStateChangeListener) {
-        this.listener = listener
-        ffPlayer.setOnPlayStateChangeListener(listener)
         ffPlayer.setOnRecordStateChangeListener {
             Log.d(TAG, "record StateChange state=$it")
             if (isOnlyRecordeVideo) {
@@ -60,6 +54,12 @@ class RecorderView : RelativeLayout {
                 }
             }
         }
+    }
+
+
+    fun setOnStateChangeListener(listener: OnPlayStateChangeListener) {
+        this.listener = listener
+        ffPlayer.setOnPlayStateChangeListener(listener)
     }
 
     fun getPlayState() = ffPlayer.playState
