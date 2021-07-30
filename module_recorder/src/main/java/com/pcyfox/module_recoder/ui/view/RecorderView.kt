@@ -183,7 +183,6 @@ class RecorderView : RelativeLayout {
         if (getPlayState() != PlayState.STOPPED) {
             Log.w(TAG, "release() called not in stopped state!maybe cause crash")
         }
-        audioRecorder.release()
         ffPlayer.release()
         listener = null
     }
