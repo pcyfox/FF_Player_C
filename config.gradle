@@ -3,4 +3,7 @@ ext {
     androidBuildTools = '30.0.2'
     androidTargetSdk = 30
     minSdkVersion = 21
+
+    versionCode =1
+    versionName ="1.0"
 }

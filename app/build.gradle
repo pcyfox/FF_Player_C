@@ -3,12 +3,16 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
+def projectName = "ffplayer"
 android {
     buildToolsVersion = project.androidBuildTools
     compileSdkVersion project.compileSdkVersion
     defaultConfig {
         minSdkVersion project.minSdkVersion
         targetSdkVersion project.androidTargetSdk
+        versionCode project.versionCode
+        versionName project.versionName
+
         vectorDrawables.useSupportLibrary = true
         androidExtensions {//z支持动态添加控件（tip:LayoutContainer）
             experimental = true
@@ -68,6 +72,29 @@ android {
         dataBinding = true
     }
 
+    applicationVariants.all {
+        variant ->
+            variant.outputs.all {
+                outputFileName = buildType.name + "_" +  projectName + "_" + defaultConfig.versionName + "_" + defaultConfig.versionCode + "_" + new Date().format("yyyy-MM-dd_HH-mm-ss") + ".apk"
+            }
+
+            //编译完成后将apk复制到指定目录
+            variant.assemble.doLast {
+                variant.outputs.all {
+                    //复制到根目录下的output文件夹 如果不需要可以直接将代码删除
+                    File desFilePath = new File("${rootDir}/apks/" + projectName + "-" + defaultConfig.versionName)
+                    if (desFilePath.exists()) {
+                        desFilePath.deleteDir()
+                    }
+                    File out = new File("${rootDir}/app/build/outputs")
+                    // 将编译好的apk 复制到output目录，方便使用
+                    copy {
+                        from out
+                        into desFilePath
+                    }
+                }
+            }
+    }
 }
 
 dependencies {
