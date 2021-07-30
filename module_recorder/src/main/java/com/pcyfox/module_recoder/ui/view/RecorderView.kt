@@ -56,23 +56,26 @@ class RecorderView : RelativeLayout {
         Log.d(TAG, "prepareRecorder() called with: videoPath = $videoPath, audioPath = $audioPath")
         if (!videoPath.isNullOrEmpty()) {
             this.videoPath = videoPath
-            ffPlayer.setOnRecordStateChangeListener {
-                Log.d(TAG, "record StateChange state=$it")
-                if (isOnlyRecordeVideo) {
-                    return@setOnRecordStateChangeListener
-                }
-                when (it) {
-                    RecordState.RECORDING -> audioRecorder.startRecording()
-                    RecordState.RECORD_PAUSE -> audioRecorder.pauseRecording()
-                    RecordState.RECORD_STOP -> audioRecorder.stopRecording()
-                    RecordState.RECORD_RESUME -> audioRecorder.startRecording()
-                    else -> {
-                    }
-                }
-            }
-
             ffPlayer.prepareRecorder(videoPath)
         }
+
+        ffPlayer.setOnRecordStateChangeListener {
+            Log.d(TAG, "record StateChange state=$it")
+            if (isOnlyRecordeVideo) {
+                return@setOnRecordStateChangeListener
+            }
+            when (it) {
+                RecordState.RECORDING -> audioRecorder.startRecording()
+                RecordState.RECORD_PAUSE -> audioRecorder.pauseRecording()
+                RecordState.RECORD_STOP -> audioRecorder.stopRecording()
+                RecordState.RECORD_RESUME -> audioRecorder.startRecording()
+                else -> {
+                }
+            }
+        }
+
+
+
         if (!audioPath.isNullOrEmpty()) {
             this.audioPath = audioPath
             File(audioPath).run {
