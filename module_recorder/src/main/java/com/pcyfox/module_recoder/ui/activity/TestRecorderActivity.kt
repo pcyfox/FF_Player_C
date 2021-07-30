@@ -28,9 +28,10 @@ class TestRecorderActivity : AppCompatActivity() {
      *
      */
     // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
-   //private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
-    private var url = "rtsp://admin:taike@2020@192.168.16.217:554/Streaming/Channels/101?transportmode=unicast&profile=Profile_1"
-   // private var url = "rtmp://58.200.131.2:1935/livetv/hunantv"
+    //private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
+    private var url =
+        "rtsp://admin:taike@2020@192.168.16.217:554/Streaming/Channels/101?transportmode=unicast&profile=Profile_1"
+    // private var url = "rtmp://58.200.131.2:1935/livetv/hunantv"
 
     //private var url = "/storage/emulated/0/test.mp4"
     //private var url = "/storage/emulated/0/video.h264"
@@ -51,7 +52,7 @@ class TestRecorderActivity : AppCompatActivity() {
         if (!inputUrl.isNullOrEmpty()) {
             url = inputUrl
         }
-        //startTime = TimeUtils.getNowString(TimeUtils.getSafeDateFormat("yyyyMMdd_HH_mm_ss"))
+        startTime = TimeUtils.getNowString(TimeUtils.getSafeDateFormat("yyyyMMdd"))
 
     }
 
@@ -109,21 +110,21 @@ class TestRecorderActivity : AppCompatActivity() {
         return rf
     }
 
-    private fun getFile(fileName: String,isDeleteOld:Boolean=true): File {
+    private fun getFile(fileName: String, isDeleteOld: Boolean = true): File {
         val f = File(getRootPath().absolutePath + "/$fileName")
-        if (f.exists()&&isDeleteOld) {
+        if (f.exists() && isDeleteOld) {
             f.delete()
         }
         f.createNewFile()
         return f
     }
 
-    private fun getVideoFile(isDeleteOld:Boolean=true): File {
-        return getFile("video.h264",isDeleteOld)
+    private fun getVideoFile(isDeleteOld: Boolean = true): File {
+        return getFile("video.h264", isDeleteOld)
     }
 
-    private fun getAudioFile(isDeleteOld:Boolean=true): File {
-        return getFile("audio.aac",isDeleteOld)
+    private fun getAudioFile(isDeleteOld: Boolean = true): File {
+        return getFile("audio.aac", isDeleteOld)
     }
 
     private fun getOutFile(): File {
@@ -162,7 +163,7 @@ class TestRecorderActivity : AppCompatActivity() {
                     postDelayed({
                         startRecord()
                         pb_recorde.visibility = View.VISIBLE
-                    },100)
+                    }, 100)
                 }
                 R.id.btn_pause_record -> {
                     pauseRecord()
@@ -195,10 +196,14 @@ class TestRecorderActivity : AppCompatActivity() {
         MediaFormat.MIMETYPE_AUDIO_AAC
         Thread {
             Log.d(TAG, "mux() called start")
-            val ret = rv_record.mux(getVideoFile(false).absolutePath,getAudioFile(false).absolutePath,getOutFile().absolutePath)
+            val ret = rv_record.mux(
+                getVideoFile(false).absolutePath,
+                getAudioFile(false).absolutePath,
+                getOutFile().absolutePath
+            )
             if (ret) {
                 Log.d(TAG, "mux() called over!")
-                ToastUtils.showShort("MUX Over!")
+                ToastUtils.showShort("MUX Success!!")
             } else {
                 ToastUtils.showShort("MUX Fail!")
                 Log.e(TAG, "mux() called fail!")
