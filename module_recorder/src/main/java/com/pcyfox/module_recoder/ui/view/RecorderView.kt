@@ -54,10 +54,6 @@ class RecorderView : RelativeLayout {
 
     fun prepareRecorder(videoPath: String?, audioPath: String? = "") {
         Log.d(TAG, "prepareRecorder() called with: videoPath = $videoPath, audioPath = $audioPath")
-        if (!videoPath.isNullOrEmpty()) {
-            this.videoPath = videoPath
-            ffPlayer.prepareRecorder(videoPath)
-        }
 
         ffPlayer.setOnRecordStateChangeListener {
             Log.d(TAG, "record StateChange state=$it")
@@ -74,8 +70,10 @@ class RecorderView : RelativeLayout {
             }
         }
 
-
-
+        if (!videoPath.isNullOrEmpty()) {
+            this.videoPath = videoPath
+            ffPlayer.prepareRecorder(videoPath)
+        }
         if (!audioPath.isNullOrEmpty()) {
             this.audioPath = audioPath
             File(audioPath).run {
