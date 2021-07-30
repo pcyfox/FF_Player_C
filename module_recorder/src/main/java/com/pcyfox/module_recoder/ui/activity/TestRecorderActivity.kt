@@ -36,7 +36,7 @@ class TestRecorderActivity : AppCompatActivity() {
     //private var url = "/storage/emulated/0/video.h264"
     //private val url = "/storage/emulated/0/test/20210602_15_23_31/1/out.mp4"
     private var recordCount = 0
-    private var startTime = ""
+    private var startTime = "2021"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.recorder_activity_test)
@@ -51,7 +51,7 @@ class TestRecorderActivity : AppCompatActivity() {
         if (!inputUrl.isNullOrEmpty()) {
             url = inputUrl
         }
-        startTime = TimeUtils.getNowString(TimeUtils.getSafeDateFormat("yyyyMMdd_HH_mm_ss"))
+        //startTime = TimeUtils.getNowString(TimeUtils.getSafeDateFormat("yyyyMMdd_HH_mm_ss"))
 
     }
 
@@ -109,21 +109,21 @@ class TestRecorderActivity : AppCompatActivity() {
         return rf
     }
 
-    private fun getFile(fileName: String): File {
+    private fun getFile(fileName: String,isDeleteOld:Boolean=true): File {
         val f = File(getRootPath().absolutePath + "/$fileName")
-        if (f.exists()) {
+        if (f.exists()&&isDeleteOld) {
             f.delete()
         }
         f.createNewFile()
         return f
     }
 
-    private fun getVideoFile(): File {
-        return getFile("video.h264")
+    private fun getVideoFile(isDeleteOld:Boolean=true): File {
+        return getFile("video.h264",isDeleteOld)
     }
 
-    private fun getAudioFile(): File {
-        return getFile("audio.aac")
+    private fun getAudioFile(isDeleteOld:Boolean=true): File {
+        return getFile("audio.aac",isDeleteOld)
     }
 
     private fun getOutFile(): File {
@@ -137,12 +137,10 @@ class TestRecorderActivity : AppCompatActivity() {
             when (v.id) {
                 R.id.btn_play -> {
                     recordCount++
-                    prepareRecorder(getVideoFile().absolutePath, getAudioFile().absolutePath)
                     setResource(url)
                 }
                 R.id.btn_start -> {
                     recordCount++
-                    prepareRecorder(getVideoFile().absolutePath, getAudioFile().absolutePath)
                     setResource(url)
                 }
 
@@ -160,8 +158,11 @@ class TestRecorderActivity : AppCompatActivity() {
                 }
 
                 R.id.btn_start_record -> {
-                    startRecord()
-                    pb_recorde.visibility = View.VISIBLE
+                    prepareRecorder(getVideoFile().absolutePath, getAudioFile().absolutePath)
+                    postDelayed({
+                        startRecord()
+                        pb_recorde.visibility = View.VISIBLE
+                    },100)
                 }
                 R.id.btn_pause_record -> {
                     pauseRecord()
@@ -194,7 +195,7 @@ class TestRecorderActivity : AppCompatActivity() {
         MediaFormat.MIMETYPE_AUDIO_AAC
         Thread {
             Log.d(TAG, "mux() called start")
-            val ret = rv_record.mux(getOutFile().absolutePath)
+            val ret = rv_record.mux(getVideoFile(false).absolutePath,getAudioFile(false).absolutePath,getOutFile().absolutePath)
             if (ret) {
                 Log.d(TAG, "mux() called over!")
                 ToastUtils.showShort("MUX Over!")

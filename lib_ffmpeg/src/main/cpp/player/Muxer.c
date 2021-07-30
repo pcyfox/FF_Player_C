@@ -5,21 +5,17 @@
 
 #define LOG_TAG "Muxer------------->"
 
-static bool isMuxing = false;
 
 static void
 ReleaseResource(AVFormatContext **in_fmt1, AVFormatContext **in_fmt2, AVFormatContext **ou_fmt3) {
     if (in_fmt1 && *in_fmt1) {
         avformat_close_input(in_fmt1);
-        *in_fmt1 = NULL;
     }
     if (in_fmt2 && *in_fmt2) {
         avformat_close_input(in_fmt2);
-        *in_fmt2 = NULL;
     }
-    if (ou_fmt3 && *ou_fmt3 != NULL) {
+    if (ou_fmt3 && *ou_fmt3) {
         avformat_free_context(*ou_fmt3);
-        *ou_fmt3 = NULL;
     }
 }
 
@@ -65,16 +61,11 @@ ReleaseResource(AVFormatContext **in_fmt1, AVFormatContext **in_fmt2, AVFormatCo
                 *
 */
 int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
-    if (isMuxing) {
-        LOGE("is under muxing file!,please waiting");
-        return PLAYER_RESULT_ERROR;
-    }
 
     LOGIX(LOG_TAG, "start to mux file audio path=%s,video path=%s,dest path=%s", audio_srcPath,
           video_srcPath, destPath);
 
-    AVFormatContext *audio_fmtCtx = NULL, *video_fmtCtx = NULL;
-    AVFormatContext *out_fmtCtx = NULL;
+    AVFormatContext *audio_fmtCtx = NULL, *video_fmtCtx = NULL, *out_fmtCtx = NULL;
     int audio_stream_index = -1;
     int video_stream_index = -1;
 
@@ -122,7 +113,7 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
     //找到视频流index
     video_stream_index = av_find_best_stream(video_fmtCtx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
     LOGDX(LOG_TAG, "find video stream index=%d", video_stream_index);
-    if (audio_stream_index < 0) {
+    if (video_stream_index < 0) {
         LOGEX(LOG_TAG, "not found video stream!");
         return PLAYER_RESULT_ERROR;
     }
@@ -186,7 +177,6 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
 
     LOGDX(LOG_TAG, "real start to mux pkt");
     do {
-        isMuxing = true;
         //读取音频数据
         if (!audio_finish && !found_audio && audio_stream_index != -1) {
             if (av_read_frame(audio_fmtCtx, audioPacket) < 0) {
@@ -312,11 +302,10 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
         ret = av_write_trailer(out_fmtCtx);
         LOGIX(LOG_TAG, "write file trailer over!,ret=%d", ret);
     }
+    video_pkt_index = 0;
     // 释放内存
     ReleaseResource(&audio_fmtCtx, &video_fmtCtx, &out_fmtCtx);
-    isMuxing = false;
-    LOGIX(LOG_TAG, "mux file over! ret=%d", ret);
-    LOGDX(LOG_TAG, "start to mux file audio path=%s,video path=%s,dest path=%s", audio_srcPath,
+    LOGDX(LOG_TAG, "mux over,ret=%d, audio path=%s,video path=%s,dest path=%s", ret, audio_srcPath,
           video_srcPath, destPath);
     return ret >= 0 ? PLAYER_RESULT_OK : PLAYER_RESULT_ERROR;
 }
