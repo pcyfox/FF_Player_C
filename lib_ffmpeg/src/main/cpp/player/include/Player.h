@@ -11,8 +11,6 @@
 #include <RecorderInfo.h>
 
 
-static bool LOG_DEBUG = false;
-
 class Player {
 
 public:
@@ -21,16 +19,18 @@ public:
     ~Player();
 
 public:
-    jobject jPlayerObject;
+    jobject jPlayerObject{};
     int playerId;
     PlayerInfo *playerInfo = NULL;
     RecorderInfo *recorderInfo = NULL;
 
-    void (*playStateListener)(PlayState, RecordState recordState, int) = NULL;
+    void (*playStateListener)(PlayState, int) = NULL;
+
+    void (*recorderStateListener)(RecordState, int) = NULL;
 
 public:
 
-    void SetDebug(bool isDebug);
+    static void SetDebug(bool isDebug);
 
     void StartRecorderThread() const;
 
@@ -60,20 +60,20 @@ public:
 
     int Stop(void) const;
 
-    void SetPlayStateChangeListener(void (*listener)(PlayState playState, int id));
-
-    void SetRecordStateChangeListener(void (*listener)(RecordState playState, int id));
-
-
     int PauseRecord(void) const;
 
     int StopRecord(void) const;
 
-    int StartRecord(void);
+    int StartRecord(void) const;
 
     int ResumeRecord(void) const;
 
     int Release(void) const;
+
+    void SetPlayStateChangeListener(void (*listener)(PlayState playState, int id));
+
+    void SetRecordStateChangeListener(void (*listener)(RecordState playState, int id));
+
 
 };
 

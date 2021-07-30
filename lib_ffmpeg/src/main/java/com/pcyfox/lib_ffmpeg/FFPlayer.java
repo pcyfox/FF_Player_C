@@ -72,7 +72,7 @@ public class FFPlayer {
 
     //for call in native
     public void onPlayerStateChange(int state) {
-        //Log.d(TAG, "onPlayerStateChange() called with: state = [" + state + "]");
+        Log.d(TAG, "onPlayerStateChange() called with: state = [" + state + "]");
         for (PlayState s : PlayState.values()) {
             if (state == s.ordinal()) {
                 this.playState = s;
@@ -225,6 +225,7 @@ public class FFPlayer {
     public native void release(int id);
 
     public native int configPlayer(Surface surface, int w, int h, int isOnlyRecorderMod, int id);
+
 
     public native int onSurfaceChange(Surface surface, int w, int h, int id);
 

@@ -31,9 +31,9 @@ static JavaVM *vm = NULL;
 
 
 Player *findPlayer(int id) {
-    auto i = playerCache.find(id);
-    if (i != playerCache.end()) {
-        return i->second;
+    auto iterator = playerCache.find(id);
+    if (iterator != playerCache.end()) {
+        return iterator->second;
     } else {
         return NULL;
     }
@@ -63,38 +63,42 @@ void *ChangeRecordState(void *p) {
     int *params = (int *) p;
     int id = params[0];
     Player *player = findPlayer(id);
-    if (player != NULL && vm) {
-        JNIEnv *env = NULL;
-        int ret = vm->AttachCurrentThread(&env, NULL);
-        if (ret == 0 && env) {
-            int state = params[1];
-            env->CallVoidMethod(player->jPlayerObject, jMid_onRecordStateChangeId, state);
-        } else {
-            LOGE("onStateChange() get jEnv error");
-        }
-        vm->DetachCurrentThread();
+    if (player == NULL) {
+        LOGE("onStateChange() not found player with id=%d", id);
+        return nullptr;
     }
-    delete[] p;
-    return NULL;
+    JNIEnv *env = NULL;
+    int ret = vm->AttachCurrentThread(&env, NULL);
+    if (ret == 0 && env) {
+        int state = params[1];
+        env->CallVoidMethod(player->jPlayerObject, jMid_onRecordStateChangeId, state);
+    } else {
+        LOGE("onStateChange() get jEnv error");
+    }
+    vm->DetachCurrentThread();
+    free(p);
+    return nullptr;
 }
 
 void *ChangePlayState(void *p) {
     int *params = (int *) p;
     int id = params[0];
     Player *player = findPlayer(id);
-    if (player != NULL && vm) {
-        JNIEnv *env = NULL;
-        int ret = vm->AttachCurrentThread(&env, NULL);
-        if (ret == 0 && env) {
-            int state = params[1];
-            env->CallVoidMethod(player->jPlayerObject, jMid_onPlayStateChangeId, state);
-        } else {
-            LOGE("onStateChange() get jEnv error");
-        }
-        vm->DetachCurrentThread();
+    if (player == NULL) {
+        LOGE("onStateChange() not found player with id=%d", id);
+        return nullptr;
     }
-    delete[] p;
-    return NULL;
+    JNIEnv *env = NULL;
+    int ret = vm->AttachCurrentThread(&env, NULL);
+    if (ret == 0 && env) {
+        int state = params[1];
+        env->CallVoidMethod(player->jPlayerObject, jMid_onPlayStateChangeId, state);
+    } else {
+        LOGE("onStateChange() get jEnv error");
+    }
+    vm->DetachCurrentThread();
+    free(p);
+    return nullptr;
 }
 
 
@@ -173,6 +177,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz,
     if (player == NULL) {
         return PLAYER_RESULT_ERROR;
     }
+
     player->SetPlayStateChangeListener(reinterpret_cast<void (*)(PlayState, int) >
                                        (onPlayStateChange));
 
@@ -191,6 +196,8 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz,
 
     return player->Configure(native_window, w, h, false);
 }
+
+
 
 extern "C"
 JNIEXPORT jint JNICALL

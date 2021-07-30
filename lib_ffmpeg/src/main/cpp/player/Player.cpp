@@ -790,6 +790,7 @@ int Player::InitPlayerInfo() {
         LOGW("InitPlayerInfo(),playerInfo is not NULL,it may be inited!");
     }
 
+    playerInfo->SetStateListener(playStateListener);
     if (playerInfo->GetPlayState() == INITIALIZED) {
         return PLAYER_RESULT_OK;
     }
@@ -1002,12 +1003,13 @@ int Player::PrepareRecorder(char *outPath) {
             recorderInfo->inputVideoStream = playerInfo->inputVideoStream;
         }
     }
+    recorderInfo->SetStateListener(recorderStateListener);
     recorderInfo->storeFile = outPath;
     recorderInfo->SetRecordState(RECORD_PREPARED);
     return PLAYER_RESULT_OK;
 }
 
-int Player::StartRecord() {
+int Player::StartRecord() const {
     if (!playerInfo || !recorderInfo) {
         LOGE("------StartRecord() player init or recorder not prepare");
         return PLAYER_RESULT_ERROR;
@@ -1101,13 +1103,15 @@ Player::~Player() {
 
 
 void Player::SetRecordStateChangeListener(void (*listener)(RecordState, int)) {
-    if (recorderInfo) {
+    recorderStateListener = listener;
+    if(recorderInfo){
         recorderInfo->SetStateListener(listener);
     }
 }
 
 void Player::SetPlayStateChangeListener(void (*listener)(PlayState, int)) {
-    if (playerInfo) {
+    playStateListener = listener;
+    if(playerInfo){
         playerInfo->SetStateListener(listener);
     }
 }
