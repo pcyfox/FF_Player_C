@@ -1,5 +1,8 @@
 package com.pcyfox.lib_ffmpeg;
 
+import androidx.annotation.Keep;
+
+@Keep
 public enum RecordState {
     UN_START_RECORD,
     RECORD_ERROR,
