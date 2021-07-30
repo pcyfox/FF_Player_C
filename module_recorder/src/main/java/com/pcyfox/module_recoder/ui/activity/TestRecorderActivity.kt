@@ -200,7 +200,9 @@ class TestRecorderActivity : AppCompatActivity() {
                 getVideoFile(false).absolutePath,
                 getAudioFile(false).absolutePath,
                 getOutFile().absolutePath
-            )
+            ) {
+                Log.d(TAG, "mux() ------------------------------progress=${it * 100}")
+            }
             if (ret) {
                 Log.d(TAG, "mux() called over!")
                 ToastUtils.showShort("MUX Success!!")

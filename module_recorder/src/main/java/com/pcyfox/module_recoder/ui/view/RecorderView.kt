@@ -8,10 +8,7 @@ import android.view.SurfaceView
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.annotation.WorkerThread
-import com.pcyfox.lib_ffmpeg.FFPlayer
-import com.pcyfox.lib_ffmpeg.OnPlayStateChangeListener
-import com.pcyfox.lib_ffmpeg.PlayState
-import com.pcyfox.lib_ffmpeg.RecordState
+import com.pcyfox.lib_ffmpeg.*
 import com.pcyfox.module_recoder.audio.AudioRecorder
 import com.pcyfox.module_recoder.audio.MediaConstants
 import com.pcyfox.module_recoder.audio.RecorderContract
@@ -204,12 +201,18 @@ class RecorderView : RelativeLayout {
     }
 
     @WorkerThread
-    fun mux(videoPath: String, audioPath: String, outPath: String): Boolean {
+    fun mux(
+        videoPath: String,
+        audioPath: String,
+        outPath: String,
+        onMuxProgressListener: OnMuxProgressListener? = null
+    ): Boolean {
         Log.d(
             TAG,
             "mux() called with: videoPath = $videoPath, audioPath = $audioPath, outPath = $outPath"
         )
-        return FFPlayer.mux(audioPath, videoPath, outPath) >= 0
+
+        return FFPlayer.mux(audioPath, videoPath, outPath, onMuxProgressListener) >= 0
     }
 
 

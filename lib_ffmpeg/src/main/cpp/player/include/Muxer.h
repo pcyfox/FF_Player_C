@@ -12,6 +12,9 @@
 #include <android_log.h>
 #include "PlayerResult.h"
 
-int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath);
+
+int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
+              void (*call_back)(float progress));
+
 
 #endif //TCTS_EDU_APP_RECODER_MUXER_H

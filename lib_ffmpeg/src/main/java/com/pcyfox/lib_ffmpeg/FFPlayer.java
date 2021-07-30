@@ -28,6 +28,7 @@ public class FFPlayer {
 
     private OnPlayStateChangeListener onPlayStateChangeListener;
     private OnRecordStateChangeListener onRecordStateChangeListener;
+    private static OnMuxProgressListener onMuxProgressListener;
 
     public void setOnPlayStateChangeListener(OnPlayStateChangeListener onPlayStateChangeListener) {
         this.onPlayStateChangeListener = onPlayStateChangeListener;
@@ -36,6 +37,7 @@ public class FFPlayer {
     public void setOnRecordStateChangeListener(OnRecordStateChangeListener onRecordStateChangeListener) {
         this.onRecordStateChangeListener = onRecordStateChangeListener;
     }
+
 
     public PlayState getPlayState() {
         return playState;
@@ -83,6 +85,7 @@ public class FFPlayer {
         }
     }
 
+
     public void onRecorderStateChange(int state) {
         Log.d(TAG, "onRecorderStateChange() called with: state = [" + state + "]");
         for (RecordState s : RecordState.values()) {
@@ -93,6 +96,14 @@ public class FFPlayer {
                 }
             }
         }
+    }
+
+
+    public static void onMuxProgress(float progress) {
+        if (onMuxProgressListener != null) {
+            onMuxProgressListener.onProgress(progress);
+        }
+        //Log.d(TAG, "onMuxProgress() called with: progress = [" + progress * 100 + "]");
     }
 
 
@@ -175,6 +186,7 @@ public class FFPlayer {
         release(id);
         onRecordStateChangeListener = null;
         onPlayStateChangeListener = null;
+        onMuxProgressListener = null;
         playState = PlayState.RELEASE;
         if (surfaceView != null) {
             if (surfaceView.getTag() instanceof SurfaceHolder.Callback) {
@@ -203,7 +215,8 @@ public class FFPlayer {
         }
     }
 
-    public static int mux(String audioFile, String videoFile, String outFile) {
+    public static int mux(String audioFile, String videoFile, String outFile,OnMuxProgressListener listener) {
+        onMuxProgressListener=listener;
         Log.d(TAG, "mux() called with: audioFile = [" + audioFile + "], videoFile = [" + videoFile + "], outFile = [" + outFile + "]");
         File video = new File(videoFile);
         if (!video.exists()) {

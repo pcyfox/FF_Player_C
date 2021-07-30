@@ -60,10 +60,25 @@ ReleaseResource(AVFormatContext **in_fmt1, AVFormatContext **in_fmt2, AVFormatCo
                 * 这里流里的时间基in_stream->time_base和out_stream->time_base，是容器中的时间基，就是 tbn
                 *
 */
-int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
+long GetFileSize(char *filename) {
+    FILE *fp = fopen(filename, "r");
+    if (!fp) return -1;
+    fseek(fp, 0L, SEEK_END);
+    long size = ftell(fp);
+    fclose(fp);
+    return size;
+}
+
+
+int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
+              void (*call_back)(float progress)) {
 
     LOGIX(LOG_TAG, "start to mux file audio path=%s,video path=%s,dest path=%s", audio_srcPath,
           video_srcPath, destPath);
+    long video_file_size = GetFileSize(video_srcPath);
+    long audio_file_size = GetFileSize(audio_srcPath);
+
+    LOGIX(LOG_TAG, "audio file size=%ld,video file size=%ld", audio_file_size, video_file_size);
 
     AVFormatContext *audio_fmtCtx = NULL, *video_fmtCtx = NULL, *out_fmtCtx = NULL;
     int audio_stream_index = -1;
@@ -117,6 +132,8 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
         LOGEX(LOG_TAG, "not found video stream!");
         return PLAYER_RESULT_ERROR;
     }
+
+
     LOGDX(LOG_TAG, "alloc output context by file name");
     // 根据文件后缀名创建封装上下文，用于封装到对应的文件中
     ret = avformat_alloc_output_context2(&out_fmtCtx, NULL, NULL, destPath);
@@ -174,7 +191,7 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
     bool found_audio = false, found_video = false;
     int64_t org_pts = 0;
     static int64_t video_pkt_index = 0;
-
+    static long total_video_frame_size = 0;
     LOGDX(LOG_TAG, "real start to mux pkt");
     do {
         //读取音频数据
@@ -250,11 +267,11 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
             }
             video_pkt_index++;
         }
-
         // 写入数据 视频在前
         if (found_video && found_audio && !video_finish && !audio_finish) {
             if ((ret = av_compare_ts(audioPacket->pts, audio_ou_stream->time_base,
                                      videoPacket->pts, video_out_stream->time_base)) > 0) {
+                total_video_frame_size += videoPacket->size;
                 // 写入视频
                 if ((ret = av_write_frame(out_fmtCtx, videoPacket)) < 0) {
                     LOGEX(LOG_TAG, "av_write_frame video  fail %d,pts=%lld", ret,
@@ -278,6 +295,7 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
             }
         } else if (!video_finish && found_video && !found_audio) {
             // 只有视频
+            total_video_frame_size += videoPacket->size;
             if ((ret = av_write_frame(out_fmtCtx, videoPacket)) < 0) {
                 LOGEX(LOG_TAG, "only write video  fail %d", ret);
                 ReleaseResource(&audio_fmtCtx, &video_fmtCtx, &out_fmtCtx);
@@ -296,16 +314,25 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath) {
             found_audio = false;
             av_packet_unref(audioPacket);
         }
+        if (call_back) {
+            call_back((float) total_video_frame_size / (float) video_file_size);
+        }
     } while (!audio_finish && !video_finish);
     // 结束写入
     if (out_fmtCtx) {
         ret = av_write_trailer(out_fmtCtx);
         LOGIX(LOG_TAG, "write file trailer over!,ret=%d", ret);
     }
-    video_pkt_index = 0;
+    if (call_back) {
+        call_back(1.0f);
+    }
     // 释放内存
     ReleaseResource(&audio_fmtCtx, &video_fmtCtx, &out_fmtCtx);
     LOGDX(LOG_TAG, "mux over,ret=%d, audio path=%s,video path=%s,dest path=%s", ret, audio_srcPath,
           video_srcPath, destPath);
+
+    video_pkt_index = 0;
+    total_video_frame_size = 0;
     return ret >= 0 ? PLAYER_RESULT_OK : PLAYER_RESULT_ERROR;
 }
+

@@ -27,6 +27,10 @@ std::map<int, Player *> playerCache;
 
 static jmethodID jMid_onPlayStateChangeId = NULL;
 static jmethodID jMid_onRecordStateChangeId = NULL;
+static jmethodID jMid_onMuxProgress = NULL;
+
+static jclass clazz = NULL;
+
 static JavaVM *vm = NULL;
 
 
@@ -80,6 +84,7 @@ void *ChangeRecordState(void *p) {
     return nullptr;
 }
 
+
 void *ChangePlayState(void *p) {
     int *params = (int *) p;
     int id = params[0];
@@ -126,6 +131,19 @@ const void *onRecordStateChange(RecordState state, int id) {
     }
     return NULL;
 }
+
+
+void *onMuxProgress(float p) {
+    JNIEnv *env = NULL;
+    int ret = vm->AttachCurrentThread(&env, NULL);
+    if (ret == 0 && env) {
+        env->CallStaticVoidMethod(clazz, jMid_onMuxProgress, p);
+    } else {
+        LOGE("onStateChange() get jEnv error");
+    }
+    return nullptr;
+}
+
 
 extern "C"
 JNIEXPORT jint JNICALL
@@ -225,12 +243,13 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug
     if (findPlayer(id) == NULL) {
         auto *player = new Player(id);
         player->jPlayerObject = env->NewGlobalRef(thiz);
-        player->SetDebug(isDebug);
+        Player::SetDebug(isDebug);
         playerCache.insert(std::map<int, Player *>::value_type(id, player));
-        jclass clazz = env->GetObjectClass(thiz);
+        clazz = env->GetObjectClass(thiz);
 
         jMid_onPlayStateChangeId = env->GetMethodID(clazz, "onPlayerStateChange", "(I)V");
         jMid_onRecordStateChangeId = env->GetMethodID(clazz, "onRecorderStateChange", "(I)V");
+        jMid_onMuxProgress = env->GetStaticMethodID(clazz, "onMuxProgress", "(F)V");
         return PLAYER_RESULT_OK;
     } else {
         return PLAYER_RESULT_ERROR;
@@ -246,7 +265,6 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_stop(JNIEnv *env, jobject thiz, int id) {
     }
     return player->Stop();
 }
-
 
 
 
@@ -334,11 +352,13 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_muxAV(JNIEnv *env, jclass clazz, jstring audio_file,
                                            jstring video_file, jstring out_file) {
+
     char *audioFile = (char *) env->GetStringUTFChars(audio_file, 0);
     char *videoFile = (char *) env->GetStringUTFChars(video_file, 0);
     char *outFile = (char *) env->GetStringUTFChars(out_file, 0);
     if (audioFile && videoFile && outFile) {
-        return static_cast<jint>(MuxAVFile(audioFile, videoFile, outFile));
+        return static_cast<jint>(MuxAVFile(audioFile, videoFile, outFile,
+                                           reinterpret_cast<void (*)(float)>(onMuxProgress)));
     } else {
         return PLAYER_RESULT_ERROR;
     }
