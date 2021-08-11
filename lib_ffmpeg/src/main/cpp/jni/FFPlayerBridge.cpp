@@ -64,6 +64,9 @@ jint JNI_OnLoad(JavaVM *jvm, void *reserved) {
 }
 
 void *ChangeRecordState(void *p) {
+    if(jMid_onRecordStateChangeId==NULL){
+        return nullptr;
+    }
     int *params = (int *) p;
     int id = params[0];
     Player *player = findPlayer(id);
@@ -86,6 +89,9 @@ void *ChangeRecordState(void *p) {
 
 
 void *ChangePlayState(void *p) {
+    if (jMid_onPlayStateChangeId == NULL) {
+        return nullptr;
+    }
     int *params = (int *) p;
     int id = params[0];
     Player *player = findPlayer(id);
@@ -134,6 +140,9 @@ const void *onRecordStateChange(RecordState state, int id) {
 
 
 void *onMuxProgress(float p) {
+    if (jMid_onMuxProgress == NULL) {
+        return nullptr;
+    }
     JNIEnv *env = NULL;
     int ret = vm->AttachCurrentThread(&env, NULL);
     if (ret == 0 && env) {
@@ -347,6 +356,10 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_release(JNIEnv *env, jobject thiz, jint id)
     env->DeleteGlobalRef(player->jPlayerObject);
     removePlayer(id);
     player->Release();
+    jMid_onMuxProgress = NULL;
+    jMid_onPlayStateChangeId = NULL;
+    jMid_onRecordStateChangeId = NULL;
+
 }
 extern "C"
 JNIEXPORT jint JNICALL
