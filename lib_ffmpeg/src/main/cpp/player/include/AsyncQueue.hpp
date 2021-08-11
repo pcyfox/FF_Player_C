@@ -8,6 +8,7 @@
 #include "queue"
 #include "pthread.h"
 #include "PlayerResult.h"
+#include <string>
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,7 +29,7 @@ public:
     pthread_mutex_t mutexPacket;
     pthread_cond_t condPacket;
     volatile bool quit = false;
-    char *tag = "";
+    std::string tag;
 
 public:
     AsyncQueue();
@@ -59,7 +60,7 @@ AsyncQueue<_TYPE>::~AsyncQueue() {
     clearAVPacket();
     pthread_mutex_destroy(&mutexPacket);
     pthread_cond_destroy(&condPacket);
-    //LOGW("AsyncQueue Deleted");
+    LOGW("%s,AsyncQueue Deleted", tag.c_str());
 }
 
 
@@ -97,7 +98,7 @@ int AsyncQueue<_TYPE>::putAvPacket(_TYPE *packet) {
     if (quit) { return PLAYER_RESULT_ERROR; }
     pthread_mutex_lock(&mutexPacket);
     if (queuePacket.size() > 260) {
-        LOGE("%s,AsyncQueue size is to large!", tag);
+        LOGE("%s,AsyncQueue size is to large!", tag.c_str());
         while (!queuePacket.empty()) {
             AVPacket *avPacket = queuePacket.front();
             queuePacket.pop();

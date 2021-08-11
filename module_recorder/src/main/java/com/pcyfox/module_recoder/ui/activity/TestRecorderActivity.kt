@@ -220,6 +220,7 @@ class TestRecorderActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         rv_record.stop()
+        rv_record.release()
     }
 
 }

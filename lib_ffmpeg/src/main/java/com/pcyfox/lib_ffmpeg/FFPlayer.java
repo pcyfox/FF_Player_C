@@ -188,6 +188,7 @@ public class FFPlayer {
         onPlayStateChangeListener = null;
         onMuxProgressListener = null;
         playState = PlayState.RELEASE;
+
         if (surfaceView != null) {
             if (surfaceView.getTag() instanceof SurfaceHolder.Callback) {
                 surfaceView.getHolder().removeCallback((SurfaceHolder.Callback) surfaceView.getTag());

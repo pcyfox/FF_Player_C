@@ -77,6 +77,7 @@ AVStream *findStream(AVFormatContext *i_fmt_ctx, AVMediaType type) {
 }
 
 void StartRelease(PlayerInfo *playerInfo, RecorderInfo *recorderInfo) {
+    LOGW("StartRelease() called !");
     if (playerInfo) {
         delete playerInfo;
         playerInfo = NULL;
@@ -189,13 +190,14 @@ void *OpenResource(void *info) {
     LOGI("OpenResource() start open=%s", url);
     playerInfo->SetPlayState(EXECUTING, true);
     int ret = avformat_open_input(&playerInfo->inputContext, url, NULL, NULL);
+    if (playerInfo->GetPlayState() != EXECUTING || playerInfo->inputContext == NULL) {
+        LOGI("close input context!after open resource");
+        avformat_close_input(&playerInfo->inputContext);
+        playerInfo->inputContext = NULL;
+        return NULL;
+    }
+
     if (ret == 0) {
-        if (playerInfo->GetPlayState() == STOPPED || playerInfo->inputContext == NULL) {
-            LOGI("close input context!after open resource");
-            avformat_close_input(&playerInfo->inputContext);
-            playerInfo->inputContext = NULL;
-            return NULL;
-        }
         /* find stream info  */
         LOGI("----------open resource success!,start to find stream info-------------");
         if (avformat_find_stream_info(playerInfo->inputContext, NULL) < 0) {
@@ -481,7 +483,7 @@ void *Decode(void *info) {
             playerInfo->packetQueue.clearAVPacket();
             continue;
         }
-        if (state != STARTED || state == ERROR) {
+        if (state != STARTED) {
             break;
         }
 
@@ -511,7 +513,6 @@ void *Decode(void *info) {
                         LOGE("queue input buffer error status=%d", status);
                     }
                 }
-
                 av_packet_unref(packet);
                 av_packet_free(&packet);
             }
@@ -741,10 +742,7 @@ void *DeMux(void *param) {
             SetPlayState(STOPPED,
                          true);
     LOGI("-----------DeMux stop over! ----------------");
-    playerInfo->packetQueue.
-
-            clearAVPacket();
-
+    playerInfo->packetQueue.clearAVPacket();
     if (playerInfo->GetPlayState() == RELEASE) {
         StartRelease(playerInfo, NULL);
     }
@@ -773,12 +771,9 @@ void Player::StartOpenResourceThread(char *res) const {
 
     LOGI("start open resource thread");
     playerInfo->resource = res;
-    pthread_create(&playerInfo
-            ->open_resource_thread, NULL, OpenResource, playerInfo);
-    pthread_setname_np(playerInfo
-                               ->open_resource_thread, "open_resource_thread");
-    pthread_detach(playerInfo
-                           ->open_resource_thread);
+    pthread_create(&playerInfo->open_resource_thread, NULL, OpenResource, playerInfo);
+    pthread_setname_np(playerInfo->open_resource_thread, "open_resource_thread");
+    pthread_detach(playerInfo->open_resource_thread);
 }
 
 int Player::InitPlayerInfo() {
@@ -1081,7 +1076,7 @@ int Player::Release() const {
         recorderInfo->SetRecordState(RECORDER_RELEASE);
     }
 
-    StartRelease(playerInfo, recorderInfo);
+    // StartRelease(playerInfo, recorderInfo);
     LOGD("Release() over!");
     return PLAYER_RESULT_OK;
 }
@@ -1104,14 +1099,14 @@ Player::~Player() {
 
 void Player::SetRecordStateChangeListener(void (*listener)(RecordState, int)) {
     recorderStateListener = listener;
-    if(recorderInfo){
+    if (recorderInfo) {
         recorderInfo->SetStateListener(listener);
     }
 }
 
 void Player::SetPlayStateChangeListener(void (*listener)(PlayState, int)) {
     playStateListener = listener;
-    if(playerInfo){
+    if (playerInfo) {
         playerInfo->SetStateListener(listener);
     }
 }

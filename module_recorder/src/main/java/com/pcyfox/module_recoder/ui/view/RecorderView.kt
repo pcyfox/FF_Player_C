@@ -29,6 +29,7 @@ class RecorderView : RelativeLayout {
     private val TAG = "RecorderView"
     private val ffPlayer: FFPlayer = FFPlayer(hashCode())
     private val audioRecorder = AudioRecorder.getInstance()
+    private var isNeedRelease = false
     var avRecorderCallback: AVRecorderCallback? = null
     var listener: OnPlayStateChangeListener? = null
     private var isOnlyRecordeVideo = false
@@ -40,9 +41,14 @@ class RecorderView : RelativeLayout {
     }
 
 
-    fun setOnStateChangeListener(listener: OnPlayStateChangeListener) {
+    fun setOnStateChangeListener(listener: OnPlayStateChangeListener?) {
         this.listener = listener
-        ffPlayer.setOnPlayStateChangeListener(listener)
+        ffPlayer.setOnPlayStateChangeListener { state ->
+            if (isNeedRelease && state == PlayState.STOPPED) {
+                doRelease()
+            }
+            listener?.onStateChange(state)
+        }
     }
 
     fun getPlayState() = ffPlayer.playState
@@ -151,6 +157,7 @@ class RecorderView : RelativeLayout {
 
 
     fun setResource(url: String, isJustRecord: Boolean = false) {
+        isNeedRelease = false
         Log.d(
             TAG,
             "setResource() called with: url = $url, isJustRecord= $isJustRecord"
@@ -178,11 +185,20 @@ class RecorderView : RelativeLayout {
     }
 
     fun release() {
-        if (getPlayState() != PlayState.STOPPED) {
-            Log.w(TAG, "release() called not in stopped state!maybe cause crash")
+        if (getPlayState() == PlayState.STOPPED) {
+            doRelease()
+        } else {
+            stop()
+            isNeedRelease = true
         }
+    }
+
+
+    private fun doRelease() {
+        Log.w(TAG, "doRelease() called")
         ffPlayer.release()
-        listener = null
+        setOnStateChangeListener(null)
+        removeAllViews()
     }
 
     fun pause(): Boolean {

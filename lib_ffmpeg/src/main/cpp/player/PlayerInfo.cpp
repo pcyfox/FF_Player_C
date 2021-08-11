@@ -16,6 +16,8 @@ PlayerInfo::PlayerInfo() {
     if (!inputContext) {
         LOGE("avformat_alloc_context fail");
     }
+
+    packetQueue.tag=&"player:"[id];
     LOGD("-------PlayerInfo created---------");
 }
 
