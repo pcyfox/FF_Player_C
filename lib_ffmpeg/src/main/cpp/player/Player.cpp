@@ -287,15 +287,15 @@ void *OpenResource(void *info) {
             return (void *) PLAYER_RESULT_ERROR;
         }
 
-        createVideoCodec(&playerInfo->videoCodec, playerInfo->windowWith,
-                         playerInfo->windowHeight,
-                         codecpar->extradata,
-                         codecpar->extradata_size,
-                         codecpar->extradata,
-                         codecpar->extradata_size,
-                         playerInfo->window, playerInfo->mine);
+        ret = createVideoCodec(&playerInfo->videoCodec, playerInfo->windowWith,
+                               playerInfo->windowHeight,
+                               codecpar->extradata,
+                               codecpar->extradata_size,
+                               codecpar->extradata,
+                               codecpar->extradata_size,
+                               playerInfo->window, playerInfo->mine);
 
-        if (playerInfo->videoCodec) {
+        if (ret == PLAYER_RESULT_OK) {
             LOGI("OpenResource():  createAMediaCodec success!,state->PREPARED");
             playerInfo->SetPlayState(PREPARED, true);
         } else {
@@ -309,7 +309,7 @@ void *OpenResource(void *info) {
     }
 
 
-    return (void *) PLAYER_RESULT_OK;
+    return (void *) ret;
 }
 
 //抽取音频数据
