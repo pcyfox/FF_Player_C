@@ -189,7 +189,9 @@ class RecorderView : RelativeLayout {
             doRelease()
         } else {
             stop()
-            isNeedRelease = true
+            postDelayed({
+                doRelease()
+            }, 100)
         }
     }
 

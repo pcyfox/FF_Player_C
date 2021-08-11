@@ -44,7 +44,7 @@ public:
 
     int PrepareRecorder(char *outPath);
 
-    int Configure(ANativeWindow *window, int w, int h, bool isOnly);
+    int Configure(ANativeWindow *window, int w, int h, bool isOnly) const;
 
     int OnWindowChange(ANativeWindow *window, int w, int h) const;
 
