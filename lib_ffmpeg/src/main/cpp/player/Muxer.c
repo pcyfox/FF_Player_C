@@ -3,8 +3,6 @@
 //
 #include "include/Muxer.h"
 
-#define LOG_TAG "Muxer------------->"
-
 
 static void
 ReleaseResource(AVFormatContext **in_fmt1, AVFormatContext **in_fmt2, AVFormatContext **ou_fmt3) {
@@ -73,12 +71,12 @@ long GetFileSize(char *filename) {
 int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
               void (*call_back)(float progress)) {
 
-    LOGIX(LOG_TAG, "start to mux file audio path=%s,video path=%s,dest path=%s", audio_srcPath,
+    LOGI("start to mux file audio path=%s,video path=%s,dest path=%s", audio_srcPath,
           video_srcPath, destPath);
     long video_file_size = GetFileSize(video_srcPath);
     long audio_file_size = GetFileSize(audio_srcPath);
 
-    LOGIX(LOG_TAG, "audio file size=%ld,video file size=%ld", audio_file_size, video_file_size);
+    LOGI("audio file size=%ld,video file size=%ld", audio_file_size, video_file_size);
 
     AVFormatContext *audio_fmtCtx = NULL, *video_fmtCtx = NULL, *out_fmtCtx = NULL;
     int audio_stream_index = -1;
@@ -89,27 +87,27 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
 
     int ret = PLAYER_RESULT_ERROR;
     // 解封装音频文件
-    LOGDX(LOG_TAG, "open input audio");
+    LOGD("open input audio");
     ret = avformat_open_input(&audio_fmtCtx, audio_srcPath, NULL, NULL);
     if (ret < 0) {
         LOGE("open input audio fail %d", ret);
         return PLAYER_RESULT_ERROR;
     }
-    LOGDX(LOG_TAG, "find audio stream info ");
+    LOGD("find audio stream info ");
     ret = avformat_find_stream_info(audio_fmtCtx, NULL);
     if (ret < 0) {
-        LOGEX(LOG_TAG, "find audio stream info audio fail");
+        LOGE("find audio stream info audio fail");
         ReleaseResource(&audio_fmtCtx, NULL, NULL);
         return PLAYER_RESULT_ERROR;
     }
     //找到音频流index
     audio_stream_index = av_find_best_stream(audio_fmtCtx, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
-    LOGDX(LOG_TAG, "find audio stream index=%d", audio_stream_index);
+    LOGD("find audio stream index=%d", audio_stream_index);
     if (audio_stream_index < 0) {
-        LOGWX(LOG_TAG, "not found audio stream!");
+        LOGW("not found audio stream!");
     }
 
-    LOGDX(LOG_TAG, "open input video");
+    LOGD("open input video");
     // 解封装视频文件
     ret = avformat_open_input(&video_fmtCtx, video_srcPath, NULL, NULL);
     if (ret < 0) {
@@ -118,32 +116,32 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
         return PLAYER_RESULT_ERROR;
     }
 
-    LOGDX(LOG_TAG, "find video stream info");
+    LOGD("find video stream info");
     ret = avformat_find_stream_info(video_fmtCtx, NULL);
     if (ret < 0) {
-        LOGEX(LOG_TAG, "find video stream_info fail");
+        LOGE("find video stream_info fail");
         ReleaseResource(&audio_fmtCtx, &video_fmtCtx, NULL);
         return PLAYER_RESULT_ERROR;
     }
     //找到视频流index
     video_stream_index = av_find_best_stream(video_fmtCtx, AVMEDIA_TYPE_VIDEO, -1, -1, NULL, 0);
-    LOGDX(LOG_TAG, "find video stream index=%d", video_stream_index);
+    LOGD("find video stream index=%d", video_stream_index);
     if (video_stream_index < 0) {
-        LOGEX(LOG_TAG, "not found video stream!");
+        LOGE("not found video stream!");
         return PLAYER_RESULT_ERROR;
     }
 
 
-    LOGDX(LOG_TAG, "alloc output context by file name");
+    LOGD("alloc output context by file name");
     // 根据文件后缀名创建封装上下文，用于封装到对应的文件中
     ret = avformat_alloc_output_context2(&out_fmtCtx, NULL, NULL, destPath);
     if (ret < 0) {
-        LOGEX(LOG_TAG, "avformat alloc_output_context2 fail %d", ret);
+        LOGE("avformat alloc_output_context2 fail %d", ret);
         ReleaseResource(&audio_fmtCtx, &video_fmtCtx, NULL);
         return PLAYER_RESULT_ERROR;
     }
 
-    LOGDX(LOG_TAG, "new audio out stream,and copy codec parameters");
+    LOGD("new audio out stream,and copy codec parameters");
     //获取创建音频输出流,并从输入流中拷贝编码参数
     if (audio_stream_index >= 0) {
         audio_ou_stream = avformat_new_stream(out_fmtCtx, NULL);//创建音频输出流
@@ -155,34 +153,34 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
         }
     }
 
-    LOGDX(LOG_TAG, "new video out stream,and copy codec parameters");
+    LOGD("new video out stream,and copy codec parameters");
     if (video_stream_index >= 0) {
         video_out_stream = avformat_new_stream(out_fmtCtx, NULL);
         video_in_stream = video_fmtCtx->streams[video_stream_index];
         if (avcodec_parameters_copy(video_out_stream->codecpar, video_in_stream->codecpar) < 0) {
-            LOGEX(LOG_TAG, "copy video codecpar  fail!");
+            LOGE("copy video codecpar  fail!");
             ReleaseResource(&audio_fmtCtx, &video_fmtCtx, &out_fmtCtx);
             return PLAYER_RESULT_ERROR;
         }
     }
 
-    LOGDX(LOG_TAG, "create and open out file");
+    LOGD("create and open out file");
     //打开输出文件
     if (!(out_fmtCtx->flags & AVFMT_NOFILE)) {
         if (avio_open(&out_fmtCtx->pb, destPath, AVIO_FLAG_WRITE) < 0) {
-            LOGEX(LOG_TAG, "open file fail! file=%s", destPath);
+            LOGE("open file fail! file=%s", destPath);
             return PLAYER_RESULT_ERROR;
         }
     }
 
     // 写入头文件
     if ((ret = avformat_write_header(out_fmtCtx, NULL)) < 0) {
-        LOGEX(LOG_TAG, "avformat write header fail %d", ret);
+        LOGE("avformat write header fail %d", ret);
         ReleaseResource(&audio_fmtCtx, &video_fmtCtx, &out_fmtCtx);
         return PLAYER_RESULT_ERROR;
     }
 
-    LOGDX(LOG_TAG, "start to write file header success!");
+    LOGD("start to write file header success!");
 
     AVPacket *audioPacket = av_packet_alloc();
     AVPacket *videoPacket = av_packet_alloc();
@@ -192,7 +190,7 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
     int64_t org_pts = 0;
     static int64_t video_pkt_index = 0;
     static long total_video_frame_size = 0;
-    LOGDX(LOG_TAG, "real start to mux pkt");
+    LOGD("real start to mux pkt");
     do {
         //读取音频数据
         if (!audio_finish && !found_audio && audio_stream_index != -1) {
@@ -239,7 +237,7 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
                 found_video = true;
                 videoPacket->stream_index = video_out_stream->index;
                 if (videoPacket->dts == AV_NOPTS_VALUE) {
-                    LOGDX(LOG_TAG, "video pkt not have pts,need calculate by frame rate");
+                    LOGD("video pkt not have pts,need calculate by frame rate");
                     AVRational o_time_base = video_out_stream->time_base;
                     int64_t frame_duration =
                             (double) AV_TIME_BASE / av_q2d(video_in_stream->r_frame_rate);
@@ -274,43 +272,42 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
                 total_video_frame_size += videoPacket->size;
                 // 写入视频
                 if ((ret = av_write_frame(out_fmtCtx, videoPacket)) < 0) {
-                    LOGEX(LOG_TAG, "av_write_frame video  fail %d,pts=%lld", ret,
-                          videoPacket->pts);
+                    LOGE("av_write_frame video  fail %d,pts=%lld", ret, videoPacket->pts);
                     ReleaseResource(&audio_fmtCtx, &video_fmtCtx, &out_fmtCtx);
                     break;
                 }
                 found_video = false;
-                LOGDX(LOG_TAG, "write video pts=%lld", videoPacket->pts);
+                LOGD("write video pts=%lld", videoPacket->pts);
                 av_packet_unref(videoPacket);
             } else {
                 // 写入音频
                 if ((ret = av_write_frame(out_fmtCtx, audioPacket)) < 0) {
-                    LOGEX(LOG_TAG, "av_write_frame audio  fail %d", ret);
+                    LOGE("av_write_frame audio  fail %d", ret);
                     ReleaseResource(&audio_fmtCtx, &video_fmtCtx, &out_fmtCtx);
                     break;
                 }
                 found_audio = false;
-                LOGDX(LOG_TAG, "write audio pts=%lld", audioPacket->pts);
+                LOGD("write audio pts=%lld", audioPacket->pts);
                 av_packet_unref(audioPacket);
             }
         } else if (!video_finish && found_video && !found_audio) {
             // 只有视频
             total_video_frame_size += videoPacket->size;
             if ((ret = av_write_frame(out_fmtCtx, videoPacket)) < 0) {
-                LOGEX(LOG_TAG, "only write video  fail %d", ret);
+                LOGE("only write video  fail %d", ret);
                 ReleaseResource(&audio_fmtCtx, &video_fmtCtx, &out_fmtCtx);
                 break;
             }
-            LOGDX(LOG_TAG, "only write video");
+            LOGD("only write video");
             found_video = false;
             av_packet_unref(videoPacket);
         } else if (!found_video && found_audio && !audio_finish) {
             // 只有音频
             if ((ret = av_write_frame(out_fmtCtx, audioPacket)) < 0) {
-                LOGEX(LOG_TAG, "only write audio fail %d", ret);
+                LOGE("only write audio fail %d", ret);
                 break;
             }
-            LOGDX(LOG_TAG, "only write video");
+            LOGD("only write video");
             found_audio = false;
             av_packet_unref(audioPacket);
         }
@@ -321,15 +318,15 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
     // 结束写入
     if (out_fmtCtx) {
         ret = av_write_trailer(out_fmtCtx);
-        LOGIX(LOG_TAG, "write file trailer over!,ret=%d", ret);
+        LOGI("write file trailer over!,ret=%d", ret);
     }
     if (call_back) {
         call_back(1.0f);
     }
     // 释放内存
     ReleaseResource(&audio_fmtCtx, &video_fmtCtx, &out_fmtCtx);
-    LOGDX(LOG_TAG, "mux over,ret=%d, audio path=%s,video path=%s,dest path=%s", ret, audio_srcPath,
-          video_srcPath, destPath);
+    LOGD("mux over,ret=%d, audio path=%s,video path=%s,dest path=%s", ret, audio_srcPath,
+         video_srcPath, destPath);
 
     video_pkt_index = 0;
     total_video_frame_size = 0;

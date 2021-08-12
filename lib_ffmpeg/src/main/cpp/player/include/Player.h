@@ -9,7 +9,7 @@
 
 #include <PlayerInfo.h>
 #include <RecorderInfo.h>
-#include "JPlayerMethods.h"
+#include "JPlayerObject.h"
 
 
 class Player {
@@ -20,7 +20,6 @@ public:
     ~Player();
 
 public:
-    jobject jPlayerObject{};
     int playerId;
     PlayerInfo *playerInfo = NULL;
     RecorderInfo *recorderInfo = NULL;
@@ -28,7 +27,7 @@ public:
     void (*playStateListener)(PlayState, int) = NULL;
     void (*recorderStateListener)(RecordState, int) = NULL;
 
-    JPlayerMethods jPlayerMethods;
+    JPlayerObject jPlayer;
 
 
 public:
@@ -71,7 +70,7 @@ public:
 
     int ResumeRecord(void) const;
 
-    int Release(void) const;
+    int Release(void) ;
 
     void SetPlayStateChangeListener(void (*listener)(PlayState playState, int id));
 

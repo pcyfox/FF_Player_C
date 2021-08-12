@@ -52,6 +52,7 @@ PlayerInfo::~PlayerInfo() {
     deMux_thread = 0;
     open_resource_thread = 0;
     stateListener = NULL;
+
     LOGW("-------PlayerInfo Delete Over---------");
 }
 

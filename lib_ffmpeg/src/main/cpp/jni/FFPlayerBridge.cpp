@@ -3,7 +3,6 @@
 //
 
 #include <jni.h>
-#include <android_log.h>
 #include "FFPlayerBridge.h"
 #include <android/native_window_jni.h>
 #include <StateListener.h>
@@ -15,6 +14,7 @@
 #ifdef __cplusplus
 extern "C" {
 #include "Muxer.h"
+#include "android_log.h"
 #endif
 #ifdef __cplusplus
 }
@@ -67,15 +67,15 @@ void *ChangeRecordState(void *p) {
         LOGE("onStateChange() not found player with id=%d", id);
         return nullptr;
     }
-    if (player->jPlayerMethods.jMid_onRecordStateChangeId == NULL) {
+    if (player->jPlayer.jMid_onRecordStateChangeId == NULL) {
         return nullptr;
     }
     JNIEnv *env = NULL;
     int ret = vm->AttachCurrentThread(&env, NULL);
     if (ret == 0 && env) {
         int state = params[1];
-        env->CallVoidMethod(player->jPlayerObject,
-                            player->jPlayerMethods.jMid_onRecordStateChangeId, state);
+        env->CallVoidMethod(player->jPlayer.jPlayerObject,
+                            player->jPlayer.jMid_onRecordStateChangeId, state);
     } else {
         LOGE("onStateChange() get jEnv error");
     }
@@ -94,14 +94,14 @@ void *ChangePlayState(void *p) {
         return nullptr;
     }
 
-    if (player->jPlayerMethods.jMid_onPlayStateChangeId == NULL) {
+    if (player->jPlayer.jMid_onPlayStateChangeId == NULL) {
         return nullptr;
     }
     JNIEnv *env = NULL;
     int ret = vm->AttachCurrentThread(&env, NULL);
     if (ret == 0 && env) {
         int state = params[1];
-        env->CallVoidMethod(player->jPlayerObject, player->jPlayerMethods.jMid_onPlayStateChangeId,
+        env->CallVoidMethod(player->jPlayer.jPlayerObject, player->jPlayer.jMid_onPlayStateChangeId,
                             state);
     } else {
         LOGE("onStateChange() get jEnv error");
@@ -247,19 +247,19 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_onSurfaceChange(JNIEnv *env, jobject thiz, 
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug, int id) {
-    LOGI("init() called with: isDebug=%d,id=%d", isDebug, id);
     if (findPlayer(id) == NULL) {
+        LOGI("init() called with: isDebug=%d,id=%d", isDebug, id);
         auto *player = new Player(id);
-        player->jPlayerObject = env->NewGlobalRef(thiz);
         Player::SetDebug(isDebug);
         playerCache.insert(std::map<int, Player *>::value_type(id, player));
         clazz = env->GetObjectClass(thiz);
-        player->jPlayerMethods.jMid_onPlayStateChangeId = env->GetMethodID(clazz,
-                                                                           "onPlayerStateChange",
-                                                                           "(I)V");
-        player->jPlayerMethods.jMid_onRecordStateChangeId = env->GetMethodID(clazz,
-                                                                             "onRecorderStateChange",
-                                                                             "(I)V");
+        player->jPlayer.jPlayerObject = env->NewGlobalRef(thiz);
+        player->jPlayer.jMid_onPlayStateChangeId = env->GetMethodID(clazz,
+                                                                    "onPlayerStateChange",
+                                                                    "(I)V");
+        player->jPlayer.jMid_onRecordStateChangeId = env->GetMethodID(clazz,
+                                                                      "onRecorderStateChange",
+                                                                      "(I)V");
         jMid_onMuxProgress = env->GetStaticMethodID(clazz, "onMuxProgress", "(F)V");
         return PLAYER_RESULT_OK;
     } else {
@@ -296,6 +296,9 @@ JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_setRecordState(JNIEnv *env, jobject thiz, jint state, int id) {
     Player *player = findPlayer(id);
     if (player == NULL) {
+        return PLAYER_RESULT_ERROR;
+    }
+    if (player->playerInfo == NULL || player->playerInfo->GetPlayState() == RELEASE) {
         return PLAYER_RESULT_ERROR;
     }
     switch (state) {
@@ -355,11 +358,9 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_release(JNIEnv *env, jobject thiz, jint id)
     if (player == NULL) {
         return;
     }
-    env->DeleteGlobalRef(player->jPlayerObject);
+    env->DeleteGlobalRef(player->jPlayer.jPlayerObject);
     removePlayer(id);
     player->Release();
-    player->jPlayerMethods.jMid_onRecordStateChangeId = NULL;
-    player->jPlayerMethods.jMid_onPlayStateChangeId = NULL;
 }
 extern "C"
 JNIEXPORT jint JNICALL

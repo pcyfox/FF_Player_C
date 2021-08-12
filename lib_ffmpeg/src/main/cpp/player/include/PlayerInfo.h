@@ -9,14 +9,13 @@
 
 #include <media/NdkMediaCodec.h>
 #include "pthread.h"
-#include "android_log.h"
 #include "StateListener.h"
 #include "AsyncQueue.hpp"
 #include <android/native_window.h>
 
 #ifdef __cplusplus
 extern "C" {
-
+#include "android_log.h"
 #include"libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
 #include "libavutil/avutil.h"
@@ -57,8 +56,7 @@ public:
 
     int8_t lastNALUType = 0;
 
-    bool isOpenAudio = true;
-
+    bool isOpenAudio = false;
     const char *mine = "video/avc";
     volatile enum PlayState playState = UNINITIALIZED;
 

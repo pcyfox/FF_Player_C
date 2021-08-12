@@ -12,6 +12,7 @@
 #include <android_log.h>
 #include "PlayerResult.h"
 
+//#define LOG_TAG "Muxer------------->"
 
 int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
               void (*call_back)(float progress));

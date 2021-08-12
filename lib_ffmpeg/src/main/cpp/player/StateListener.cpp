@@ -3,11 +3,9 @@
 //
 
 #include "include/StateListener.h"
-#include "android_log.h"
 
 
 void StateListener::onStateChange(PlayState state) {
-    LOGI("onStateChange=%d", state);
 }
 
 std::string StateListener::PlayerStateToString(int state) {

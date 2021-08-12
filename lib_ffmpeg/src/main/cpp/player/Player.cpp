@@ -24,7 +24,6 @@ extern "C" {
 //clang -g -o pvlib  ParseVideo.c  -lavformat -lavutil
 //clang -g -o pvlib  ParseVideo.c `pkg-config --libs libavutil libavformat`
 
-static bool isDebug = IS_DEBUG;
 #define head_1  0x00
 #define head_2  0x00
 #define head_3  0x00
@@ -69,7 +68,6 @@ static int GetStartCodeLen(const unsigned char *pkt) {
 AVStream *findStream(AVFormatContext *i_fmt_ctx, AVMediaType type) {
     int index = av_find_best_stream(i_fmt_ctx, type, -1, -1, NULL, 0);
     if (index == AVERROR_STREAM_NOT_FOUND) {
-        LOGE("not find video stream!,streams number=%d", i_fmt_ctx->nb_streams);
         return NULL;
     } else {
         return i_fmt_ctx->streams[index];
@@ -194,26 +192,26 @@ void *OpenResource(void *info) {
         LOGE("could not find stream info\n");
         return (void *) PLAYER_RESULT_ERROR;
     }
-
     LOGI("----------find stream info success!-------------");
     playerInfo->resource = url;
     LOGD("----------fmt_ctx:streams number=%d,bit rate=%ld\n",
          playerInfo->inputContext->nb_streams,
-         playerInfo->inputContext->bit_rate)
+         playerInfo->inputContext->bit_rate);
 
     //输出多媒体文件信息,第二个参数是流的索引值（默认0），第三个参数，0:输入流，1:输出流
     //    av_dump_format(fmt_ctx, 0, url, 0);
     playerInfo->inputVideoStream = findStream(playerInfo->inputContext, AVMEDIA_TYPE_VIDEO);
-
     if (playerInfo->inputVideoStream == NULL) {
         playerInfo->SetPlayState(ERROR, true);
+        LOGE("----------find video stream fail!-------------");
         return (void *) PLAYER_RESULT_ERROR;
     }
+    LOGI("----------find video stream success!-------------");
 
     if (playerInfo->isOpenAudio) {
         playerInfo->inputAudioStream = findStream(playerInfo->inputContext, AVMEDIA_TYPE_AUDIO);
         if (playerInfo->inputAudioStream) {
-            LOGI("find audio stream!");
+            LOGI("find audio stream success!");
             AVCodecID codec_id = playerInfo->inputAudioStream->codecpar->codec_id;
             if (AV_CODEC_ID_AAC == codec_id) {
                 // createAudioCodec(&playerInfo->audioCodec, "audio/mp4a-latm");
@@ -221,6 +219,8 @@ void *OpenResource(void *info) {
                 LOGE("not support audio type:%d", codec_id);
             }
 
+        } else{
+            LOGW("find audio stream fail!");
         }
     }
 
@@ -1042,7 +1042,7 @@ int Player::ResumeRecord() const {
     }
 }
 
-int Player::Release() const {
+int Player::Release() {
     LOGD("Release() called!");
     if (playerInfo->GetPlayState() == STOPPED) {
         StartRelease(playerInfo, recorderInfo);
@@ -1052,8 +1052,8 @@ int Player::Release() const {
     if (recorderInfo != NULL) {
         recorderInfo->SetRecordState(RECORDER_RELEASE);
     }
-
-    // StartRelease(playerInfo, recorderInfo);
+    jPlayer.jMid_onRecordStateChangeId = NULL;
+    jPlayer.jMid_onPlayStateChangeId = NULL;
     LOGD("Release() over!");
     return PLAYER_RESULT_OK;
 }
@@ -1061,7 +1061,7 @@ int Player::Release() const {
 
 void Player::SetDebug(bool debug) {
     LOGD("SetDebug() called with %d", debug);
-    isDebug = debug;
+    isDebug(debug);
 }
 
 Player::Player(int id) {

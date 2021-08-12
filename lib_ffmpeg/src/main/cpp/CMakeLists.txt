@@ -28,6 +28,7 @@ add_library( # Sets the name of the library.
         ${player_dir}/RecorderInfo.cpp
         ${player_dir}/StateListener.cpp
         ${jni_dir}/FFPlayerBridge.cpp
+        ${include_dir}/android_log.c
         )
 
 add_library(avcodec
@@ -56,26 +57,34 @@ set_target_properties(avutil
 
 
 
-add_library(avfilter
-        SHARED
-        IMPORTED)
-set_target_properties(avfilter
-        PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libavfilter.so)
+#add_library(avfilter
+#        SHARED
+#        IMPORTED)
+#set_target_properties(avfilter
+#        PROPERTIES IMPORTED_LOCATION
+#        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libavfilter.so)
+#
+#add_library(swresample
+#        SHARED
+#        IMPORTED)
+#set_target_properties(swresample
+#        PROPERTIES IMPORTED_LOCATION
+#        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libswresample.so)
 
-add_library(swresample
-        SHARED
-        IMPORTED)
-set_target_properties(swresample
-        PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libswresample.so)
+#add_library(swscale
+#        SHARED
+#        IMPORTED)
+#set_target_properties(swscale
+#        PROPERTIES IMPORTED_LOCATION
+#        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libswscale.so)
+#
 
-add_library(swscale
-        SHARED
-        IMPORTED)
-set_target_properties(swscale
-        PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libswscale.so)
+#add_library(ascan
+#        SHARED
+#        IMPORTED)
+#set_target_properties(ascan
+#        PROPERTIES IMPORTED_LOCATION
+#        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libclang_rt.ubsan_standalone-arm-android.so)
 
 
 add_library(postproc
@@ -84,14 +93,6 @@ add_library(postproc
 set_target_properties(postproc
         PROPERTIES IMPORTED_LOCATION
         ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libpostproc.so)
-
-add_library(ascan
-        SHARED
-        IMPORTED)
-set_target_properties(ascan
-        PROPERTIES IMPORTED_LOCATION
-        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libclang_rt.ubsan_standalone-arm-android.so)
-
 
 
 find_library(android-log-lib log)
@@ -103,13 +104,12 @@ target_link_libraries(ff_player
         #EGL
         #GLESv3
         log
-
         avcodec
-        avfilter
+        #avfilter
         avformat
         avutil
-        swresample
-        swscale
-        ascan
+        #swresample
+        #swscale
+        #ascan
         postproc
         )

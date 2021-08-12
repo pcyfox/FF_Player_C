@@ -3,34 +3,23 @@
 #ifndef H_LOG
 #define H_LOG
 
+#include <android/log.h>
+#include <stdbool.h>
+
 #define TAG "ff-player"
 
-#include <android/log.h>
+static bool IS_DEBUG = false;
 
-#define IS_DEBUG false
+void LOGD(const char *fmt, ...);
 
-#define LOGV(...) if(IS_DEBUG)__android_log_print(ANDROID_LOG_VERBOSE, TAG, __VA_ARGS__)
-#define LOGD(...) if(IS_DEBUG){__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__);}
-#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__)
-#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, TAG, __VA_ARGS__)
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
+void LOGI(const char *fmt, ...);
 
-#define LOGVX(tag, ...) if(IS_DEBUG)__android_log_print(ANDROID_LOG_VERBOSE, tag, __VA_ARGS__)
-#define LOGDX(tag, ...) if(IS_DEBUG){__android_log_print(ANDROID_LOG_DEBUG, TAG, __VA_ARGS__);}
-#define LOGWX(tag, ...) __android_log_print(ANDROID_LOG_WARN, tag, __VA_ARGS__)
-#define LOGEX(tag, ...) __android_log_print(ANDROID_LOG_ERROR, tag, __VA_ARGS__)
-#define LOGIX(tag, ...) __android_log_print(ANDROID_LOG_INFO, tag, __VA_ARGS__)
+void LOGW(const char *fmt, ...);
 
+void LOGE(const char *fmt, ...);
 
-static void printCharsHex(char *data, int length, int printLen, char *tag) {
-    LOGD("-----------------------------%s-printLen=%d--------------------------------------->", tag,
-         printLen);
-    if (printLen > length) {
-        return;
-    }
-    for (int i = 0; i < printLen; ++i) {
-        LOGD("------------%s:i=%d,char=%02x", tag, i, *(data + i));
-    }
-}
+void printCharsHex(const char *data, int length, int printLen, const char *tag);
+
+void isDebug(bool isDebug);
 
 #endif

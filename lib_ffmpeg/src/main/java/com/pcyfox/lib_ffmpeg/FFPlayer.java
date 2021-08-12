@@ -56,6 +56,12 @@ public class FFPlayer {
         init(BuildConfig.DEBUG ? 1 : 0, id);
     }
 
+
+    public FFPlayer(int id, boolean debug) {
+        this.id = id;
+        init(debug ? 1 : 0, id);
+    }
+
     public int startRecord() {
         return setRecordState(RecordState.RECORD_START.ordinal(), id);
     }
@@ -216,8 +222,8 @@ public class FFPlayer {
         }
     }
 
-    public static int mux(String audioFile, String videoFile, String outFile,OnMuxProgressListener listener) {
-        onMuxProgressListener=listener;
+    public static int mux(String audioFile, String videoFile, String outFile, OnMuxProgressListener listener) {
+        onMuxProgressListener = listener;
         Log.d(TAG, "mux() called with: audioFile = [" + audioFile + "], videoFile = [" + videoFile + "], outFile = [" + outFile + "]");
         File video = new File(videoFile);
         if (!video.exists()) {

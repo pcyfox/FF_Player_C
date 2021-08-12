@@ -2,7 +2,15 @@
 // Created by LN on 2021/2/24.
 //
 
-#include <android_log.h>
+
+#ifdef __cplusplus
+extern "C" {
+#include "android_log.h"
+#endif
+#ifdef __cplusplus
+}
+#endif
+
 #include "include/RecorderInfo.h"
 
 RecorderInfo::~RecorderInfo() {
