@@ -24,13 +24,9 @@ extern "C" {
 #include <algorithm>
 
 std::map<int, Player *> playerCache;
-
-static jmethodID jMid_onPlayStateChangeId = NULL;
-static jmethodID jMid_onRecordStateChangeId = NULL;
 static jmethodID jMid_onMuxProgress = NULL;
 
 static jclass clazz = NULL;
-
 static JavaVM *vm = NULL;
 
 
@@ -64,9 +60,6 @@ jint JNI_OnLoad(JavaVM *jvm, void *reserved) {
 }
 
 void *ChangeRecordState(void *p) {
-    if(jMid_onRecordStateChangeId==NULL){
-        return nullptr;
-    }
     int *params = (int *) p;
     int id = params[0];
     Player *player = findPlayer(id);
@@ -74,11 +67,15 @@ void *ChangeRecordState(void *p) {
         LOGE("onStateChange() not found player with id=%d", id);
         return nullptr;
     }
+    if (player->jPlayerMethods.jMid_onRecordStateChangeId == NULL) {
+        return nullptr;
+    }
     JNIEnv *env = NULL;
     int ret = vm->AttachCurrentThread(&env, NULL);
     if (ret == 0 && env) {
         int state = params[1];
-        env->CallVoidMethod(player->jPlayerObject, jMid_onRecordStateChangeId, state);
+        env->CallVoidMethod(player->jPlayerObject,
+                            player->jPlayerMethods.jMid_onRecordStateChangeId, state);
     } else {
         LOGE("onStateChange() get jEnv error");
     }
@@ -89,9 +86,6 @@ void *ChangeRecordState(void *p) {
 
 
 void *ChangePlayState(void *p) {
-    if (jMid_onPlayStateChangeId == NULL) {
-        return nullptr;
-    }
     int *params = (int *) p;
     int id = params[0];
     Player *player = findPlayer(id);
@@ -99,11 +93,16 @@ void *ChangePlayState(void *p) {
         LOGE("onStateChange() not found player with id=%d", id);
         return nullptr;
     }
+
+    if (player->jPlayerMethods.jMid_onPlayStateChangeId == NULL) {
+        return nullptr;
+    }
     JNIEnv *env = NULL;
     int ret = vm->AttachCurrentThread(&env, NULL);
     if (ret == 0 && env) {
         int state = params[1];
-        env->CallVoidMethod(player->jPlayerObject, jMid_onPlayStateChangeId, state);
+        env->CallVoidMethod(player->jPlayerObject, player->jPlayerMethods.jMid_onPlayStateChangeId,
+                            state);
     } else {
         LOGE("onStateChange() get jEnv error");
     }
@@ -255,9 +254,12 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug
         Player::SetDebug(isDebug);
         playerCache.insert(std::map<int, Player *>::value_type(id, player));
         clazz = env->GetObjectClass(thiz);
-
-        jMid_onPlayStateChangeId = env->GetMethodID(clazz, "onPlayerStateChange", "(I)V");
-        jMid_onRecordStateChangeId = env->GetMethodID(clazz, "onRecorderStateChange", "(I)V");
+        player->jPlayerMethods.jMid_onPlayStateChangeId = env->GetMethodID(clazz,
+                                                                           "onPlayerStateChange",
+                                                                           "(I)V");
+        player->jPlayerMethods.jMid_onRecordStateChangeId = env->GetMethodID(clazz,
+                                                                             "onRecorderStateChange",
+                                                                             "(I)V");
         jMid_onMuxProgress = env->GetStaticMethodID(clazz, "onMuxProgress", "(F)V");
         return PLAYER_RESULT_OK;
     } else {
@@ -356,10 +358,8 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_release(JNIEnv *env, jobject thiz, jint id)
     env->DeleteGlobalRef(player->jPlayerObject);
     removePlayer(id);
     player->Release();
-    jMid_onMuxProgress = NULL;
-    jMid_onPlayStateChangeId = NULL;
-    jMid_onRecordStateChangeId = NULL;
-
+    player->jPlayerMethods.jMid_onRecordStateChangeId = NULL;
+    player->jPlayerMethods.jMid_onPlayStateChangeId = NULL;
 }
 extern "C"
 JNIEXPORT jint JNICALL
