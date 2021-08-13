@@ -1,14 +1,19 @@
 #!/bin/bash
-#设置ndk目录
-NDK=/Users/pcyfox/toolchains/arm-linux-androideabi
+#设置交叉编译工具集目录
+echo "NDK_TOOLCHAINS_HOME:$NDK_TOOLCHAINS_HOME"
+ls "$NDK_TOOLCHAINS_HOME"
+echo "----------------------------------------------------------------------------------"
+echo "                           "
+SYSROOT=$NDK_TOOLCHAINS_HOME/sysroot
+TOOLCHAIN=$NDK_TOOLCHAINS_HOME/bin
+
+OS=android
 API=21
-SYSROOT=$NDK/sysroot
-TOOLCHAIN=$NDK/bin
+CROSS_PREFIX=$TOOLCHAIN/$PLATFORM-
 #armv7 arm64 x86 x86_64 ARCH=armv7
-#arm aarch64  i686 x86_64
 ARCH2=aarch64
 
-echo '第一个参数: '$1 
+echo '第一个参数: '$1
 if [ ! -n "$1" ]
 then
     echo "没有参数 使用默认架构"
@@ -27,7 +32,6 @@ else
 fi
 
 
-
 if [ $ARCH == "armv7" ]
     then
     PLATFORM=$ARCH2-linux-androideabi
@@ -38,25 +42,32 @@ else
 fi
 
 
-OS=android
-CROSS_PREFIX=$TOOLCHAIN/$PLATFORM-
-
 echo "ARCH:${ARCH}, ARCH2:${ARCH2}"
-pwd
+
+echo "FFmpeg source dir:"
 cd /Users/pcyfox/FFmpeg
 pwd
+echo "    "
+
 #保存目录
 PREFIX=$(pwd)/build_android/$ARCH
 
+echo "PREFIX:$PREFIX"
+ls "$PREFIX"
+rm  -rf "$PREFIX"
+ls "$PREFIX"
+echo "------------------------------------"
+echo "                           "
+
 echo "TooChain ------->$TOOLCHAIN"
-echo "PREFIX   ------->$PREFIX"
 echo "ANDROID_CROSS_PREFIX------>$ANDROID_CROSS_PREFIX"
 echo "CROSS_PREFIX------>$CROSS_PREFIX"
 
 build()
 {
-    make clean
+    make clean all
     echo "----------------configure start!--------------------"
+
     ./configure \
     --prefix=$PREFIX \
     --enable-cross-compile \
@@ -89,13 +100,8 @@ build()
     --enable-shared \
 
     echo "----------------configure finish!--------------------"
-    make clean all
     make -j8
     make install
     echo "build finish:------->$PREFIX"
-
 }
-
 build
-
-
