@@ -4,7 +4,9 @@ echo "NDK_TOOLCHAINS_HOME:$NDK_TOOLCHAINS_HOME"
 ls "$NDK_TOOLCHAINS_HOME"
 echo "----------------------------------------------------------------------------------"
 echo "                           "
+#交叉编译环境目录
 SYSROOT=$NDK_TOOLCHAINS_HOME/sysroot
+#编译工具链目录：
 TOOLCHAIN=$NDK_TOOLCHAINS_HOME/bin
 
 OS=android
@@ -44,30 +46,31 @@ fi
 
 echo "ARCH:${ARCH}, ARCH2:${ARCH2}"
 
-echo "FFmpeg source dir:"
-cd /Users/pcyfox/FFmpeg
-pwd
-echo "    "
-
 #保存目录
 PREFIX=$(pwd)/build_android/$ARCH
 
 echo "PREFIX:$PREFIX"
 ls "$PREFIX"
 rm  -rf "$PREFIX"
-ls "$PREFIX"
 echo "------------------------------------"
-echo "                           "
+echo "    "
+
+
+echo "FFmpeg source dir:"
+cd /Users/pcyfox/FFmpeg
+pwd
+echo "    "
+
 
 echo "TooChain ------->$TOOLCHAIN"
 echo "ANDROID_CROSS_PREFIX------>$ANDROID_CROSS_PREFIX"
 echo "CROSS_PREFIX------>$CROSS_PREFIX"
+echo " "
+echo "----------------configure start!--------------------"
 
 build()
 {
     make clean all
-    echo "----------------configure start!--------------------"
-
     ./configure \
     --prefix=$PREFIX \
     --enable-cross-compile \
@@ -81,7 +84,6 @@ build()
     --sysroot=$SYSROOT \
     --disable-static \
     --disable-doc \
-    --disable-asm \
     --disable-x86asm \
     --disable-symver \
     --disable-stripping \
@@ -89,6 +91,7 @@ build()
     --fatal-warnings \
     --enable-gpl \
     --enable-version3 \
+    --enable-asm \
     --enable-neon \
     --enable-nonfree \
     --disable-ffmpeg \
@@ -103,5 +106,7 @@ build()
     make -j8
     make install
     echo "build finish:------->$PREFIX"
+    ls "$PREFIX"
+    echo "------------------------------------"
 }
 build
