@@ -57,27 +57,27 @@ set_target_properties(avutil
 
 
 
-#add_library(avfilter
-#        SHARED
-#        IMPORTED)
-#set_target_properties(avfilter
-#        PROPERTIES IMPORTED_LOCATION
-#        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libavfilter.so)
-#
-#add_library(swresample
-#        SHARED
-#        IMPORTED)
-#set_target_properties(swresample
-#        PROPERTIES IMPORTED_LOCATION
-#        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libswresample.so)
+add_library(avfilter
+        SHARED
+        IMPORTED)
+set_target_properties(avfilter
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libavfilter.so)
 
-#add_library(swscale
-#        SHARED
-#        IMPORTED)
-#set_target_properties(swscale
-#        PROPERTIES IMPORTED_LOCATION
-#        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libswscale.so)
-#
+add_library(swresample
+        SHARED
+        IMPORTED)
+set_target_properties(swresample
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libswresample.so)
+
+add_library(swscale
+        SHARED
+        IMPORTED)
+set_target_properties(swscale
+        PROPERTIES IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}/libswscale.so)
+
 
 #add_library(ascan
 #        SHARED
@@ -105,11 +105,10 @@ target_link_libraries(ff_player
         #GLESv3
         log
         avcodec
-        #avfilter
+        avfilter
         avformat
         avutil
-        #swresample
-        #swscale
-        #ascan
+        swresample
+        swscale
         postproc
         )

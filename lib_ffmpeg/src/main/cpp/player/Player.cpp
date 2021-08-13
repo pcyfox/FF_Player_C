@@ -354,6 +354,8 @@ void *RecordPkt(void *info) {
         if (!recorderInfo->o_fmt_ctx) {
             recorderInfo->SetRecordState(RECORD_ERROR);
             LOGE("avformat_alloc_output_context  error ,file=%s ", file);
+            delete recorderInfo;
+            recorderInfo=NULL;
             return (void *) PLAYER_RESULT_ERROR;
         }
         /*
@@ -968,12 +970,12 @@ int Player::PrepareRecorder(char *outPath) {
         return PLAYER_RESULT_ERROR;
     }
     if (recorderInfo == NULL) {
-        LOGI("---------PrepareRecorder()  new RecorderInfo ");
         recorderInfo = new RecorderInfo;
         recorderInfo->id = playerId;
         if (playerInfo != NULL) {
             recorderInfo->inputVideoStream = playerInfo->inputVideoStream;
         }
+        LOGI("---------PrepareRecorder()  new RecorderInfo ");
     }
     recorderInfo->SetStateListener(recorderStateListener);
     recorderInfo->storeFile = outPath;

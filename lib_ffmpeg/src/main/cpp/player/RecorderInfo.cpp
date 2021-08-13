@@ -20,6 +20,8 @@ RecorderInfo::~RecorderInfo() {
         avformat_free_context(o_fmt_ctx);
         o_fmt_ctx = NULL;
     }
+    free(storeFile);
+    storeFile=NULL;
     LOGD("delete RecorderInfo over!");
 }
 
@@ -40,6 +42,5 @@ void RecorderInfo::SetStateListener(void (*l)(RecordState, int)) {
 }
 
 RecorderInfo::RecorderInfo() {
-    packetQueue.tag = &"recorder:"[id];
-
+    packetQueue.tag = "recorder";
 }

@@ -336,7 +336,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_prepareRecorder(JNIEnv *env, jobject thiz,
     if (player == NULL) {
         return PLAYER_RESULT_ERROR;
     }
-    char *outFile = (char *) env->GetStringUTFChars(out_file_path, 0);
+    char *outFile = (char *) env->GetStringUTFChars(out_file_path, nullptr);
     return player->PrepareRecorder(outFile);
 }
 
