@@ -105,8 +105,9 @@ build()
     echo "----------------configure finish!--------------------"
     make -j8
     make install
+
     echo "build finish:------->$PREFIX"
-    ls "$PREFIX"
+    ls "$PREFIX/$ARCH/lib"
     echo "------------------------------------"
 }
 build
