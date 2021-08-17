@@ -42,5 +42,5 @@ void RecorderInfo::SetStateListener(void (*l)(RecordState, int)) {
 }
 
 RecorderInfo::RecorderInfo() {
-    packetQueue.tag = "recorder";
+    //packetQueue.tag = "recorder";
 }
