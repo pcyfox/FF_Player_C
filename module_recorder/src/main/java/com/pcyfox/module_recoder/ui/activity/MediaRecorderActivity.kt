@@ -13,6 +13,7 @@ import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.PermissionUtils
 import com.blankj.utilcode.util.TimeUtils
 import com.blankj.utilcode.util.ToastUtils
+import com.pcyfox.lib_ffmpeg.AVMuxer
 import com.pcyfox.lib_ffmpeg.FFPlayer
 import com.pcyfox.lib_ffmpeg.PlayState
 import com.pcyfox.module_recoder.R
@@ -106,7 +107,7 @@ class MediaRecorderActivity : AppCompatActivity() {
             }
             Thread.sleep(100)
             val startMuxTime = SystemClock.uptimeMillis()
-            FFPlayer.mux(audioPath, videoPath, destFile.absolutePath,null)
+            AVMuxer.mux(audioPath, videoPath, destFile.absolutePath,null)
             val time = (SystemClock.uptimeMillis() - startMuxTime) / 1000.0
             ToastUtils.showLong("合成结束! coast time=" + time + "s")
             Log.d(

@@ -3,17 +3,16 @@
 //
 
 #include <jni.h>
-#include "FFPlayerBridge.h"
 #include <android/native_window_jni.h>
 #include <StateListener.h>
 #include "PlayerResult.h"
 #include "Player.h"
 #include <map>
 #include <utility>
+#include "VMLoader.h"
 
 #ifdef __cplusplus
 extern "C" {
-#include "Muxer.h"
 #include "android_log.h"
 #endif
 #ifdef __cplusplus
@@ -24,10 +23,7 @@ extern "C" {
 #include <algorithm>
 
 std::map<int, Player *> playerCache;
-static jmethodID jMid_onMuxProgress = NULL;
-
 static jclass clazz = NULL;
-static JavaVM *vm = NULL;
 
 
 Player *findPlayer(int id) {
@@ -50,14 +46,6 @@ bool removePlayer(int id) {
 }
 
 
-jint JNI_OnLoad(JavaVM *jvm, void *reserved) {
-    JNIEnv *env = NULL;
-    if (jvm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
-        return JNI_ERR;
-    }
-    vm = jvm;
-    return JNI_VERSION_1_6;
-}
 
 void *ChangeRecordState(void *p) {
     int *params = (int *) p;
@@ -138,19 +126,6 @@ const void *onRecordStateChange(RecordState state, int id) {
 }
 
 
-void *onMuxProgress(float p) {
-    if (jMid_onMuxProgress == NULL) {
-        return nullptr;
-    }
-    JNIEnv *env = NULL;
-    int ret = vm->AttachCurrentThread(&env, NULL);
-    if (ret == 0 && env) {
-        env->CallStaticVoidMethod(clazz, jMid_onMuxProgress, p);
-    } else {
-        LOGE("onStateChange() get jEnv error");
-    }
-    return nullptr;
-}
 
 
 extern "C"
@@ -247,6 +222,9 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_onSurfaceChange(JNIEnv *env, jobject thiz, 
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug, int id) {
+    if (!vm) {
+        env->GetJavaVM(&vm);
+    }
     if (findPlayer(id) == NULL) {
         LOGI("init() called with: isDebug=%d,id=%d", isDebug, id);
         auto *player = new Player(id);
@@ -260,7 +238,6 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug
         player->jPlayer.jMid_onRecordStateChangeId = env->GetMethodID(clazz,
                                                                       "onRecorderStateChange",
                                                                       "(I)V");
-        jMid_onMuxProgress = env->GetStaticMethodID(clazz, "onMuxProgress", "(F)V");
         return PLAYER_RESULT_OK;
     } else {
         return PLAYER_RESULT_ERROR;
@@ -351,6 +328,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_surfaceDestroyed(JNIEnv *env, jobject thiz,
     }
     return player->Pause(0);
 }
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_release(JNIEnv *env, jobject thiz, jint id) {
@@ -362,19 +340,3 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_release(JNIEnv *env, jobject thiz, jint id)
     removePlayer(id);
     player->Release();
 }
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_pcyfox_lib_1ffmpeg_FFPlayer_muxAV(JNIEnv *env, jclass clazz, jstring audio_file,
-                                           jstring video_file, jstring out_file) {
-
-    char *audioFile = (char *) env->GetStringUTFChars(audio_file, 0);
-    char *videoFile = (char *) env->GetStringUTFChars(video_file, 0);
-    char *outFile = (char *) env->GetStringUTFChars(out_file, 0);
-    if (audioFile && videoFile && outFile) {
-        return static_cast<jint>(MuxAVFile(audioFile, videoFile, outFile,
-                                           reinterpret_cast<void (*)(float)>(onMuxProgress)));
-    } else {
-        return PLAYER_RESULT_ERROR;
-    }
-}
-

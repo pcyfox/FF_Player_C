@@ -8,7 +8,6 @@ import android.view.SurfaceView;
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
 
-import java.io.File;
 
 @Keep
 public class FFPlayer {
@@ -28,7 +27,6 @@ public class FFPlayer {
 
     private OnPlayStateChangeListener onPlayStateChangeListener;
     private OnRecordStateChangeListener onRecordStateChangeListener;
-    private static OnMuxProgressListener onMuxProgressListener;
 
     public void setOnPlayStateChangeListener(OnPlayStateChangeListener onPlayStateChangeListener) {
         this.onPlayStateChangeListener = onPlayStateChangeListener;
@@ -102,14 +100,6 @@ public class FFPlayer {
                 }
             }
         }
-    }
-
-
-    public static void onMuxProgress(float progress) {
-        if (onMuxProgressListener != null) {
-            onMuxProgressListener.onProgress(progress);
-        }
-        //Log.d(TAG, "onMuxProgress() called with: progress = [" + progress * 100 + "]");
     }
 
 
@@ -192,7 +182,6 @@ public class FFPlayer {
         release(id);
         onRecordStateChangeListener = null;
         onPlayStateChangeListener = null;
-        onMuxProgressListener = null;
         playState = PlayState.RELEASE;
 
         if (surfaceView != null) {
@@ -222,22 +211,6 @@ public class FFPlayer {
         }
     }
 
-    public static int mux(String audioFile, String videoFile, String outFile, OnMuxProgressListener listener) {
-        onMuxProgressListener = listener;
-        Log.d(TAG, "mux() called with: audioFile = [" + audioFile + "], videoFile = [" + videoFile + "], outFile = [" + outFile + "]");
-        File video = new File(videoFile);
-        if (!video.exists()) {
-            Log.e(TAG, "mux fail: video not exist!");
-            return -1;
-        }
-        File audio = new File(audioFile);
-        if (!audio.exists()) {
-            Log.e(TAG, "mux fail: audio not exist!");
-            return -1;
-        }
-
-        return muxAV(audioFile, videoFile, outFile);
-    }
 
     //-------------for native-------------------------
     public native int init(int isDebug, int id);
@@ -245,7 +218,6 @@ public class FFPlayer {
     public native void release(int id);
 
     public native int configPlayer(Surface surface, int w, int h, int isOnlyRecorderMod, int id);
-
 
     public native int onSurfaceChange(Surface surface, int w, int h, int id);
 
@@ -267,7 +239,6 @@ public class FFPlayer {
 
     public native int resume(int id);
 
-    private static native int muxAV(String audioFile, String videoFile, String outFile);
 
     //-------------for native-------------------------
 }

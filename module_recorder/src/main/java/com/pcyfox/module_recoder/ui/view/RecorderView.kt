@@ -230,7 +230,7 @@ class RecorderView : RelativeLayout {
             "mux() called with: videoPath = $videoPath, audioPath = $audioPath, outPath = $outPath"
         )
 
-        return FFPlayer.mux(audioPath, videoPath, outPath, onMuxProgressListener) >= 0
+        return AVMuxer.mux(audioPath, videoPath, outPath, onMuxProgressListener) >= 0
     }
 
 

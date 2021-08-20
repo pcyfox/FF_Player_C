@@ -72,7 +72,7 @@ int MuxAVFile(char *audio_srcPath, char *video_srcPath, char *destPath,
               void (*call_back)(float progress)) {
 
     LOGI("start to mux file audio path=%s,video path=%s,dest path=%s", audio_srcPath,
-          video_srcPath, destPath);
+         video_srcPath, destPath);
     long video_file_size = GetFileSize(video_srcPath);
     long audio_file_size = GetFileSize(audio_srcPath);
 
