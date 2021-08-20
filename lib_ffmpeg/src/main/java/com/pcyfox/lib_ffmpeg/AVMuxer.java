@@ -51,6 +51,7 @@ public class AVMuxer {
 
     public static void release(String tag) {
         onMuxProgressListener = null;
+        release();
     }
 
 
