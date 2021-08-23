@@ -26,6 +26,15 @@ void LOG(int level, const char *fmt, ...) {
     va_end(args);
 }
 
+
+void LOGV(const char *fmt, ...) {
+    va_list args;
+    va_start(args, fmt);
+    __android_log_vprint(ANDROID_LOG_VERBOSE, TAG, fmt, args);
+    va_end(args);
+}
+
+
 void LOGD(const char *fmt, ...) {
     if (!IS_DEBUG) {
         return;
@@ -43,6 +52,7 @@ void LOGI(const char *fmt, ...) {
     __android_log_vprint(ANDROID_LOG_INFO, TAG, fmt, args);
     va_end(args);
 }
+
 
 void LOGW(const char *fmt, ...) {
     va_list args;

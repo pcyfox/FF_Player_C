@@ -27,7 +27,7 @@ class RecorderView : RelativeLayout {
     private var videoPath = ""
     private var audioPath = ""
     private val TAG = "RecorderView"
-    private val ffPlayer: FFPlayer = FFPlayer(hashCode(),false)
+    private val ffPlayer: FFPlayer = FFPlayer(hashCode(),true)
     private val audioRecorder = AudioRecorder.getInstance()
     private var isNeedRelease = false
     var avRecorderCallback: AVRecorderCallback? = null

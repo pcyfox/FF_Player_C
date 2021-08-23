@@ -46,7 +46,6 @@ bool removePlayer(int id) {
 }
 
 
-
 void *ChangeRecordState(void *p) {
     int *params = (int *) p;
     int id = params[0];
@@ -124,8 +123,6 @@ const void *onRecordStateChange(RecordState state, int id) {
     }
     return NULL;
 }
-
-
 
 
 extern "C"
@@ -219,12 +216,40 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_onSurfaceChange(JNIEnv *env, jobject thiz, 
 }
 
 
+static void ffmpeg_android_log_callback(void *ptr, int level, const char *fmt, va_list vl) {
+    switch (level) {
+        case AV_LOG_DEBUG:
+            LOGD(fmt, vl);
+            break;
+        case AV_LOG_VERBOSE:
+            LOGD(fmt, vl);
+            break;
+        case AV_LOG_INFO:
+            LOGI(fmt, vl);
+            break;
+        case AV_LOG_WARNING:
+            LOGW(fmt, vl);
+            break;
+        case AV_LOG_ERROR:
+            LOGE(fmt, vl);
+            break;
+    }
+}
+
+
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_pcyfox_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug, int id) {
     if (!vm) {
         env->GetJavaVM(&vm);
     }
+
+    if (isDebug) {
+        av_log_set_callback(ffmpeg_android_log_callback);
+    } else {
+        av_log_set_callback(NULL);
+    }
+
     if (findPlayer(id) == NULL) {
         LOGI("init() called with: isDebug=%d,id=%d", isDebug, id);
         auto *player = new Player(id);

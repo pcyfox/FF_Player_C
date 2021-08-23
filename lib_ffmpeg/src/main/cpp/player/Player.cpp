@@ -1,8 +1,7 @@
 
 #include <android/native_window_jni.h>
 #include <android/native_window.h>
-#include <media/NdkMediaCodec.h>
-#include <media/NdkMediaFormat.h>
+#include <media/NdkMediaCodec.h> #include <media/NdkMediaFormat.h>
 
 #include "Player.h"
 #include <PlayerResult.h>
@@ -219,7 +218,7 @@ void *OpenResource(void *info) {
                 LOGE("not support audio type:%d", codec_id);
             }
 
-        } else{
+        } else {
             LOGW("find audio stream fail!");
         }
     }
@@ -355,7 +354,7 @@ void *RecordPkt(void *info) {
             recorderInfo->SetRecordState(RECORD_ERROR);
             LOGE("avformat_alloc_output_context  error ,file=%s ", file);
             delete recorderInfo;
-            recorderInfo=NULL;
+            recorderInfo = NULL;
             return (void *) PLAYER_RESULT_ERROR;
         }
         /*
@@ -548,15 +547,15 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
         return PLAYER_RESULT_ERROR;
     }
     int type = GetNALUType(packet);
-    if (isDebug) {
-        LOGD("------ProcessPacket NALU type=%0x,flag=%d", type, packet->flags);
-        if (type == 0x67 && playerInfo->lastNALUType == type) {
-            LOGW("------ProcessPacket more than one SPS in this GOP");
-        }
-        printCharsHex((char *) packet->data, 22, 18, "-------before------");
-        LOGD("ProcessPacket :pos=%ld,dts=%ld,pts=%ld,duration=%ld", packet->pos, packet->dts,
-             packet->pts, packet->duration);
-    }
+//    if (isDebug) {
+//        LOGD("------ProcessPacket NALU type=%0x,flag=%d", type, packet->flags);
+//        if (type == 0x67 && playerInfo->lastNALUType == type) {
+//            LOGW("------ProcessPacket more than one SPS in this GOP");
+//        }
+//        printCharsHex((char *) packet->data, 22, 18, "-------before------");
+//        LOGD("ProcessPacket :pos=%ld,dts=%ld,pts=%ld,duration=%ld", packet->pos, packet->dts,
+//             packet->pts, packet->duration);
+//    }
     //H264的打包类型有AVC1、H264 、X264 、x264
     //The main difference between these media types is the presence of start codes in the bitstream.
     // If the subtype is MEDIASUBTYPE_AVC1, the bitstream does not contain start codes.
@@ -573,9 +572,9 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
             av_bsf_init(playerInfo->bsf_ctx);
         }
         H264_mp4toannexb_filter(playerInfo->bsf_ctx, packet);
-        if (isDebug) {
-            printCharsHex((char *) packet->data, 22, 16, "-------after------");
-        }
+//        if (isDebug) {
+//         printCharsHex((char *) packet->data, 22, 16, "-------after------");
+//        }
     } else {//MEDIASUBTYPE_H264
         packet->flags = type;
     }
