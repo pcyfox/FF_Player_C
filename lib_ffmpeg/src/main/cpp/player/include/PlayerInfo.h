@@ -11,6 +11,7 @@
 #include "pthread.h"
 #include "StateListener.h"
 #include "AsyncQueue.hpp"
+#include "../MediaDecoder.h"
 #include <android/native_window.h>
 
 #ifdef __cplusplus
@@ -31,8 +32,6 @@ class PlayerInfo {
 public:
     int id{};
     AVBSFContext *bsf_ctx = NULL;
-    AMediaCodec *videoCodec = NULL;
-    AMediaCodec *audioCodec = NULL;
     AVFormatContext *inputContext = NULL;
     AVFormatContext *outContext = NULL;
     AVStream *inputVideoStream = NULL;
@@ -47,9 +46,6 @@ public:
     pthread_t deMux_thread = 0;
     pthread_t open_resource_thread = 0;
 
-    ANativeWindow *window = NULL;
-    int windowWith{};
-    int windowHeight{};
 
     pthread_mutex_t mutex{};
     pthread_cond_t cond{};
@@ -57,9 +53,10 @@ public:
     int8_t lastNALUType = 0;
 
     bool isOpenAudio = false;
-    const char *mine = "video/avc";
+    char *mine = "video/avc";
     volatile enum PlayState playState = UNINITIALIZED;
 
+    MediaDecoder mediaDecoder;
 private:
     void (*stateListener)(PlayState, int) = NULL;
 

@@ -27,15 +27,6 @@ PlayerInfo::~PlayerInfo() {
     if (bsf_ctx) {
         av_bsf_free(&bsf_ctx);
     }
-    if (window) {
-        ANativeWindow_release(window);
-        window = NULL;
-    }
-    if (videoCodec) {
-        AMediaCodec_stop(videoCodec);
-        AMediaCodec_delete(videoCodec);
-        videoCodec = NULL;
-    }
 
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&cond);

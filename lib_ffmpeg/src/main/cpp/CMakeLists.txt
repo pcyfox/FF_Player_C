@@ -27,6 +27,7 @@ add_library( # Sets the name of the library.
         ${player_dir}/Muxer.c
         ${player_dir}/RecorderInfo.cpp
         ${player_dir}/StateListener.cpp
+        ${player_dir}/MediaDecoder.cpp
         ${jni_dir}/VMLoader.cpp
         ${jni_dir}/FFPlayerBridge.cpp
         ${jni_dir}/AVMuxerBridge.cpp

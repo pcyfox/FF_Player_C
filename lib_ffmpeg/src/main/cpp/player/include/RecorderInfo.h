@@ -8,6 +8,7 @@
 
 #include "StateListener.h"
 #include "AsyncQueue.hpp"
+#include "../MediaDecoder.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,6 +32,7 @@ public:
     AVFormatContext *o_fmt_ctx = NULL;
     AVStream *inputVideoStream = NULL;
     AVStream *o_video_stream = NULL;
+
     volatile enum RecordState recordState = UN_START_RECORD;
 private:
     void (*listener)(RecordState, int) = NULL;

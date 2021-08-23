@@ -23,10 +23,8 @@ public:
     int playerId;
     PlayerInfo *playerInfo = NULL;
     RecorderInfo *recorderInfo = NULL;
-
     void (*playStateListener)(PlayState, int) = NULL;
     void (*recorderStateListener)(RecordState, int) = NULL;
-
     JPlayerObject jPlayer;
 
 

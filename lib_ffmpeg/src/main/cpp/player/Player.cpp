@@ -1,7 +1,8 @@
 
 #include <android/native_window_jni.h>
 #include <android/native_window.h>
-#include <media/NdkMediaCodec.h> #include <media/NdkMediaFormat.h>
+#include <media/NdkMediaCodec.h>
+#include <media/NdkMediaFormat.h>
 
 #include "Player.h"
 #include <PlayerResult.h>
@@ -97,60 +98,6 @@ int GetNALUType(AVPacket *packet) {
 }
 
 
-int createVideoCodec(AMediaCodec **mMediaCodec, int width, int height, uint8_t *sps, int spsSize,
-                     uint8_t *pps, int ppsSize,
-                     ANativeWindow *surface, const char *mine) {
-
-    LOGI("createAMediaCodec() called width=%d,height=%d,spsSize=%d,ppsSize=%d,mine=%s\n", width,
-         height,
-         spsSize, ppsSize, mine);
-
-    if (width * height <= 0) {
-        LOGE("createAMediaCodec() not support video size");
-        return PLAYER_RESULT_ERROR;
-    }
-
-    if (*mMediaCodec) {
-        AMediaCodec_stop(*mMediaCodec);
-        AMediaCodec_delete(*mMediaCodec);
-        *mMediaCodec = NULL;
-        LOGW("createAMediaCodec() delete old codec!");
-    }
-
-    AMediaCodec *mediaCodec = AMediaCodec_createDecoderByType(mine);
-    if (!mediaCodec) {
-        LOGE("createAMediaCodec()  create decoder fail!");
-        return PLAYER_RESULT_ERROR;
-    } else {
-        LOGI("createAMediaCodec() create decoder success!");
-    }
-
-    AMediaFormat *videoFormat = AMediaFormat_new();
-    AMediaFormat_setString(videoFormat, "mime", mine);
-    AMediaFormat_setInt32(videoFormat, AMEDIAFORMAT_KEY_WIDTH, width); // 视频宽度
-    AMediaFormat_setInt32(videoFormat, AMEDIAFORMAT_KEY_HEIGHT, height); // 视频高度
-
-    if (spsSize && sps) {
-        AMediaFormat_setBuffer(videoFormat, "csd-0", sps, spsSize); // sps
-    }
-    if (ppsSize && pps) {
-        AMediaFormat_setBuffer(videoFormat, "csd-1", pps, ppsSize); // pps
-    }
-
-    media_status_t status = AMediaCodec_configure(mediaCodec, videoFormat, surface, NULL, 0);
-    if (status != AMEDIA_OK) {
-        LOGE("configure AMediaCodec fail!,ret=%d", status);
-        AMediaCodec_delete(mediaCodec);
-        mMediaCodec = NULL;
-        return PLAYER_RESULT_ERROR;
-    } else {
-        *mMediaCodec = mediaCodec;
-        LOGD("configure AMediaCodec success!");
-    }
-    return PLAYER_RESULT_OK;
-}
-
-
 void *OpenResource(void *info) {
     if (info == NULL) {
         return NULL;
@@ -233,6 +180,26 @@ void *OpenResource(void *info) {
     AVCodecParameters *codecpar = NULL;
     codecpar = playerInfo->inputVideoStream->codecpar;
 
+    if (codecpar == NULL) {
+        playerInfo->SetPlayState(ERROR, true);
+        LOGE("OpenResource() fail:can't get video stream params");
+        return (void *) PLAYER_RESULT_ERROR;
+    }
+
+
+    ret = playerInfo->mediaDecoder.init(
+            codecpar->extradata,
+            codecpar->extradata_size,
+            codecpar->extradata,
+            codecpar->extradata_size
+    );
+    if (ret == PLAYER_RESULT_ERROR) {
+        return (void *) PLAYER_RESULT_ERROR;
+    }
+
+    playerInfo->SetPlayState(PREPARED, true);
+
+
     if (isDebug) {
         uint8_t exSize = codecpar->extradata_size;
         if (exSize > 0) {
@@ -269,42 +236,6 @@ void *OpenResource(void *info) {
                 LOGD("input video color format is other");
                 break;
         }
-    }
-
-    if (codecpar == NULL) {
-        playerInfo->SetPlayState(ERROR, true);
-        LOGE("OpenResource() fail:can't get video stream params");
-        return (void *) PLAYER_RESULT_ERROR;
-    }
-
-
-    if (!playerInfo->isOnlyRecordMedia) {
-        if (playerInfo->window == NULL ||
-            !playerInfo->windowHeight * playerInfo->windowHeight) {
-            playerInfo->SetPlayState(ERROR, true);
-            LOGE("configure error!");
-            return (void *) PLAYER_RESULT_ERROR;
-        }
-
-        ret = createVideoCodec(&playerInfo->videoCodec, playerInfo->windowWith,
-                               playerInfo->windowHeight,
-                               codecpar->extradata,
-                               codecpar->extradata_size,
-                               codecpar->extradata,
-                               codecpar->extradata_size,
-                               playerInfo->window, playerInfo->mine);
-
-        if (ret == PLAYER_RESULT_OK) {
-            LOGI("OpenResource():  createAMediaCodec success!,state->PREPARED");
-            playerInfo->SetPlayState(PREPARED, true);
-        } else {
-            LOGE("OpenResource():created AMediaCodec fail");
-            playerInfo->SetPlayState(ERROR, true);
-            return (void *) PLAYER_RESULT_ERROR;
-        }
-    } else {
-        LOGI("OpenResource(): state->PREPARED");
-        playerInfo->SetPlayState(PREPARED, true);
     }
 
 
@@ -459,7 +390,6 @@ void *RecordPkt(void *info) {
 
 void *Decode(void *info) {
     auto *playerInfo = (PlayerInfo *) info;
-    AMediaCodec *codec = playerInfo->videoCodec;
     while (true) {
         PlayState state = playerInfo->GetPlayState();
         if (state == PAUSE) {
@@ -475,67 +405,10 @@ void *Decode(void *info) {
         if (ret == PLAYER_RESULT_OK) {
             uint8_t *data = packet->data;
             int length = packet->size;
-            // 获取buffer的索引
-            ssize_t index = AMediaCodec_dequeueInputBuffer(codec, 10000);
-            if (index >= 0) {
-                size_t out_size;
-                uint8_t *inputBuf = AMediaCodec_getInputBuffer(codec, index, &out_size);
-                if (inputBuf != NULL && length <= out_size) {
-                    //clear buf
-                    memset(inputBuf, 0, out_size);
-                    // 将待解码的数据copy到硬件中
-                    memcpy(inputBuf, data, length);
-                    int64_t pts = packet->pts;
-                    if (pts <= 0 || !pts) {
-                        pts = getCurrentTime();
-                    }
-
-                    media_status_t status = AMediaCodec_queueInputBuffer(codec, index, 0, length,
-                                                                         pts, 0);
-                    if (status != AMEDIA_OK) {
-                        LOGE("queue input buffer error status=%d", status);
-                    }
-                }
-                av_packet_unref(packet);
-                av_packet_free(&packet);
-            }
-
-            AMediaCodecBufferInfo bufferInfo;
-            ssize_t status = AMediaCodec_dequeueOutputBuffer(codec, &bufferInfo, 10000);
-
-            if (status >= 0) {
-                AMediaCodec_releaseOutputBuffer(codec, status, bufferInfo.size != 0);
-                if (bufferInfo.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
-                    LOGE("video producer output EOS");
-                }
-
-                if (IS_DEBUG) {
-                    //size_t outsize = 0;
-                    //u_int8_t *outData = AMediaCodec_getOutputBuffer(codec, status, &outsize);
-                    auto formatType = AMediaCodec_getOutputFormat(codec);
-                    LOGD("Decode:format formatType to: %s\n", AMediaFormat_toString(formatType));
-                    int colorFormat = 0;
-                    int width = 0;
-                    int height = 0;
-                    AMediaFormat_getInt32(formatType, "color-format", &colorFormat);
-                    AMediaFormat_getInt32(formatType, "width", &width);
-                    AMediaFormat_getInt32(formatType, "height", &height);
-                    LOGD("Decode:format color-format : %d ,width ：%d, height :%d", colorFormat,
-                         width,
-                         height);
-                }
-            } else if (status == AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED) {
-                LOGE("output buffers changed");
-            } else if (status == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED) {
-            } else if (status == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
-                LOGW("video no output buffer right now");
-            } else {
-                LOGE("unexpected info code: %zd", status);
-            }
+            playerInfo->mediaDecoder.decode(data, length, 0);
         }
     }
     LOGI("-------Decode Stop!---------");
-
     return NULL;
 }
 
@@ -721,9 +594,7 @@ void *DeMux(void *param) {
         LOGI("close input context!");
     }
 
-    playerInfo->
-            SetPlayState(STOPPED,
-                         true);
+    playerInfo->SetPlayState(STOPPED, true);
     LOGI("-----------DeMux stop over! ----------------");
     playerInfo->packetQueue.clearAVPacket();
     if (playerInfo->GetPlayState() == RELEASE) {
@@ -807,12 +678,11 @@ int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNo
         playerInfo->isOnlyRecordMedia = true;
         StartOpenResourceThread(playerInfo->resource);
         return PLAYER_RESULT_OK;
+    } else {
+        playerInfo->mediaDecoder.config(playerInfo->mine, window, w, h);
     }
 
     if (playerInfo->GetPlayState() != ERROR) {
-        playerInfo->window = window;
-        playerInfo->windowWith = w;
-        playerInfo->windowHeight = h;
         char *resource = playerInfo->resource;
         if (!resource) {
             return PLAYER_RESULT_ERROR;
@@ -833,18 +703,11 @@ int Player::OnWindowDestroy(ANativeWindow *window) {
 int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
     LOGI("--------OnWindowChange() called with w=%d,h=%d", w, h);
     if (playerInfo && playerInfo->GetPlayState() == PAUSE) {
-        playerInfo->window = window;
-        playerInfo->windowWith = w;
-        playerInfo->windowHeight = h;
-        int ret = createVideoCodec(&playerInfo->videoCodec, playerInfo->windowWith,
-                                   playerInfo->windowHeight,
-                                   NULL,
-                                   0,
-                                   NULL,
-                                   0,
-                                   playerInfo->window, playerInfo->mine);
-
-        AMediaCodec_start(playerInfo->videoCodec);
+        int ret = playerInfo->mediaDecoder.init(playerInfo->mine, window, w, h, NULL, 0, NULL, 0);
+        if (ret == PLAYER_RESULT_ERROR) {
+            return PLAYER_RESULT_ERROR;
+        }
+        ret = playerInfo->mediaDecoder.start();
         if (ret == PLAYER_RESULT_OK) {
             LOGI("--------OnWindowChange() success!state->STARTED");
             StartDecodeThread(playerInfo);
@@ -901,12 +764,10 @@ int Player::Play() {
         return PLAYER_RESULT_ERROR;
     }
 
-
-    media_status_t status = AMediaCodec_start(playerInfo->videoCodec);
+    int status = playerInfo->mediaDecoder.start();
     if (status != AMEDIA_OK) {
         LOGE("start AMediaCodec fail!\n");
-        AMediaCodec_delete(playerInfo->videoCodec);
-        playerInfo->videoCodec = NULL;
+        playerInfo->mediaDecoder.release();
         return PLAYER_RESULT_ERROR;
     } else {
         LOGI("------------AMediaCodec start success!!\n");

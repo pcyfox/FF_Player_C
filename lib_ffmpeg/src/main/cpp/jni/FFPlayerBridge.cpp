@@ -26,6 +26,8 @@ std::map<int, Player *> playerCache;
 static jclass clazz = NULL;
 
 
+
+
 Player *findPlayer(int id) {
     auto iterator = playerCache.find(id);
     if (iterator != playerCache.end()) {

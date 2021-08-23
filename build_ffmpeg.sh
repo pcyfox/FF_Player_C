@@ -101,6 +101,14 @@ build()
     --enable-pic \
     --enable-jni \
     --enable-shared \
+    --enable-mediacodec \
+    --disable-decoders \
+    --enable-decoder=aac \
+    --enable-decoder=aac_latm \
+    --enable-decoder=mjpeg \
+    --enable-decoder=png \
+    --enable-decoder=h264_mediacodec \
+    --enable-decoder=mpeg4_mediacodec \
 
     echo "----------------configure finish!--------------------"
     make -j8

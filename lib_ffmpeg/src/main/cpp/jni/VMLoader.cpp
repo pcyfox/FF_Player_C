@@ -7,6 +7,7 @@
 
 #ifdef __cplusplus
 extern "C" {
+#include <libavcodec/jni.h>
 #include "android_log.h"
 #endif
 #ifdef __cplusplus
@@ -17,9 +18,10 @@ jint JNI_OnLoad(JavaVM *jvm, void *reserved) {
     JNIEnv *env = NULL;
     if (jvm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
         LOGE("--------JavaVm load fail!--------");
+        av_jni_set_java_vm(jvm, NULL);
         return JNI_ERR;
     }
     vm = jvm;
-    LOGD("--------JavaVm load success!--------");
+    LOGI("--------JavaVm load success!--------");
     return JNI_VERSION_1_6;
 }
