@@ -10,7 +10,7 @@
 #include <PlayerInfo.h>
 #include <RecorderInfo.h>
 #include "JPlayerObject.h"
-
+#include <android/looper.h>
 
 class Player {
 
@@ -27,12 +27,12 @@ public:
     void (*recorderStateListener)(RecordState, int) = NULL;
     JPlayerObject jPlayer;
 
-
 public:
 
     static void SetDebug(bool isDebug);
 
     void StartRecorderThread() const;
+
 
     void StartDeMuxThread();
 

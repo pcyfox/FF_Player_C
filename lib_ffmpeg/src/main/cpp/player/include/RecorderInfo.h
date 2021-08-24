@@ -8,7 +8,7 @@
 
 #include "StateListener.h"
 #include "AsyncQueue.hpp"
-#include "../MediaDecoder.h"
+#include "MediaDecoder.h"
 
 #ifdef __cplusplus
 extern "C" {

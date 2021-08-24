@@ -215,7 +215,6 @@ class TestRecorderActivity : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        rv_record.stop()
     }
 
     override fun onDestroy() {

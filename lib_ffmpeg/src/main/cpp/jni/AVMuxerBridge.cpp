@@ -17,7 +17,7 @@ extern "C" {
 #include <pthread.h>
 
 static jmethodID jMid_onMuxProgress = NULL;
-static jobject clazz = NULL;
+static jclass clazz = NULL;
 
 void *onMuxProgress(float p) {
     JNIEnv *env = NULL;
@@ -26,7 +26,7 @@ void *onMuxProgress(float p) {
         if (jMid_onMuxProgress == NULL) {
             jMid_onMuxProgress = env->GetStaticMethodID((jclass) clazz, "onMuxProgress", "(F)V");
         }
-        env->CallStaticVoidMethod((jclass) clazz, jMid_onMuxProgress, p);
+        env->CallStaticVoidMethod(clazz, jMid_onMuxProgress, p);
     } else {
         LOGE("onStateChange() get jEnv error");
     }
@@ -59,8 +59,7 @@ Java_com_pcyfox_lib_1ffmpeg_AVMuxer_init(JNIEnv *env, jclass muxer) {
     if (!vm) {
         env->GetJavaVM(&vm);
     }
-    //class cast to  GlobalRef object,just for fix bug on MTK
-    clazz = env->NewGlobalRef(muxer);
+    clazz = (jclass) env->NewGlobalRef(muxer);
 }
 
 

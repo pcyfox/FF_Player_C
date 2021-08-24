@@ -22,13 +22,13 @@ add_library( # Sets the name of the library.
         SHARED #动态库
         # Provides a relative path to your source file(s).
         ${player_dir}/Player.cpp
-      #  ${player_dir}/AsyncQueue.cpp
         ${player_dir}/PlayerInfo.cpp
         ${player_dir}/Muxer.c
         ${player_dir}/RecorderInfo.cpp
         ${player_dir}/StateListener.cpp
         ${player_dir}/MediaDecoder.cpp
         ${jni_dir}/VMLoader.cpp
+       # ${jni_dir}/Looper.cpp
         ${jni_dir}/FFPlayerBridge.cpp
         ${jni_dir}/AVMuxerBridge.cpp
         ${include_dir}/android_log.c

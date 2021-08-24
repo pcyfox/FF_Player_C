@@ -27,16 +27,16 @@ class MediaDecoder {
 public:
     AMediaCodec *mediaCodec = nullptr;
     ANativeWindow *nativeWindow = nullptr;
-    char *mine;
+    const char *mine;
     int width;
     int height;
 
-public:
 
+public:
 
     void config(char *mine, ANativeWindow *nativeWindow, int width, int height);
 
-    int init(char *mine, ANativeWindow *nativeWindow, int width, int height, uint8_t *sps,
+    int init(const char *mine, ANativeWindow *nativeWindow, int width, int height, uint8_t *sps,
              int spsSize, uint8_t *pps, int ppsSize);
 
 
@@ -52,7 +52,7 @@ public:
 
     int release();
 
-    int decode(uint8_t *data, int length, int64_t pts) const;
+    int decodeVideo(uint8_t *data, int length, int64_t pts) const;
 
 };
 

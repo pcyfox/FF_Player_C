@@ -405,7 +405,7 @@ void *Decode(void *info) {
         if (ret == PLAYER_RESULT_OK) {
             uint8_t *data = packet->data;
             int length = packet->size;
-            playerInfo->mediaDecoder.decode(data, length, 0);
+            playerInfo->mediaDecoder.decodeVideo(data, length, 0);
         }
     }
     LOGI("-------Decode Stop!---------");
@@ -679,7 +679,7 @@ int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNo
         StartOpenResourceThread(playerInfo->resource);
         return PLAYER_RESULT_OK;
     } else {
-        playerInfo->mediaDecoder.config(playerInfo->mine, window, w, h);
+        playerInfo->mediaDecoder.config(playerInfo->mine, window, w, h, true);
     }
 
     if (playerInfo->GetPlayState() != ERROR) {
@@ -703,7 +703,21 @@ int Player::OnWindowDestroy(ANativeWindow *window) {
 int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
     LOGI("--------OnWindowChange() called with w=%d,h=%d", w, h);
     if (playerInfo && playerInfo->GetPlayState() == PAUSE) {
-        int ret = playerInfo->mediaDecoder.init(playerInfo->mine, window, w, h, NULL, 0, NULL, 0);
+        AVCodecParameters *codecpar = nullptr;
+        codecpar = playerInfo->inputVideoStream->codecpar;
+        if (codecpar == nullptr) {
+            playerInfo->SetPlayState(ERROR, true);
+            LOGE("OpenResource() fail:can't get video stream params");
+            return PLAYER_RESULT_ERROR;
+        }
+        int ret = playerInfo->mediaDecoder.init(playerInfo->mine,
+                                                window, w, h,
+                                                codecpar->extradata,
+                                                codecpar->extradata_size,
+                                                codecpar->extradata,
+                                                codecpar->extradata_size
+        );
+
         if (ret == PLAYER_RESULT_ERROR) {
             return PLAYER_RESULT_ERROR;
         }
@@ -765,7 +779,7 @@ int Player::Play() {
     }
 
     int status = playerInfo->mediaDecoder.start();
-    if (status != AMEDIA_OK) {
+    if (status != PLAYER_RESULT_OK) {
         LOGE("start AMediaCodec fail!\n");
         playerInfo->mediaDecoder.release();
         return PLAYER_RESULT_ERROR;
@@ -949,6 +963,8 @@ void Player::SetPlayStateChangeListener(void (*listener)(PlayState, int)) {
         playerInfo->SetStateListener(listener);
     }
 }
+
+
 
 
 

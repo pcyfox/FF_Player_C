@@ -8,7 +8,50 @@
 #include "MediaDecoder.h"
 
 
-int MediaDecoder::decode(uint8_t *data, int length, int64_t pts) const {
+void OnAMediaCodecOnAsyncInputAvailable(
+        AMediaCodec *codec,
+        void *userdata,
+        int32_t index) {
+
+};
+
+/**
+ * Called when an output buffer becomes available.
+ * The specified index is the index of the available output buffer.
+ * The specified bufferInfo contains information regarding the available output buffer.
+ */
+void OnAMediaCodecOnAsyncOutputAvailable(
+        AMediaCodec *codec,
+        void *userdata,
+        int32_t index,
+        AMediaCodecBufferInfo *bufferInfo) {};
+
+/**
+ * Called when the output format has changed.
+ * The specified format contains the new output format.
+ */
+void OnAMediaCodecOnAsyncFormatChanged(
+        AMediaCodec *codec,
+        void *userdata,
+        AMediaFormat *format) {};
+
+/**
+ * Called when the MediaCodec encountered an error.
+ * The specified actionCode indicates the possible actions that client can take,
+ * and it can be checked by calling AMediaCodecActionCode_isRecoverable or
+ * AMediaCodecActionCode_isTransient. If both AMediaCodecActionCode_isRecoverable() * and AMediaCodecActionCode_isTransient() return false, then the codec error is fatal
+ * and the codec must be deleted.
+ * The specified detail may contain more detailed messages about this error.
+ */
+void OnAMediaCodecOnAsyncError(
+        AMediaCodec *codec,
+        void *userdata,
+        media_status_t error,
+        int32_t actionCode,
+        const char *detail) {}
+
+
+int MediaDecoder::decodeVideo(uint8_t *data, int length, int64_t pts) const {
     // 获取buffer的索引
     ssize_t index = AMediaCodec_dequeueInputBuffer(mediaCodec, 10000);
     if (index >= 0) {
@@ -32,12 +75,13 @@ int MediaDecoder::decode(uint8_t *data, int length, int64_t pts) const {
 
     AMediaCodecBufferInfo bufferInfo;
     ssize_t status = AMediaCodec_dequeueOutputBuffer(mediaCodec, &bufferInfo, 10000);
+    //LOGD("----------dequeue ret=%d", status);
+
     if (status >= 0) {
         AMediaCodec_releaseOutputBuffer(mediaCodec, status, bufferInfo.size != 0);
         if (bufferInfo.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
             LOGE("video producer output EOS");
         }
-
         if (IS_DEBUG) {
             //size_t outsize = 0;
             //u_int8_t *outData = AMediaCodec_getOutputBuffer(codec, status, &outsize);
@@ -53,13 +97,20 @@ int MediaDecoder::decode(uint8_t *data, int length, int64_t pts) const {
                  width,
                  height);
         }
-    } else if (status == AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED) {
-        LOGE("output buffers changed");
-    } else if (status == AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED) {
-    } else if (status == AMEDIACODEC_INFO_TRY_AGAIN_LATER) {
-        LOGW("video no output buffer right now");
     } else {
-        LOGE("unexpected info code: %zd", status);
+        switch (status) {
+            case AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED:
+                LOGW("output buffers changed");
+                break;
+            case AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED:
+                LOGW("output buffers format changed");
+                break;
+            case AMEDIACODEC_INFO_TRY_AGAIN_LATER:
+                LOGW("timeout,video no output buffer right now");
+                break;
+            default:
+                LOGE("unexpected info code: %zd", status);
+        }
     }
     return status;
 }
@@ -81,7 +132,7 @@ int MediaDecoder::release() {
 
 int MediaDecoder::stop() const {
     if (mediaCodec) {
-        return AMediaCodec_stop(mediaCodec);
+        return AMediaCodec_stop(mediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK : PLAYER_RESULT_ERROR;
     }
 
     return PLAYER_RESULT_ERROR;
@@ -89,7 +140,7 @@ int MediaDecoder::stop() const {
 
 int MediaDecoder::start() const {
     if (mediaCodec) {
-        return AMediaCodec_start(mediaCodec);
+        return AMediaCodec_start(mediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK : PLAYER_RESULT_ERROR;
     }
 
     return PLAYER_RESULT_ERROR;
@@ -97,15 +148,16 @@ int MediaDecoder::start() const {
 
 int MediaDecoder::flush() const {
     if (mediaCodec) {
-        return AMediaCodec_flush(mediaCodec);
+        return AMediaCodec_flush(mediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK : PLAYER_RESULT_ERROR;
     }
     return PLAYER_RESULT_ERROR;
 }
 
 
-int MediaDecoder::init(char *mine, ANativeWindow *window, int width, int height, uint8_t *sps,
+int MediaDecoder::init(const char *mine, ANativeWindow *window, int width, int height, uint8_t *sps,
                        int spsSize,
                        uint8_t *pps, int ppsSize) {
+
     if (width * height <= 0) {
         LOGE("MediaDecoder init() not support video size");
         return PLAYER_RESULT_ERROR;
@@ -116,7 +168,6 @@ int MediaDecoder::init(char *mine, ANativeWindow *window, int width, int height,
         mediaCodec = nullptr;
         LOGW("MediaDecoder createAMediaCodec() delete old codec!");
     }
-
     mediaCodec = AMediaCodec_createDecoderByType(mine);
     if (!mediaCodec) {
         LOGE("MediaDecoder createAMediaCodec()  create decoder fail!");
@@ -124,15 +175,15 @@ int MediaDecoder::init(char *mine, ANativeWindow *window, int width, int height,
     } else {
         LOGI("MediaDecoder createAMediaCodec() create decoder success!");
     }
-
     AMediaFormat *videoFormat = AMediaFormat_new();
     AMediaFormat_setString(videoFormat, "mime", mine);
+    this->mine = mine;
     if (window) {
         nativeWindow = window;
     }
 
-    AMediaFormat_setInt32(videoFormat, AMEDIAFORMAT_KEY_WIDTH, width); // 视频宽度
-    AMediaFormat_setInt32(videoFormat, AMEDIAFORMAT_KEY_HEIGHT, height); // 视频高度
+    AMediaFormat_setInt32(videoFormat, AMEDIAFORMAT_KEY_WIDTH, width); // 宽度
+    AMediaFormat_setInt32(videoFormat, AMEDIAFORMAT_KEY_HEIGHT, height); // 高度
 
     if (spsSize && sps) {
         AMediaFormat_setBuffer(videoFormat, "csd-0", sps, spsSize); // sps
@@ -153,8 +204,15 @@ int MediaDecoder::init(char *mine, ANativeWindow *window, int width, int height,
         mediaCodec = nullptr;
         return PLAYER_RESULT_ERROR;
     }
-
     return PLAYER_RESULT_OK;
+}
+
+
+int MediaDecoder::init(uint8_t *sps, int spsSize, uint8_t *pps, int ppsSize) {
+    if (nativeWindow) {
+        return init(mine, nativeWindow, width, height, sps, spsSize, pps, ppsSize);
+    }
+    return PLAYER_RESULT_ERROR;
 }
 
 void MediaDecoder::config(char *mine, ANativeWindow *nativeWindow, int width, int height) {
@@ -164,9 +222,3 @@ void MediaDecoder::config(char *mine, ANativeWindow *nativeWindow, int width, in
     this->height = height;
 }
 
-int MediaDecoder::init(uint8_t *sps, int spsSize, uint8_t *pps, int ppsSize) {
-    if(nativeWindow){
-        return init(mine,nativeWindow,width,height,sps,spsSize,pps,ppsSize);
-    }
-    return PLAYER_RESULT_ERROR;
-}

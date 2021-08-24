@@ -11,7 +11,7 @@
 #include "pthread.h"
 #include "StateListener.h"
 #include "AsyncQueue.hpp"
-#include "../MediaDecoder.h"
+#include "MediaDecoder.h"
 #include <android/native_window.h>
 
 #ifdef __cplusplus
