@@ -1,5 +1,7 @@
 package com.pcyfox.lib_ffmpeg;
 
+import android.media.MediaCodecInfo;
+import android.media.MediaCodecList;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -7,6 +9,10 @@ import android.view.SurfaceView;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 @Keep
@@ -58,6 +64,18 @@ public class FFPlayer {
     public FFPlayer(int id, boolean debug) {
         this.id = id;
         init(debug ? 1 : 0, id);
+        if (BuildConfig.DEBUG) {
+            List<String> codecIndoList = new ArrayList<>();
+            int numCodecs = MediaCodecList.getCodecCount();
+            for (int i = 0; i < numCodecs; i++) {
+                MediaCodecInfo codecInfo = MediaCodecList.getCodecInfoAt(i);
+                String[] types = codecInfo.getSupportedTypes();
+                for (String type : types) {
+                    codecIndoList.add("name:" + codecInfo.getName() + ",type:" + type + "\n");
+                }
+            }
+            Log.d(TAG, "FFPlayer() MediaCodecList=" + Arrays.toString(codecIndoList.toArray()));
+        }
     }
 
     public int startRecord() {

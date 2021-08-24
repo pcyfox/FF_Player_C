@@ -8,55 +8,12 @@
 #include "MediaDecoder.h"
 
 
-void OnAMediaCodecOnAsyncInputAvailable(
-        AMediaCodec *codec,
-        void *userdata,
-        int32_t index) {
-
-};
-
-/**
- * Called when an output buffer becomes available.
- * The specified index is the index of the available output buffer.
- * The specified bufferInfo contains information regarding the available output buffer.
- */
-void OnAMediaCodecOnAsyncOutputAvailable(
-        AMediaCodec *codec,
-        void *userdata,
-        int32_t index,
-        AMediaCodecBufferInfo *bufferInfo) {};
-
-/**
- * Called when the output format has changed.
- * The specified format contains the new output format.
- */
-void OnAMediaCodecOnAsyncFormatChanged(
-        AMediaCodec *codec,
-        void *userdata,
-        AMediaFormat *format) {};
-
-/**
- * Called when the MediaCodec encountered an error.
- * The specified actionCode indicates the possible actions that client can take,
- * and it can be checked by calling AMediaCodecActionCode_isRecoverable or
- * AMediaCodecActionCode_isTransient. If both AMediaCodecActionCode_isRecoverable() * and AMediaCodecActionCode_isTransient() return false, then the codec error is fatal
- * and the codec must be deleted.
- * The specified detail may contain more detailed messages about this error.
- */
-void OnAMediaCodecOnAsyncError(
-        AMediaCodec *codec,
-        void *userdata,
-        media_status_t error,
-        int32_t actionCode,
-        const char *detail) {}
-
-
 int MediaDecoder::decodeVideo(uint8_t *data, int length, int64_t pts) const {
     // 获取buffer的索引
-    ssize_t index = AMediaCodec_dequeueInputBuffer(mediaCodec, 10000);
+    ssize_t index = AMediaCodec_dequeueInputBuffer(videoMediaCodec, 10000);
     if (index >= 0) {
         size_t out_size;
-        uint8_t *inputBuf = AMediaCodec_getInputBuffer(mediaCodec, index, &out_size);
+        uint8_t *inputBuf = AMediaCodec_getInputBuffer(videoMediaCodec, index, &out_size);
         if (inputBuf != NULL && length <= out_size) {
             //clear buf
             memset(inputBuf, 0, out_size);
@@ -65,7 +22,7 @@ int MediaDecoder::decodeVideo(uint8_t *data, int length, int64_t pts) const {
             if (pts <= 0 || !pts) {
                 pts = getCurrentTime();
             }
-            media_status_t status = AMediaCodec_queueInputBuffer(mediaCodec, index, 0, length,
+            media_status_t status = AMediaCodec_queueInputBuffer(videoMediaCodec, index, 0, length,
                                                                  pts, 0);
             if (status != AMEDIA_OK) {
                 LOGE("queue input buffer error status=%d", status);
@@ -74,18 +31,16 @@ int MediaDecoder::decodeVideo(uint8_t *data, int length, int64_t pts) const {
     }
 
     AMediaCodecBufferInfo bufferInfo;
-    ssize_t status = AMediaCodec_dequeueOutputBuffer(mediaCodec, &bufferInfo, 10000);
-    //LOGD("----------dequeue ret=%d", status);
-
-    if (status >= 0) {
-        AMediaCodec_releaseOutputBuffer(mediaCodec, status, bufferInfo.size != 0);
+    ssize_t status = AMediaCodec_dequeueOutputBuffer(videoMediaCodec, &bufferInfo, 10000);
+    if (status > 0) {
+        AMediaCodec_releaseOutputBuffer(videoMediaCodec, status, bufferInfo.size != 0);
         if (bufferInfo.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
             LOGE("video producer output EOS");
         }
         if (IS_DEBUG) {
             //size_t outsize = 0;
             //u_int8_t *outData = AMediaCodec_getOutputBuffer(codec, status, &outsize);
-            auto formatType = AMediaCodec_getOutputFormat(mediaCodec);
+            auto formatType = AMediaCodec_getOutputFormat(videoMediaCodec);
             LOGD("Decode:format formatType to: %s\n", AMediaFormat_toString(formatType));
             int colorFormat = 0;
             int width = 0;
@@ -121,34 +76,37 @@ int MediaDecoder::release() {
         ANativeWindow_release(nativeWindow);
         nativeWindow = nullptr;
     }
-    if (mediaCodec) {
-        AMediaCodec_stop(mediaCodec);
-        AMediaCodec_delete(mediaCodec);
-        mediaCodec = nullptr;
+    if (videoMediaCodec) {
+        AMediaCodec_stop(videoMediaCodec);
+        AMediaCodec_delete(videoMediaCodec);
+        videoMediaCodec = nullptr;
     }
     return 0;
 }
 
 
 int MediaDecoder::stop() const {
-    if (mediaCodec) {
-        return AMediaCodec_stop(mediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK : PLAYER_RESULT_ERROR;
+    if (videoMediaCodec) {
+        return AMediaCodec_stop(videoMediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
+                                                              : PLAYER_RESULT_ERROR;
     }
 
     return PLAYER_RESULT_ERROR;
 }
 
 int MediaDecoder::start() const {
-    if (mediaCodec) {
-        return AMediaCodec_start(mediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK : PLAYER_RESULT_ERROR;
+    if (videoMediaCodec) {
+        return AMediaCodec_start(videoMediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
+                                                               : PLAYER_RESULT_ERROR;
     }
 
     return PLAYER_RESULT_ERROR;
 }
 
 int MediaDecoder::flush() const {
-    if (mediaCodec) {
-        return AMediaCodec_flush(mediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK : PLAYER_RESULT_ERROR;
+    if (videoMediaCodec) {
+        return AMediaCodec_flush(videoMediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
+                                                               : PLAYER_RESULT_ERROR;
     }
     return PLAYER_RESULT_ERROR;
 }
@@ -162,14 +120,14 @@ int MediaDecoder::init(const char *mine, ANativeWindow *window, int width, int h
         LOGE("MediaDecoder init() not support video size");
         return PLAYER_RESULT_ERROR;
     }
-    if (mediaCodec) {
-        AMediaCodec_stop(mediaCodec);
-        AMediaCodec_delete(mediaCodec);
-        mediaCodec = nullptr;
+    if (videoMediaCodec) {
+        AMediaCodec_stop(videoMediaCodec);
+        AMediaCodec_delete(videoMediaCodec);
+        videoMediaCodec = nullptr;
         LOGW("MediaDecoder createAMediaCodec() delete old codec!");
     }
-    mediaCodec = AMediaCodec_createDecoderByType(mine);
-    if (!mediaCodec) {
+    videoMediaCodec = AMediaCodec_createDecoderByType(mine);
+    if (!videoMediaCodec) {
         LOGE("MediaDecoder createAMediaCodec()  create decoder fail!");
         return PLAYER_RESULT_ERROR;
     } else {
@@ -192,7 +150,7 @@ int MediaDecoder::init(const char *mine, ANativeWindow *window, int width, int h
         AMediaFormat_setBuffer(videoFormat, "csd-1", pps, ppsSize); // pps
     }
 
-    media_status_t status = AMediaCodec_configure(mediaCodec, videoFormat, nativeWindow,
+    media_status_t status = AMediaCodec_configure(videoMediaCodec, videoFormat, nativeWindow,
                                                   nullptr,
                                                   0);
 
@@ -200,8 +158,8 @@ int MediaDecoder::init(const char *mine, ANativeWindow *window, int width, int h
         LOGD("MediaDecoder configure AMediaCodec success!");
     } else {
         LOGE("MediaDecoder configure AMediaCodec fail!,ret=%d", status);
-        AMediaCodec_delete(mediaCodec);
-        mediaCodec = nullptr;
+        AMediaCodec_delete(videoMediaCodec);
+        videoMediaCodec = nullptr;
         return PLAYER_RESULT_ERROR;
     }
     return PLAYER_RESULT_OK;
@@ -220,5 +178,14 @@ void MediaDecoder::config(char *mine, ANativeWindow *nativeWindow, int width, in
     this->nativeWindow = nativeWindow;
     this->width = width;
     this->height = height;
+}
+
+void MediaDecoder::configAudio(char *mine) {
+
+
+}
+
+MediaDecoder::~MediaDecoder() {
+    release();
 }
 

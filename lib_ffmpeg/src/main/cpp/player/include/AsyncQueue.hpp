@@ -76,6 +76,9 @@ int AsyncQueue<_TYPE>::getQueueSize() {
 
 template<class _TYPE>
 void AsyncQueue<_TYPE>::clearAVPacket() {
+    if (quit) {
+        return;
+    }
     pthread_mutex_lock(&mutexPacket);
     pthread_cond_signal(&condPacket);
     while (!queuePacket.empty()) {

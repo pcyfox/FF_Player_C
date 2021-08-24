@@ -25,7 +25,8 @@ extern "C" {
 class MediaDecoder {
 
 public:
-    AMediaCodec *mediaCodec = nullptr;
+    AMediaCodec *videoMediaCodec = nullptr;
+    AMediaCodec *audioMediaCodec = nullptr;
     ANativeWindow *nativeWindow = nullptr;
     const char *mine;
     int width;
@@ -33,6 +34,9 @@ public:
 
 
 public:
+    ~MediaDecoder();
+
+    void configAudio(char *mine);
 
     void config(char *mine, ANativeWindow *nativeWindow, int width, int height);
 
@@ -48,7 +52,6 @@ public:
     int flush() const;
 
     int stop() const;
-
 
     int release();
 

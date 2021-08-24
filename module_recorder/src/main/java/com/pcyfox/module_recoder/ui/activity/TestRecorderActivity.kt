@@ -73,7 +73,7 @@ class TestRecorderActivity : AppCompatActivity() {
                 }
 
                 override fun onRecordProgress(mills: Long, amp: Int) {
-                    Log.d(TAG, "onRecordProgress() called with: mills = $mills, amp = $amp")
+                    //Log.d(TAG, "onRecordProgress() called with: mills = $mills, amp = $amp")
                 }
 
                 override fun onStopRecord(audio: File?, video: File?) {

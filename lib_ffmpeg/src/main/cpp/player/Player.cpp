@@ -99,8 +99,8 @@ int GetNALUType(AVPacket *packet) {
 
 
 void *OpenResource(void *info) {
-    if (info == NULL) {
-        return NULL;
+    if (info == nullptr) {
+        return nullptr;
     }
     auto *playerInfo = (PlayerInfo *) info;
     char *url = playerInfo->resource;
@@ -115,7 +115,9 @@ void *OpenResource(void *info) {
     //或者根本没有后缀时需要填写，
     LOGI("OpenResource() start open=%s", url);
     playerInfo->SetPlayState(EXECUTING, true);
-    int ret = avformat_open_input(&playerInfo->inputContext, url, NULL, NULL);
+    AVDictionary *opts = NULL;
+    av_dict_set(&opts, "stimeout", "6000000", 0);//设置超时3秒
+    int ret = avformat_open_input(&playerInfo->inputContext, url, NULL, &opts);
     if (ret != 0) {
         LOGE("OpenResource():can't open source: %s ,msg:%s \n", url, av_err2str(ret));
         playerInfo->inputContext = NULL;
@@ -133,11 +135,12 @@ void *OpenResource(void *info) {
 
     /* find stream info  */
     LOGI("----------open resource success!,start to find stream info-------------");
-    if (avformat_find_stream_info(playerInfo->inputContext, NULL) < 0) {
+    if (avformat_find_stream_info(playerInfo->inputContext, &opts) < 0) {
         playerInfo->SetPlayState(ERROR, true);
         LOGE("could not find stream info\n");
         return (void *) PLAYER_RESULT_ERROR;
     }
+    av_freep(&opts);
     LOGI("----------find stream info success!-------------");
     playerInfo->resource = url;
     LOGD("----------fmt_ctx:streams number=%d,bit rate=%ld\n",
@@ -153,18 +156,16 @@ void *OpenResource(void *info) {
         return (void *) PLAYER_RESULT_ERROR;
     }
     LOGI("----------find video stream success!-------------");
-
     if (playerInfo->isOpenAudio) {
         playerInfo->inputAudioStream = findStream(playerInfo->inputContext, AVMEDIA_TYPE_AUDIO);
         if (playerInfo->inputAudioStream) {
             LOGI("find audio stream success!");
             AVCodecID codec_id = playerInfo->inputAudioStream->codecpar->codec_id;
             if (AV_CODEC_ID_AAC == codec_id) {
-                // createAudioCodec(&playerInfo->audioCodec, "audio/mp4a-latm");
+                playerInfo->mediaDecoder.configAudio("audio/mp4a-latm");
             } else {
                 LOGE("not support audio type:%d", codec_id);
             }
-
         } else {
             LOGW("find audio stream fail!");
         }
@@ -176,31 +177,29 @@ void *OpenResource(void *info) {
         playerInfo->SetPlayState(ERROR, true);
         return (void *) PLAYER_RESULT_ERROR;
     }
-
-    AVCodecParameters *codecpar = NULL;
+    AVCodecParameters *codecpar = nullptr;
     codecpar = playerInfo->inputVideoStream->codecpar;
-
-    if (codecpar == NULL) {
+    if (codecpar == nullptr) {
         playerInfo->SetPlayState(ERROR, true);
         LOGE("OpenResource() fail:can't get video stream params");
         return (void *) PLAYER_RESULT_ERROR;
     }
+    if(!playerInfo->isOnlyRecordMedia){
+        // init decoder
+        ret = playerInfo->mediaDecoder.init(
+                codecpar->extradata,
+                codecpar->extradata_size,
+                codecpar->extradata,
+                codecpar->extradata_size
+        );
+    }
 
-
-    ret = playerInfo->mediaDecoder.init(
-            codecpar->extradata,
-            codecpar->extradata_size,
-            codecpar->extradata,
-            codecpar->extradata_size
-    );
     if (ret == PLAYER_RESULT_ERROR) {
         return (void *) PLAYER_RESULT_ERROR;
     }
-
     playerInfo->SetPlayState(PREPARED, true);
 
-
-    if (isDebug) {
+    if (IS_DEBUG) {
         uint8_t exSize = codecpar->extradata_size;
         if (exSize > 0) {
             uint8_t *extraData = codecpar->extradata;
@@ -239,39 +238,7 @@ void *OpenResource(void *info) {
     }
 
 
-    return (void *) ret;
-}
-
-//抽取音频数据
-int getAudioData(AVFormatContext *ctx, char *dest) {
-    //创建一个可写的输出文件,用于存放输出数据
-    FILE *dest_fd = fopen(dest, "a*");
-    if (!dest_fd) {
-        LOGE("open out file %s fail! \n", dest);
-        return -1;
-    }
-    //找到音频流,第二参数流类型（FFMPEG宏）第三个流的索引号，未知，填-1，第四个，相关流的索引号，
-    //如音频流对应的视频流索引号，也未知，第五个制定解解码器，最后一个是标志符解
-    int index = av_find_best_stream(ctx, AVMEDIA_TYPE_AUDIO, -1, -1, NULL, 0);
-
-    if (index < 0) {
-        LOGE("find audio stream fail!");
-        return -1;
-    }
-    //读取数据包（因历史原因，函数未改名字）
-    AVPacket audio_pkt;
-    av_init_packet(&audio_pkt);
-    while (av_read_frame(ctx, &audio_pkt) >= 0) {
-        if (audio_pkt.stream_index == index) {
-            //TODO 每个音频包前加入头信息
-            int len = fwrite(audio_pkt.data, 1, audio_pkt.size, dest_fd);
-            if (len != audio_pkt.size) {//判断写入文件是否成功
-                LOGE("the write data length not equals audio_pkt size \n");
-            }
-            av_packet_unref(&audio_pkt);
-        }
-    }
-    return 0;
+    return nullptr;
 }
 
 
@@ -341,6 +308,7 @@ void *RecordPkt(void *info) {
             recorderInfo->packetQueue.clearAVPacket();
             continue;
         }
+
         if (recordState == RECORD_STOP) {
             /*write file trailer*/
             LOGD("--------- recordState changed to stop ---------");
@@ -350,6 +318,7 @@ void *RecordPkt(void *info) {
             LOGI("--------- record stop ,and write trailer over ---------");
             break;
         }
+
         int ret = recorderInfo->packetQueue.getAvPacket(&packet);
 
         if (ret == PLAYER_RESULT_ERROR) {
@@ -374,12 +343,9 @@ void *RecordPkt(void *info) {
             /*write packet and auto free packet*/
             av_interleaved_write_frame(recorderInfo->o_fmt_ctx, packet);
         }
-
         av_packet_unref(packet);
     }
-
     LOGI("----------------- record work stop,start to delete recordInfo--------------");
-
     recorderInfo->packetQueue.clearAVPacket();
     if (recorderInfo->GetRecordState() == RECORDER_RELEASE) {
         StartRelease(NULL, recorderInfo);
@@ -523,30 +489,25 @@ void *DeMux(void *param) {
         return NULL;
     }
     AVStream *i_video_stream = playerInfo->inputVideoStream;
-    /*
-    * since all input files are supposed to be identical (framerate, dimension, color format, ...)
-    * we can safely set output codec values from first input file
-    */
+    AVCodecParameters *i_av_codec_parameters = i_video_stream->codecpar;
+    int video_stream_index = i_video_stream->index;
+
+    float delay = 0;
+    int num = playerInfo->inputVideoStream->avg_frame_rate.num;
+    int den = playerInfo->inputVideoStream->avg_frame_rate.den;
+    if (isLocalFile(playerInfo->resource)) {
+        float fps = (float) num / (float) den;
+        delay = 1.0f / fps * 1000000;
+        LOGI("--------------------Start DeMux----------------------FPS:%f,span=%d", fps,
+             (unsigned int) delay);
+    }
 
     playerInfo->SetPlayState(STARTED, true);
     if (!playerInfo->isOnlyRecordMedia) {
         LOGI("--------------------DeMux() change state to STARTED----------------------");
         StartDecodeThread(playerInfo);
     }
-
-    AVCodecParameters *i_av_codec_parameters = i_video_stream->codecpar;
-    int video_stream_index = i_video_stream->index;
     PlayState state;
-
-    float delay = 0;
-    if (isLocalFile(playerInfo->resource)) {
-        float fps = (1.0f * playerInfo->inputVideoStream->avg_frame_rate.num) /
-                    playerInfo->inputVideoStream->avg_frame_rate.den;
-        delay = 1.0f / fps * 1000000;
-        LOGI("--------------------Start DeMux----------------------FPS:%f,span=%d", fps,
-             (unsigned int) delay);
-    }
-
     while ((state = playerInfo->GetPlayState()) != STOPPED) {
         if (state == UNINITIALIZED || state == ERROR || state == RELEASE) {
             playerInfo->packetQueue.clearAVPacket();
@@ -554,8 +515,11 @@ void *DeMux(void *param) {
             break;
         }
         RecorderInfo *recorderInfo = player->recorderInfo;
-        if (state == PAUSE) {
-            if ((recorderInfo != NULL) && recorderInfo->GetRecordState() == RECORD_PAUSE) {
+        //只有播放暂停与录制暂停同时出现才会暂停
+        if (state == PAUSE) {//播放暂停
+            if (recorderInfo != NULL &&
+                recorderInfo->GetRecordState() == RECORD_PAUSE ||
+                recorderInfo == NULL) {//检查录制是否也要暂停
                 continue;
             }
         }
@@ -566,7 +530,7 @@ void *DeMux(void *param) {
             return NULL;
         }
         int ret = av_read_frame(playerInfo->inputContext, i_pkt);
-        if (ret == 0 && i_pkt->buf != NULL) {
+        if (ret == 0 && i_pkt->size > 0) {
             if (i_pkt->stream_index == video_stream_index) {
                 ProcessPacket(i_pkt, i_av_codec_parameters, playerInfo, recorderInfo);
                 if (delay > 0) {
@@ -577,31 +541,27 @@ void *DeMux(void *param) {
             }
         } else if (ret == AVERROR_EOF) {
             av_packet_free(&i_pkt);
-            break;
             LOGE("DeMux: end of file!");
+            break;
         } else {
             av_packet_free(&i_pkt);
-            LOGE("DeMux:ERROR!,ret=%d", ret);
+            LOGW("DeMux:read frame ERROR!,ret=%d", ret);
         }
     }
 
-    if (playerInfo->inputContext != NULL) {
+    if (playerInfo->inputContext != nullptr) {
         LOGI("-----------DeMux close ----------------");
-        avformat_close_input(&playerInfo
-                ->inputContext);
-        playerInfo->
-                inputContext = NULL;
+        avformat_close_input(&playerInfo->inputContext);
+        playerInfo->inputContext = nullptr;
         LOGI("close input context!");
     }
-
     playerInfo->SetPlayState(STOPPED, true);
     LOGI("-----------DeMux stop over! ----------------");
     playerInfo->packetQueue.clearAVPacket();
     if (playerInfo->GetPlayState() == RELEASE) {
-        StartRelease(playerInfo, NULL);
+        StartRelease(playerInfo, nullptr);
     }
-    static int num = 1;
-    return NULL;
+    return nullptr;
 }
 
 
@@ -679,7 +639,7 @@ int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNo
         StartOpenResourceThread(playerInfo->resource);
         return PLAYER_RESULT_OK;
     } else {
-        playerInfo->mediaDecoder.config(playerInfo->mine, window, w, h, true);
+        playerInfo->mediaDecoder.config(playerInfo->mine, window, w, h);
     }
 
     if (playerInfo->GetPlayState() != ERROR) {
@@ -920,16 +880,18 @@ int Player::ResumeRecord() const {
 
 int Player::Release() {
     LOGD("Release() called!");
-    if (playerInfo->GetPlayState() == STOPPED) {
+    if (playerInfo && playerInfo->GetPlayState() == STOPPED) {
         StartRelease(playerInfo, recorderInfo);
         return PLAYER_RESULT_OK;
     }
-    playerInfo->SetPlayState(RELEASE, true);
-    if (recorderInfo != NULL) {
+    if (playerInfo) {
+        playerInfo->SetPlayState(RELEASE, true);
+    }
+    if (recorderInfo) {
         recorderInfo->SetRecordState(RECORDER_RELEASE);
     }
-    jPlayer.jMid_onRecordStateChangeId = NULL;
-    jPlayer.jMid_onPlayStateChangeId = NULL;
+    jPlayer.jMid_onRecordStateChangeId = nullptr;
+    jPlayer.jMid_onPlayStateChangeId = nullptr;
     LOGD("Release() over!");
     return PLAYER_RESULT_OK;
 }
