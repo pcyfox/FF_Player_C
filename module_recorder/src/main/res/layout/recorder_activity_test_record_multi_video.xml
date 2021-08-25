@@ -52,7 +52,8 @@
                 android:layout_height="wrap_content"
                 android:onClick="onClick"
                 android:text="play"
-                android:textSize="16dp" />
+                android:textSize="16dp"
+                android:visibility="gone" />
 
 
             <Button
@@ -120,7 +121,8 @@
                 android:layout_height="wrap_content"
                 android:onClick="onClick"
                 android:text="mux AV"
-                android:textSize="16dp" />
+                android:textSize="16dp"
+                android:visibility="gone" />
 
         </LinearLayout>
 

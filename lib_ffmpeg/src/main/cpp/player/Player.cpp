@@ -184,15 +184,6 @@ void *OpenResource(void *info) {
         LOGE("OpenResource() fail:can't get video stream params");
         return (void *) PLAYER_RESULT_ERROR;
     }
-    if(!playerInfo->isOnlyRecordMedia){
-        // init decoder
-        ret = playerInfo->mediaDecoder.init(
-                codecpar->extradata,
-                codecpar->extradata_size,
-                codecpar->extradata,
-                codecpar->extradata_size
-        );
-    }
 
     if (ret == PLAYER_RESULT_ERROR) {
         return (void *) PLAYER_RESULT_ERROR;
@@ -417,8 +408,6 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
     } else {//MEDIASUBTYPE_H264
         packet->flags = type;
     }
-
-    playerInfo->lastNALUType = packet->flags;
 
     //加入录制队列
     if (recorderInfo != NULL) {
@@ -738,14 +727,29 @@ int Player::Play() {
         return PLAYER_RESULT_ERROR;
     }
 
-    int status = playerInfo->mediaDecoder.start();
+
+    AVCodecParameters *codecpar =
+            playerInfo->inputVideoStream->codecpar;
+    // init decoder
+    int status = playerInfo->mediaDecoder.init(
+            codecpar->extradata,
+            codecpar->extradata_size,
+            codecpar->extradata,
+            codecpar->extradata_size
+    );
+
+    if (status != PLAYER_RESULT_OK) {
+        LOGE("init AMediaCodec fail!");
+        playerInfo->mediaDecoder.release();
+        return PLAYER_RESULT_ERROR;
+    }
+    status = playerInfo->mediaDecoder.start();
     if (status != PLAYER_RESULT_OK) {
         LOGE("start AMediaCodec fail!\n");
         playerInfo->mediaDecoder.release();
         return PLAYER_RESULT_ERROR;
-    } else {
-        LOGI("------------AMediaCodec start success!!\n");
     }
+    LOGI("------------AMediaCodec start success!!\n");
     Start();
     return PLAYER_RESULT_OK;
 }

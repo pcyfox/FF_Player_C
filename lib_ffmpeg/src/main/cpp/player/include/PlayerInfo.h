@@ -46,14 +46,12 @@ public:
     pthread_t deMux_thread = 0;
     pthread_t open_resource_thread = 0;
 
-
     pthread_mutex_t mutex{};
     pthread_cond_t cond{};
 
-    int8_t lastNALUType = 0;
-
     bool isOpenAudio = false;
     char *mine = "video/avc";
+
     volatile enum PlayState playState = UNINITIALIZED;
 
     MediaDecoder mediaDecoder;

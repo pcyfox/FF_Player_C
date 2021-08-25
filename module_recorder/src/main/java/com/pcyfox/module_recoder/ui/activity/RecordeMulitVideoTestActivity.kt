@@ -109,6 +109,10 @@ class RecordeMulitVideoTestActivity : AppCompatActivity() {
                 rv_record_2.prepareRecorder(getVideoFile().absolutePath)
                 rv_record_2.setResource(url_2, true)
             }
+            R.id.btn_play->{
+                rv_record_1.play()
+                rv_record_2.play()
+            }
 
             R.id.btn_stop -> {
                 rv_record_1.stop()

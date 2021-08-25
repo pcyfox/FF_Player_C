@@ -27,7 +27,7 @@ class RecorderView : RelativeLayout {
     private var videoPath = ""
     private var audioPath = ""
     private val TAG = "RecorderView"
-    private val ffPlayer: FFPlayer = FFPlayer(hashCode(),true)
+    private val ffPlayer: FFPlayer = FFPlayer(hashCode(), true)
     private val audioRecorder = AudioRecorder.getInstance()
     private var isNeedRelease = false
     var avRecorderCallback: AVRecorderCallback? = null
@@ -97,44 +97,53 @@ class RecorderView : RelativeLayout {
     fun startRecord(isOnlyRecordeVideo: Boolean = false): Boolean {
         this.isOnlyRecordeVideo = isOnlyRecordeVideo
         Log.d(TAG, "startRecord() called with: videoPath = $videoPath, audioPath = $audioPath")
-        if (TextUtils.isEmpty(videoPath) || TextUtils.isEmpty(audioPath)) {
-            return false
-        }
         if (ffPlayer.playState != PlayState.STARTED) {
             Log.e(TAG, "startRecord() called fail,state=${ffPlayer.playState}")
             return false
         }
 
-        audioRecorder.setRecorderCallback(object : RecorderContract.RecorderCallback {
-            override fun onPrepareRecord() {
-                avRecorderCallback?.onPauseRecord()
-            }
-
-            override fun onStartRecord(output: File?) {
-                avRecorderCallback?.onStartRecord(output, File(videoPath))
-            }
-
-            override fun onPauseRecord() {
-                avRecorderCallback?.onPauseRecord()
-            }
-
-            override fun onRecordProgress(mills: Long, amp: Int) {
-                avRecorderCallback?.onRecordProgress(mills, amp)
-            }
-
-            override fun onStopRecord(output: File?) {
-                avRecorderCallback?.onStopRecord(output, File(videoPath))
-            }
-
-            override fun onError(throwable: Exception?) {
-                avRecorderCallback?.onError(throwable)
-            }
-        })
-
-        if (ffPlayer.recodeState == RecordState.RECORD_STOP) {
-            ffPlayer.prepareRecorder(videoPath)
+        if (videoPath.isEmpty() && audioPath.isEmpty()) {
+            return false
         }
-        return ffPlayer.startRecord() > 0
+
+        if (audioPath.isNotEmpty()) {
+            audioRecorder.setRecorderCallback(object : RecorderContract.RecorderCallback {
+                override fun onPrepareRecord() {
+                    avRecorderCallback?.onPauseRecord()
+                }
+
+                override fun onStartRecord(output: File?) {
+                    avRecorderCallback?.onStartRecord(output, File(videoPath))
+                }
+
+                override fun onPauseRecord() {
+                    avRecorderCallback?.onPauseRecord()
+                }
+
+                override fun onRecordProgress(mills: Long, amp: Int) {
+                    avRecorderCallback?.onRecordProgress(mills, amp)
+                }
+
+                override fun onStopRecord(output: File?) {
+                    avRecorderCallback?.onStopRecord(output, File(videoPath))
+                }
+
+                override fun onError(throwable: Exception?) {
+                    avRecorderCallback?.onError(throwable)
+                }
+            })
+        }
+
+
+        if (videoPath.isNotEmpty()) {
+            if (ffPlayer.recodeState == RecordState.RECORD_STOP) {
+                ffPlayer.prepareRecorder(videoPath)
+            }
+
+            ffPlayer.startRecord() > 0
+        }
+
+        return true
     }
 
 
