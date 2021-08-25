@@ -32,7 +32,7 @@ class RecorderView : RelativeLayout {
     private var isNeedRelease = false
     var avRecorderCallback: AVRecorderCallback? = null
     var listener: OnPlayStateChangeListener? = null
-    private var isOnlyRecordeVideo = false
+    var isOnlyRecordeVideo = false
     override fun onFinishInflate() {
         super.onFinishInflate()
         addView(sv)
@@ -94,8 +94,7 @@ class RecorderView : RelativeLayout {
 
     }
 
-    fun startRecord(isOnlyRecordeVideo: Boolean = false): Boolean {
-        this.isOnlyRecordeVideo = isOnlyRecordeVideo
+    fun startRecord(): Boolean {
         Log.d(TAG, "startRecord() called with: videoPath = $videoPath, audioPath = $audioPath")
         if (ffPlayer.playState != PlayState.STARTED) {
             Log.e(TAG, "startRecord() called fail,state=${ffPlayer.playState}")
@@ -148,7 +147,7 @@ class RecorderView : RelativeLayout {
 
 
     fun startRecordVideo(): Boolean {
-        return startRecord(true)
+        return startRecord()
     }
 
 

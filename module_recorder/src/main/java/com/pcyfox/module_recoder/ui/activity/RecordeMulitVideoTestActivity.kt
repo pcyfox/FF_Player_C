@@ -37,7 +37,9 @@ class RecordeMulitVideoTestActivity : AppCompatActivity() {
     }
 
     private fun initView() {
+
         rv_record_2.run {
+            isOnlyRecordeVideo=true
             setOnStateChangeListener { state ->
                 Log.d(TAG, "initView 2() called with: state = $state")
                 when (state) {
@@ -51,6 +53,7 @@ class RecordeMulitVideoTestActivity : AppCompatActivity() {
             }
         }
         rv_record_1.run {
+            isOnlyRecordeVideo=true
             setOnStateChangeListener { state ->
                 Log.d(TAG, "initView 1() called with: state = $state")
                 when (state) {
