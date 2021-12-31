@@ -12,4 +12,8 @@ FFmpeg编译脚本：build_ffmpeg.sh
 支持：http、rtsp、rtmp等（暂不支持音频）
 说明：FFmpeg仅用于获取视频流数据及合成视频，MediaCodec负责解码，SurfaceView负责渲染
 
+dependencies {
+	        implementation 'com.github.pcyfox.FF_Player_C:lib_ffmpeg:v2.0.34'
+	}
+
 
