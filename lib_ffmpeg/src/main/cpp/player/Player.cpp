@@ -526,6 +526,7 @@ void *DeMux(void *param) {
         } else if (ret == AVERROR_EOF) {
             av_packet_free(&i_pkt);
             LOGE("DeMux: end of file!");
+            break;
         } else {
             av_packet_free(&i_pkt);
             LOGW("DeMux:read frame ERROR!,ret=%d", ret);
