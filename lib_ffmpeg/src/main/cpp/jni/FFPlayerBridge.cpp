@@ -244,7 +244,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_setRecordState(JNIEnv *env, jobject thiz, j
     if (player == NULL) {
         return PLAYER_RESULT_ERROR;
     }
-    if (player->playerInfo == NULL || player->playerInfo->GetPlayState() == RELEASE) {
+    if (player->playerContext == NULL || player->playerContext->GetPlayState() == RELEASE) {
         return PLAYER_RESULT_ERROR;
     }
     switch (state) {

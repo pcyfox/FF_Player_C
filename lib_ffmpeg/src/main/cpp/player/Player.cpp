@@ -49,7 +49,7 @@ static int H264_mp4toannexb_filter(AVBSFContext *bsf_ctx, AVPacket *pkt) {
     while ((ret = av_bsf_receive_packet(bsf_ctx, pkt)) != 0) {
         // LOGD("av_bsf_receive_packet,ret=%d", ret);
     }
-    LOGD("av_bsf_receive_packet,ret=%d", ret);
+    //  LOGD("av_bsf_receive_packet,ret=%d", ret);
     return PLAYER_RESULT_OK;
 }
 
@@ -153,11 +153,9 @@ void *OpenResource(void *info) {
     //或者根本没有后缀时需要填写，
     LOGI("OpenResource() start open=%s", url);
     playerInfo->SetPlayState(EXECUTING, true);
-
-
     playerInfo->resource.check();
-    AVDictionary *opts = NULL;
 
+    AVDictionary *opts = NULL;
     if (!playerInfo->resource.isLocalFile) {
         av_dict_set(&opts, "stimeout", "6000000", 0);//设置超时6秒
     }
@@ -448,33 +446,22 @@ void StartDecodeThread(PlayerContext *playerInfo) {
 }
 
 void Player::StartRecorderThread() const {
-    if (playerInfo != NULL && recorderInfo != NULL) {
-        recorderInfo->inputVideoStream = playerInfo->inputVideoStream;
+    if (playerContext != NULL && recorderContext != NULL) {
+        recorderContext->inputVideoStream = playerContext->inputVideoStream;
     } else {
         LOGE("Start recorder thread fail!");
         return;
     }
     LOGI("Start recorder thread");
-    pthread_create(&recorderInfo->recorder_thread, NULL, RecordPkt, recorderInfo);
-    pthread_setname_np(recorderInfo->recorder_thread, "recorder_thread");
-    pthread_detach(recorderInfo->recorder_thread);
+    pthread_create(&recorderContext->recorder_thread, NULL, RecordPkt, recorderContext);
+    pthread_setname_np(recorderContext->recorder_thread, "recorder_thread");
+    pthread_detach(recorderContext->recorder_thread);
 }
 
-
-static bool isLocalFile(char *url) {
-    bool isFile = false;
-    FILE *file = fopen(url, "r");
-    if (file) {
-        isFile = true;
-        fclose(file);
-    }
-    LOGD("isLocalFile:url=%s,isFile=%d", url, isFile);
-    return isFile;
-}
 
 void *DeMux(void *param) {
     auto *player = (Player *) param;
-    PlayerContext *playerInfo = player->playerInfo;
+    PlayerContext *playerInfo = player->playerContext;
     if (playerInfo == NULL) {
         LOGE("Player is not init");
         return NULL;
@@ -511,7 +498,7 @@ void *DeMux(void *param) {
             LOGD("DeMux() stop,due to state-STOPPED!");
             break;
         }
-        RecorderContext *recorderInfo = player->recorderInfo;
+        RecorderContext *recorderInfo = player->recorderContext;
         //只有播放暂停与录制暂停同时出现才会暂停
         if (state == PAUSE) {//播放暂停
             if (recorderInfo != NULL &&
@@ -564,49 +551,47 @@ void *DeMux(void *param) {
 
 void Player::StartDeMuxThread() {
     LOGI("start deMux thread");
-    pthread_create(&playerInfo->deMux_thread, NULL, DeMux, this);
-    pthread_setname_np(playerInfo->deMux_thread, "deMux_thread");
-    pthread_detach(playerInfo->deMux_thread);
+    pthread_create(&playerContext->deMux_thread, NULL, DeMux, this);
+    pthread_setname_np(playerContext->deMux_thread, "deMux_thread");
+    pthread_detach(playerContext->deMux_thread);
 }
 
-void Player::StartOpenResourceThread(char *url) const {
-    if (!url) {
+void Player::StartOpenResourceThread() const {
+    if (!playerContext->resource.url) {
         LOGE("StartOpenResourceThread() fail,urlis null");
         return;
     }
-
     LOGI("start open resource thread");
-    playerInfo->resource.url = url;
-    pthread_create(&playerInfo->open_resource_thread, NULL, OpenResource, playerInfo);
-    pthread_setname_np(playerInfo->open_resource_thread, "open_resource_thread");
-    pthread_detach(playerInfo->open_resource_thread);
+    pthread_create(&playerContext->open_resource_thread, NULL, OpenResource, playerContext);
+    pthread_setname_np(playerContext->open_resource_thread, "open_resource_thread");
+    pthread_detach(playerContext->open_resource_thread);
 }
 
 int Player::InitPlayerInfo() {
     LOGD("InitPlayerInfo() called");
-    if (!playerInfo) {
-        playerInfo = new PlayerContext;
-        playerInfo->id = playerId;
+    if (!playerContext) {
+        playerContext = new PlayerContext;
+        playerContext->id = playerId;
     } else {
         LOGW("InitPlayerInfo(),playerInfo is not NULL,it may be inited!");
     }
 
-    playerInfo->SetStateListener(playStateListener);
-    if (playerInfo->GetPlayState() == INITIALIZED) {
+    playerContext->SetStateListener(playStateListener);
+    if (playerContext->GetPlayState() == INITIALIZED) {
         return PLAYER_RESULT_OK;
     }
 
     LOGI("InitPlayerInfo():state-> INITIALIZED");
-    playerInfo->SetPlayState(INITIALIZED, true);
+    playerContext->SetPlayState(INITIALIZED, true);
     LOGD("init player info over");
     return PLAYER_RESULT_OK;
 }
 
 
-int Player::SetResource(char *resource) {
-    LOGI("---------SetResource() called with:resource=%s\n", resource);
-    if (NULL != playerInfo) {
-        PlayState state = playerInfo->GetPlayState();
+int Player::SetResource(char *url) {
+    LOGI("---------SetResource() called with:url=%s\n", url);
+    if (NULL != playerContext) {
+        PlayState state = playerContext->GetPlayState();
         if (state == STARTED) {
             LOGE("player is not stopped!");
             return PLAYER_RESULT_ERROR;
@@ -614,7 +599,7 @@ int Player::SetResource(char *resource) {
     }
 
     if (InitPlayerInfo()) {
-        playerInfo->resource.url = resource;
+        playerContext->resource.url = url;
     } else {
         LOGE("init player info ERROR");
         return PLAYER_RESULT_ERROR;
@@ -627,24 +612,22 @@ int Player::SetResource(char *resource) {
 int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNode) const {
     LOGI("----------Configure() called with: w=%d,h=%d,isOnlyRecorderNode=%d", w, h,
          isOnlyRecorderNode);
-    if (playerInfo == NULL) {
+    if (playerContext == NULL) {
         LOGE("player info not init !");
         return PLAYER_RESULT_ERROR;
     }
     if (isOnlyRecorderNode) {
-        playerInfo->isOnlyRecordMedia = true;
-        StartOpenResourceThread(playerInfo->resource.url);
+        playerContext->isOnlyRecordMedia = true;
+        StartOpenResourceThread();
         return PLAYER_RESULT_OK;
-    } else {
-        playerInfo->mediaDecodeContext.config(playerInfo->mine, window, w, h);
     }
 
-    if (playerInfo->GetPlayState() != ERROR) {
-        char *resource = playerInfo->resource.url;
-        if (!resource) {
+    playerContext->mediaDecodeContext.config(playerContext->mine, window, w, h);
+    if (playerContext->GetPlayState() != ERROR) {
+        if (!playerContext->resource.url) {
             return PLAYER_RESULT_ERROR;
         }
-        StartOpenResourceThread(resource);
+        StartOpenResourceThread();
     } else {
         LOGE("can't configure due to init player ERROR\n");
         return PLAYER_RESULT_ERROR;
@@ -659,30 +642,30 @@ int Player::OnWindowDestroy(ANativeWindow *window) {
 
 int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
     LOGI("--------OnWindowChange() called with w=%d,h=%d", w, h);
-    if (playerInfo && playerInfo->GetPlayState() == PAUSE) {
+    if (playerContext && playerContext->GetPlayState() == PAUSE) {
         AVCodecParameters *codecpar = nullptr;
-        codecpar = playerInfo->inputVideoStream->codecpar;
+        codecpar = playerContext->inputVideoStream->codecpar;
         if (codecpar == nullptr) {
-            playerInfo->SetPlayState(ERROR, true);
+            playerContext->SetPlayState(ERROR, true);
             LOGE("OpenResource() fail:can't get video stream params");
             return PLAYER_RESULT_ERROR;
         }
-        int ret = playerInfo->mediaDecodeContext.init(playerInfo->mine,
-                                                      window, w, h,
-                                                      codecpar->extradata,
-                                                      codecpar->extradata_size,
-                                                      codecpar->extradata,
-                                                      codecpar->extradata_size
+        int ret = playerContext->mediaDecodeContext.init(playerContext->mine,
+                                                         window, w, h,
+                                                         codecpar->extradata,
+                                                         codecpar->extradata_size,
+                                                         codecpar->extradata,
+                                                         codecpar->extradata_size
         );
 
         if (ret == PLAYER_RESULT_ERROR) {
             return PLAYER_RESULT_ERROR;
         }
-        ret = playerInfo->mediaDecodeContext.start();
+        ret = playerContext->mediaDecodeContext.start();
         if (ret == PLAYER_RESULT_OK) {
             LOGI("--------OnWindowChange() success!state->STARTED");
-            StartDecodeThread(playerInfo);
-            playerInfo->SetPlayState(STARTED, true);
+            StartDecodeThread(playerContext);
+            playerContext->SetPlayState(STARTED, true);
         }
     } else {
         LOGE("player not init or it not pause");
@@ -694,11 +677,11 @@ int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
 
 int Player::Start() {
     LOGI("--------Play()  start-------");
-    if (playerInfo == NULL) {
+    if (playerContext == NULL) {
         LOGE("player not init,playerInfo == NULL!");
         return PLAYER_RESULT_ERROR;
     }
-    PlayState state = playerInfo->GetPlayState();
+    PlayState state = playerContext->GetPlayState();
     if (state != PREPARED) {
         LOGE("player not PREPARED!");
         return PLAYER_RESULT_ERROR;
@@ -709,24 +692,24 @@ int Player::Start() {
 
 int Player::Play() {
     LOGI("--------Play()  called-------");
-    if (playerInfo == NULL) {
+    if (playerContext == NULL) {
         LOGE("player not init,playerInfo == NULL!");
         return PLAYER_RESULT_ERROR;
     }
 
-    if (playerInfo->isOnlyRecordMedia) {
+    if (playerContext->isOnlyRecordMedia) {
         LOGE("player is only recorder mode!");
         return PLAYER_RESULT_ERROR;
     }
 
-    PlayState state = playerInfo->GetPlayState();
+    PlayState state = playerContext->GetPlayState();
     if (state == STARTED) {
         LOGE("player is started!");
         return PLAYER_RESULT_ERROR;
     }
 
     if (state == PAUSE) {
-        playerInfo->SetPlayState(STARTED, true);
+        playerContext->SetPlayState(STARTED, true);
         return PLAYER_RESULT_OK;
     }
 
@@ -737,9 +720,9 @@ int Player::Play() {
 
 
     AVCodecParameters *codecpar =
-            playerInfo->inputVideoStream->codecpar;
+            playerContext->inputVideoStream->codecpar;
     // init decoder
-    int status = playerInfo->mediaDecodeContext.init(
+    int status = playerContext->mediaDecodeContext.init(
             codecpar->extradata,
             codecpar->extradata_size,
             codecpar->extradata,
@@ -748,13 +731,13 @@ int Player::Play() {
 
     if (status != PLAYER_RESULT_OK) {
         LOGE("init AMediaCodec fail!");
-        playerInfo->mediaDecodeContext.release();
+        playerContext->mediaDecodeContext.release();
         return PLAYER_RESULT_ERROR;
     }
-    status = playerInfo->mediaDecodeContext.start();
+    status = playerContext->mediaDecodeContext.start();
     if (status != PLAYER_RESULT_OK) {
         LOGE("start AMediaCodec fail!\n");
-        playerInfo->mediaDecodeContext.release();
+        playerContext->mediaDecodeContext.release();
         return PLAYER_RESULT_ERROR;
     }
     LOGI("------------AMediaCodec start success!!\n");
@@ -765,41 +748,41 @@ int Player::Play() {
 
 int Player::Pause(int delay) const {
     LOGI("--------Pause()  called-------");
-    if (playerInfo == NULL) {
+    if (playerContext == NULL) {
         return PLAYER_RESULT_ERROR;
     }
-    if (playerInfo->GetPlayState() != STARTED) {
+    if (playerContext->GetPlayState() != STARTED) {
         LOGE("--------Pause()  called fail ,player not started------");
         return PLAYER_RESULT_ERROR;
     }
-    playerInfo->SetPlayState(PAUSE, true);
+    playerContext->SetPlayState(PAUSE, true);
     return PLAYER_RESULT_OK;
 }
 
 int Player::Resume() const {
     LOGI("--------Resume()  called-------");
-    if (playerInfo == NULL) {
+    if (playerContext == NULL) {
         return PLAYER_RESULT_ERROR;
     }
-    if (playerInfo->GetPlayState() != PAUSE) {
+    if (playerContext->GetPlayState() != PAUSE) {
         LOGE("--------Pause()  called fail, player not pause------");
         return PLAYER_RESULT_ERROR;
     }
     //  playerInfo->packetQueue.clearAVPacket();
-    playerInfo->SetPlayState(STARTED, true);
+    playerContext->SetPlayState(STARTED, true);
     return PLAYER_RESULT_OK;
 }
 
 
 int Player::Stop() const {
-    if (playerInfo == NULL) {
+    if (playerContext == NULL) {
         LOGE("Stop() called with playerInfo is NULL");
         return PLAYER_RESULT_ERROR;
     }
-    PlayState state = playerInfo->GetPlayState();
+    PlayState state = playerContext->GetPlayState();
     LOGI("--------Stop()  called,state=%d-------", state);
     if (state == PREPARED || state == STARTED || state == PAUSE) {
-        playerInfo->SetPlayState(STOPPED, false);
+        playerContext->SetPlayState(STOPPED, false);
         LOGI("Stop():start to stop recorde");
         //停止录制
         StopRecord();
@@ -815,26 +798,26 @@ int Player::PrepareRecorder(char *outPath) {
     if (!outPath) {
         return PLAYER_RESULT_ERROR;
     }
-    if (recorderInfo == NULL) {
-        recorderInfo = new RecorderContext;
-        recorderInfo->id = playerId;
-        if (playerInfo != NULL) {
-            recorderInfo->inputVideoStream = playerInfo->inputVideoStream;
+    if (recorderContext == NULL) {
+        recorderContext = new RecorderContext;
+        recorderContext->id = playerId;
+        if (playerContext != NULL) {
+            recorderContext->inputVideoStream = playerContext->inputVideoStream;
         }
         LOGI("---------PrepareRecorder()  new RecorderInfo ");
     }
-    recorderInfo->SetStateListener(recorderStateListener);
-    recorderInfo->storeFile = outPath;
-    recorderInfo->SetRecordState(RECORD_PREPARED);
+    recorderContext->SetStateListener(recorderStateListener);
+    recorderContext->storeFile = outPath;
+    recorderContext->SetRecordState(RECORD_PREPARED);
     return PLAYER_RESULT_OK;
 }
 
 int Player::StartRecord() const {
-    if (!playerInfo || !recorderInfo) {
+    if (!playerContext || !recorderContext) {
         LOGE("------StartRecord() player init or recorder not prepare");
         return PLAYER_RESULT_ERROR;
     }
-    RecordState state = recorderInfo->GetRecordState();
+    RecordState state = recorderContext->GetRecordState();
     LOGI("------StartRecord() called state=%d----------", state);
     if (state == RECORDING || state == RECORDER_RELEASE) {
         LOGE("------StartRecord() recorder is recording!");
@@ -847,11 +830,11 @@ int Player::StartRecord() const {
     }
 
     if (state == RECORD_PREPARED) {
-        recorderInfo->SetRecordState(RECORD_START);
+        recorderContext->SetRecordState(RECORD_START);
         StartRecorderThread();
     } else {
         LOGE("start recorder in illegal state=%d", state);
-        recorderInfo->SetRecordState(RECORD_ERROR);
+        recorderContext->SetRecordState(RECORD_ERROR);
         return PLAYER_RESULT_ERROR;
     }
     return PLAYER_RESULT_OK;
@@ -859,9 +842,9 @@ int Player::StartRecord() const {
 
 int Player::StopRecord() const {
     LOGI("------StopRecord() called------");
-    if (recorderInfo != NULL &&
-        recorderInfo->GetRecordState() >= RECORD_PREPARED) {
-        recorderInfo->SetRecordState(RECORD_STOP);
+    if (recorderContext != NULL &&
+        recorderContext->GetRecordState() >= RECORD_PREPARED) {
+        recorderContext->SetRecordState(RECORD_STOP);
         return PLAYER_RESULT_OK;
     } else {
         return PLAYER_RESULT_ERROR;
@@ -871,8 +854,8 @@ int Player::StopRecord() const {
 
 int Player::PauseRecord() const {
     LOGI("------PauseRecord() called------");
-    if (recorderInfo && recorderInfo->GetRecordState() != RECORD_START) {
-        recorderInfo->SetRecordState(RECORD_PAUSE);
+    if (recorderContext && recorderContext->GetRecordState() != RECORD_START) {
+        recorderContext->SetRecordState(RECORD_PAUSE);
         return PLAYER_RESULT_OK;
     } else {
         LOGE("PauseRecord() called fail in error state");
@@ -882,8 +865,8 @@ int Player::PauseRecord() const {
 
 int Player::ResumeRecord() const {
     LOGI("------ResumeRecord() called------");
-    if (recorderInfo && recorderInfo->GetRecordState() == RECORD_PAUSE) {
-        recorderInfo->SetRecordState(RECORDING);
+    if (recorderContext && recorderContext->GetRecordState() == RECORD_PAUSE) {
+        recorderContext->SetRecordState(RECORDING);
         return PLAYER_RESULT_OK;
     } else {
         return PLAYER_RESULT_ERROR;
@@ -892,15 +875,15 @@ int Player::ResumeRecord() const {
 
 int Player::Release() {
     LOGD("Release() called!");
-    if (playerInfo && playerInfo->GetPlayState() == STOPPED) {
-        StartRelease(playerInfo, recorderInfo);
+    if (playerContext && playerContext->GetPlayState() == STOPPED) {
+        StartRelease(playerContext, recorderContext);
         return PLAYER_RESULT_OK;
     }
-    if (playerInfo) {
-        playerInfo->SetPlayState(RELEASE, true);
+    if (playerContext) {
+        playerContext->SetPlayState(RELEASE, true);
     }
-    if (recorderInfo) {
-        recorderInfo->SetRecordState(RECORDER_RELEASE);
+    if (recorderContext) {
+        recorderContext->SetRecordState(RECORDER_RELEASE);
     }
     jPlayer.jMid_onRecordStateChangeId = nullptr;
     jPlayer.jMid_onPlayStateChangeId = nullptr;
@@ -931,15 +914,15 @@ Player::~Player() {
 
 void Player::SetRecordStateChangeListener(void (*listener)(RecordState, int)) {
     recorderStateListener = listener;
-    if (recorderInfo) {
-        recorderInfo->SetStateListener(listener);
+    if (recorderContext) {
+        recorderContext->SetStateListener(listener);
     }
 }
 
 void Player::SetPlayStateChangeListener(void (*listener)(PlayState, int)) {
     playStateListener = listener;
-    if (playerInfo) {
-        playerInfo->SetStateListener(listener);
+    if (playerContext) {
+        playerContext->SetStateListener(listener);
     }
 }
 

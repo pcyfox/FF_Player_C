@@ -21,8 +21,8 @@ public:
 
 public:
     int playerId;
-    PlayerContext *playerInfo = NULL;
-    RecorderContext *recorderInfo = NULL;
+    PlayerContext *playerContext = NULL;
+    RecorderContext *recorderContext = NULL;
     void (*playStateListener)(PlayState, int) = NULL;
     void (*recorderStateListener)(RecordState, int) = NULL;
     JPlayerObject jPlayer;
@@ -33,10 +33,9 @@ public:
 
     void StartRecorderThread() const;
 
-
     void StartDeMuxThread();
 
-    void StartOpenResourceThread(char *res) const;
+    void StartOpenResourceThread() const;
 
     int InitPlayerInfo();
 
