@@ -139,7 +139,6 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_configPlayer(JNIEnv *env, jobject thiz,
     if (player == NULL) {
         return PLAYER_RESULT_ERROR;
     }
-
     player->SetPlayStateChangeListener(reinterpret_cast<void (*)(PlayState, int) >
                                        (onPlayStateChange));
 
@@ -180,25 +179,6 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_onSurfaceChange(JNIEnv *env, jobject thiz, 
 }
 
 
-static void ffmpeg_android_log_callback(void *ptr, int level, const char *fmt, va_list vl) {
-    switch (level) {
-        case AV_LOG_DEBUG:
-            LOGD(fmt, vl);
-            break;
-        case AV_LOG_VERBOSE:
-            LOGD(fmt, vl);
-            break;
-        case AV_LOG_INFO:
-            LOGI(fmt, vl);
-            break;
-        case AV_LOG_WARNING:
-            LOGW(fmt, vl);
-            break;
-        case AV_LOG_ERROR:
-            LOGE(fmt, vl);
-            break;
-    }
-}
 
 
 extern "C"

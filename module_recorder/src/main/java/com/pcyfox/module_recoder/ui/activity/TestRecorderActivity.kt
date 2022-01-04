@@ -30,7 +30,7 @@ class TestRecorderActivity : AppCompatActivity() {
     // private var url = "/storage/emulated/0/test/20210602_15_23_31/1/video.h264"
     //private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
     private var url =
-        "rtsp://admin:taike@2020@192.168.16.217:554/Streaming/Channels/101?transportmode=unicast&profile=Profile_1"
+        "rtsp://admin:taike@2020@192.168.10.63:554/Streaming/Channels/101?transportmode=unicast&profile=Profile_1"
     // private var url = "rtmp://58.200.131.2:1935/livetv/hunantv"
 
     //private var url = "/storage/emulated/0/test.mp4"

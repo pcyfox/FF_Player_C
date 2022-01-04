@@ -1,8 +1,7 @@
 
 #include <android/native_window_jni.h>
 #include <android/native_window.h>
-#include <media/NdkMediaCodec.h>
-#include <media/NdkMediaFormat.h>
+
 
 #include "Player.h"
 #include <PlayerResult.h>
@@ -12,10 +11,11 @@
 
 #ifdef __cplusplus
 extern "C" {
-#include "libavutil/time.h"
+#include <ctime>
 #include"libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
 #include "libavutil/avutil.h"
+#include "libavutil/time.h"
 #endif
 #ifdef __cplusplus
 }
@@ -904,6 +904,11 @@ int Player::Release() {
 void Player::SetDebug(bool debug) {
     LOGD("SetDebug() called with %d", debug);
     isDebug(debug);
+    if (debug) {
+        av_log_set_callback(ffmpeg_android_log_callback);
+    } else {
+        av_log_set_callback(NULL);
+    }
 }
 
 Player::Player(int id) {

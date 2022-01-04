@@ -13,7 +13,7 @@ import com.pcyfox.module_recoder.R
 import kotlinx.android.synthetic.main.recorder_activity_test_record_multi_video.*
 import java.io.File
 
-class RecordeMulitVideoTestActivity : AppCompatActivity() {
+class RecordeMultiVideoTestActivity : AppCompatActivity() {
     private val TAG = "TestActivity"
     private val url_1 = "rtsp://admin:taike@2020@192.168.16.219:554/Streaming/Channels/102?transportmode=unicast&profile=Profile_2"
     private val url_2 = "rtsp://admin:taike@2020@192.168.16.219:554/Streaming/Channels/102?transportmode=unicast&profile=Profile_2"

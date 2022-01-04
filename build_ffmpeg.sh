@@ -11,6 +11,7 @@ TOOLCHAIN=$NDK_TOOLCHAINS_HOME/bin
 
 OS=android
 API=21
+
 CROSS_PREFIX=$TOOLCHAIN/$PLATFORM-
 #armv7 arm64 x86 x86_64 ARCH=armv7
 ARCH2=aarch64
@@ -57,12 +58,12 @@ echo "    "
 
 
 echo "FFmpeg source dir:"
-cd /Users/pcyfox/FFmpeg
+cd /Users/pcyfox/FFmpeg ||exit
 pwd
 echo "    "
 
 
-echo "TooChain ------->$TOOLCHAIN"
+echo "ToolChain ------->$TOOLCHAIN"
 echo "ANDROID_CROSS_PREFIX------>$ANDROID_CROSS_PREFIX"
 echo "CROSS_PREFIX------>$CROSS_PREFIX"
 echo " "
@@ -102,13 +103,20 @@ build()
     --enable-jni \
     --enable-shared \
     --disable-decoders \
+    --enable-mediacodec \
+    --enable-decoder=aac \
+    --enable-decoder=aac_latm \
+    --enable-decoder=mjpeg \
+    --enable-decoder=png \
+    --enable-decoder=h264_mediacodec \
+    --enable-decoder=mpeg4_mediacodec \
 
     echo "----------------configure finish!--------------------"
     make -j8
     make install
 
     echo "build finish:------->$PREFIX"
-    ls "$PREFIX/$ARCH/lib"
+    ls "$PREFIX/lib"
     echo "------------------------------------"
 }
 build

@@ -18,7 +18,7 @@ class RMainActivity : AppCompatActivity() {
                 startActivity(Intent(this, TestRecorderActivity::class.java))
             }
             R.id.btn_test_multi_video_record -> {
-                startActivity(Intent(this, RecordeMulitVideoTestActivity::class.java))
+                startActivity(Intent(this, RecordeMultiVideoTestActivity::class.java))
             }
             R.id.btn_local_video_play_test -> startActivity(
                 Intent(

@@ -39,10 +39,11 @@
         </activity>
 
         <activity
-            android:name="com.pcyfox.module_recoder.ui.activity.RecordeMulitVideoTestActivity"
+            android:name="com.pcyfox.module_recoder.ui.activity.RecordeMultiVideoTestActivity"
             android:screenOrientation="landscape"
             android:turnScreenOn="true"
             android:windowSoftInputMode="stateHidden|stateUnchanged" />
+
         <activity
             android:name="com.pcyfox.module_recoder.ui.activity.MediaRecorderActivity"
             android:screenOrientation="landscape"
