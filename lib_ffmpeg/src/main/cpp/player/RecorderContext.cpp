@@ -11,9 +11,9 @@ extern "C" {
 }
 #endif
 
-#include "include/RecorderInfo.h"
+#include "RecorderContext.h"
 
-RecorderInfo::~RecorderInfo() {
+RecorderContext::~RecorderContext() {
     LOGD("start to delete RecorderInfo ");
     if (o_fmt_ctx != NULL) {
         packetQueue.clearAVPacket();
@@ -25,7 +25,7 @@ RecorderInfo::~RecorderInfo() {
     LOGD("delete RecorderInfo over!");
 }
 
-void RecorderInfo::SetRecordState(RecordState state) {
+void RecorderContext::SetRecordState(RecordState state) {
     LOGI("SetRecordState state=%d", state);
     recordState = state;
     if (listener != NULL) {
@@ -33,14 +33,14 @@ void RecorderInfo::SetRecordState(RecordState state) {
     }
 }
 
-RecordState RecorderInfo::GetRecordState() {
+RecordState RecorderContext::GetRecordState() {
     return recordState;
 }
 
-void RecorderInfo::SetStateListener(void (*l)(RecordState, int)) {
+void RecorderContext::SetStateListener(void (*l)(RecordState, int)) {
     listener = l;
 }
 
-RecorderInfo::RecorderInfo() {
+RecorderContext::RecorderContext() {
     //packetQueue.tag = "recorder";
 }

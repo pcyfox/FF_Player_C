@@ -5,10 +5,31 @@
 #include <cstdint>
 #include <cstring>
 #include <Utils.h>
-#include "MediaDecoder.h"
+#include "AMediaDecodeContext.h"
 
 
-int MediaDecoder::decodeVideo(uint8_t *data, int length, int64_t pts) const {
+void dumpOutFormat(AMediaCodec *videoMediaCodec) {
+//size_t outsize = 0;
+//u_int8_t *outData = AMediaCodec_getOutputBuffer(codec, status, &outsize);
+    auto formatType = AMediaCodec_getOutputFormat(videoMediaCodec);
+    LOGD("Decode:format formatType to: %s\n",
+         AMediaFormat_toString(formatType)
+    );
+    int colorFormat = 0;
+    int width = 0;
+    int height = 0;
+    AMediaFormat_getInt32(formatType,
+                          "color-format", &colorFormat);
+    AMediaFormat_getInt32(formatType,
+                          "width", &width);
+    AMediaFormat_getInt32(formatType,
+                          "height", &height);
+    LOGD("Decode:format color-format : %d ,width ：%d, height :%d", colorFormat,
+         width,
+         height);
+}
+
+int AMediaDecodeContext::decodeVideo(uint8_t *data, int length, int64_t pts) const {
     // 获取buffer的索引
     ssize_t index = AMediaCodec_dequeueInputBuffer(videoMediaCodec, 10000);
     if (index >= 0) {
@@ -38,19 +59,7 @@ int MediaDecoder::decodeVideo(uint8_t *data, int length, int64_t pts) const {
             LOGE("video producer output EOS");
         }
         if (IS_DEBUG) {
-            //size_t outsize = 0;
-            //u_int8_t *outData = AMediaCodec_getOutputBuffer(codec, status, &outsize);
-            auto formatType = AMediaCodec_getOutputFormat(videoMediaCodec);
-            LOGD("Decode:format formatType to: %s\n", AMediaFormat_toString(formatType));
-            int colorFormat = 0;
-            int width = 0;
-            int height = 0;
-            AMediaFormat_getInt32(formatType, "color-format", &colorFormat);
-            AMediaFormat_getInt32(formatType, "width", &width);
-            AMediaFormat_getInt32(formatType, "height", &height);
-            LOGD("Decode:format color-format : %d ,width ：%d, height :%d", colorFormat,
-                 width,
-                 height);
+        //    dumpOutFormat(videoMediaCodec)
         }
     } else {
         switch (status) {
@@ -71,7 +80,7 @@ int MediaDecoder::decodeVideo(uint8_t *data, int length, int64_t pts) const {
 }
 
 
-int MediaDecoder::release() {
+int AMediaDecodeContext::release() {
     if (nativeWindow) {
         ANativeWindow_release(nativeWindow);
         nativeWindow = nullptr;
@@ -85,7 +94,7 @@ int MediaDecoder::release() {
 }
 
 
-int MediaDecoder::stop() const {
+int AMediaDecodeContext::stop() const {
     if (videoMediaCodec) {
         return AMediaCodec_stop(videoMediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
                                                               : PLAYER_RESULT_ERROR;
@@ -94,7 +103,7 @@ int MediaDecoder::stop() const {
     return PLAYER_RESULT_ERROR;
 }
 
-int MediaDecoder::start() const {
+int AMediaDecodeContext::start() const {
     if (videoMediaCodec) {
         return AMediaCodec_start(videoMediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
                                                                : PLAYER_RESULT_ERROR;
@@ -103,7 +112,7 @@ int MediaDecoder::start() const {
     return PLAYER_RESULT_ERROR;
 }
 
-int MediaDecoder::flush() const {
+int AMediaDecodeContext::flush() const {
     if (videoMediaCodec) {
         return AMediaCodec_flush(videoMediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
                                                                : PLAYER_RESULT_ERROR;
@@ -112,9 +121,9 @@ int MediaDecoder::flush() const {
 }
 
 
-int MediaDecoder::init(const char *mine, ANativeWindow *window, int width, int height, uint8_t *sps,
-                       int spsSize,
-                       uint8_t *pps, int ppsSize) {
+int AMediaDecodeContext::init(const char *mine, ANativeWindow *window, int width, int height, uint8_t *sps,
+                              int spsSize,
+                              uint8_t *pps, int ppsSize) {
 
     if (width * height <= 0) {
         LOGE("MediaDecoder init() not support video size");
@@ -166,26 +175,26 @@ int MediaDecoder::init(const char *mine, ANativeWindow *window, int width, int h
 }
 
 
-int MediaDecoder::init(uint8_t *sps, int spsSize, uint8_t *pps, int ppsSize) {
+int AMediaDecodeContext::init(uint8_t *sps, int spsSize, uint8_t *pps, int ppsSize) {
     if (nativeWindow) {
         return init(mine, nativeWindow, width, height, sps, spsSize, pps, ppsSize);
     }
     return PLAYER_RESULT_ERROR;
 }
 
-void MediaDecoder::config(char *mine, ANativeWindow *nativeWindow, int width, int height) {
+void AMediaDecodeContext::config(char *mine, ANativeWindow *nativeWindow, int width, int height) {
     this->mine = mine;
     this->nativeWindow = nativeWindow;
     this->width = width;
     this->height = height;
 }
 
-void MediaDecoder::configAudio(char *mine) {
+void AMediaDecodeContext::configAudio(char *mine) {
 
 
 }
 
-MediaDecoder::~MediaDecoder() {
+AMediaDecodeContext::~AMediaDecodeContext() {
     release();
 }
 

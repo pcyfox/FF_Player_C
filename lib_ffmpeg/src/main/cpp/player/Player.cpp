@@ -44,12 +44,11 @@ static int H264_mp4toannexb_filter(AVBSFContext *bsf_ctx, AVPacket *pkt) {
     // bitstreamfilter内部去维护内存空间
     if (av_bsf_send_packet(bsf_ctx, pkt) != 0) {
         return PLAYER_RESULT_ERROR;
-        LOGE("av_bsf_send_packet fail");
     }
     int ret = -1;
     while ((ret = av_bsf_receive_packet(bsf_ctx, pkt)) != 0) {
-        LOGD("av_bsf_receive_packet,ret=%d", ret);
-    };
+        // LOGD("av_bsf_receive_packet,ret=%d", ret);
+    }
     LOGD("av_bsf_receive_packet,ret=%d", ret);
     return PLAYER_RESULT_OK;
 }
@@ -74,7 +73,7 @@ AVStream *findStream(AVFormatContext *i_fmt_ctx, AVMediaType type) {
     }
 }
 
-void StartRelease(PlayerInfo *playerInfo, RecorderInfo *recorderInfo) {
+void StartRelease(PlayerContext *playerInfo, RecorderContext *recorderInfo) {
     LOGW("StartRelease() called !");
     if (playerInfo) {
         delete playerInfo;
@@ -98,12 +97,51 @@ int GetNALUType(AVPacket *packet) {
 }
 
 
+void dumpStreamInfo(AVCodecParameters *codecpar) {
+    uint8_t exSize = codecpar->extradata_size;
+    if (exSize > 0) {
+        uint8_t *extraData = codecpar->extradata;
+        printCharsHex((char *) extraData, exSize, exSize - 1, "SPS-PPS");
+    }
+    int w = codecpar->width;
+    int h = codecpar->height;
+    int level = codecpar->level;
+    int profile = codecpar->profile;
+    int sample_rate = codecpar->sample_rate;
+    const int codecId = codecpar->codec_id;
+    LOGD("input video stream info :w=%d,h=%d,codec=%d,level=%d,profile=%d,sample_rate=%d",
+         w, h,
+         codecId, level, profile, sample_rate);
+    int format = codecpar->format;
+    switch (format) {
+        case AV_PIX_FMT_YUV420P:
+            LOGD("input video color format is YUV420p");
+            break;
+        case AV_PIX_FMT_YUYV422:   ///< packed YUV 4:2:2, 16bpp, Y0 Cb Y1 Cr
+            LOGD("input video color format is YUVV422");
+            break;
+        case AV_PIX_FMT_YUV422P:
+            LOGD("input video color format is YUV422P");
+            break;
+        case AV_PIX_FMT_YUV444P:
+            LOGD("input video color format is YUV444P");
+            break;
+        case AV_PIX_FMT_YUVJ420P://ffmpeg 默认格式
+            LOGD("input video color format is YUVJ420P");
+            break;
+        default:
+            LOGD("input video color format is other");
+            break;
+    }
+}
+
+
 void *OpenResource(void *info) {
     if (info == nullptr) {
         return nullptr;
     }
-    auto *playerInfo = (PlayerInfo *) info;
-    char *url = playerInfo->resource;
+    auto *playerInfo = (PlayerContext *) info;
+    char *url = playerInfo->resource.url;
     if (playerInfo->inputContext != NULL) {
         LOGI("close input context!before open resource");
         avformat_close_input(&playerInfo->inputContext);
@@ -115,8 +153,15 @@ void *OpenResource(void *info) {
     //或者根本没有后缀时需要填写，
     LOGI("OpenResource() start open=%s", url);
     playerInfo->SetPlayState(EXECUTING, true);
+
+
+    playerInfo->resource.check();
     AVDictionary *opts = NULL;
-    av_dict_set(&opts, "stimeout", "6000000", 0);//设置超时3秒
+
+    if (!playerInfo->resource.isLocalFile) {
+        av_dict_set(&opts, "stimeout", "6000000", 0);//设置超时6秒
+    }
+
     int ret = avformat_open_input(&playerInfo->inputContext, url, NULL, &opts);
     if (ret != 0) {
         LOGE("OpenResource():can't open source: %s ,msg:%s \n", url, av_err2str(ret));
@@ -135,26 +180,26 @@ void *OpenResource(void *info) {
 
     /* find stream info  */
     LOGI("----------open resource success!,start to find stream info-------------");
-    if (avformat_find_stream_info(playerInfo->inputContext, &opts) < 0) {
+    if (avformat_find_stream_info(playerInfo->inputContext, opts == NULL ? NULL : &opts) < 0) {
         playerInfo->SetPlayState(ERROR, true);
         LOGE("could not find stream info\n");
         return (void *) PLAYER_RESULT_ERROR;
     }
     av_freep(&opts);
     LOGI("----------find stream info success!-------------");
-    playerInfo->resource = url;
+
     LOGD("----------fmt_ctx:streams number=%d,bit rate=%ld\n",
          playerInfo->inputContext->nb_streams,
          playerInfo->inputContext->bit_rate);
 
     //输出多媒体文件信息,第二个参数是流的索引值（默认0），第三个参数，0:输入流，1:输出流
-    //    av_dump_format(fmt_ctx, 0, url, 0);
     playerInfo->inputVideoStream = findStream(playerInfo->inputContext, AVMEDIA_TYPE_VIDEO);
     if (playerInfo->inputVideoStream == NULL) {
         playerInfo->SetPlayState(ERROR, true);
         LOGE("----------find video stream fail!-------------");
         return (void *) PLAYER_RESULT_ERROR;
     }
+
     LOGI("----------find video stream success!-------------");
     if (playerInfo->isOpenAudio) {
         playerInfo->inputAudioStream = findStream(playerInfo->inputContext, AVMEDIA_TYPE_AUDIO);
@@ -162,7 +207,7 @@ void *OpenResource(void *info) {
             LOGI("find audio stream success!");
             AVCodecID codec_id = playerInfo->inputAudioStream->codecpar->codec_id;
             if (AV_CODEC_ID_AAC == codec_id) {
-                playerInfo->mediaDecoder.configAudio("audio/mp4a-latm");
+                playerInfo->mediaDecodeContext.configAudio("audio/mp4a-latm");
             } else {
                 LOGE("not support audio type:%d", codec_id);
             }
@@ -177,64 +222,26 @@ void *OpenResource(void *info) {
         playerInfo->SetPlayState(ERROR, true);
         return (void *) PLAYER_RESULT_ERROR;
     }
-    AVCodecParameters *codecpar = nullptr;
-    codecpar = playerInfo->inputVideoStream->codecpar;
+
+    AVCodecParameters *codecpar = playerInfo->inputVideoStream->codecpar;
     if (codecpar == nullptr) {
         playerInfo->SetPlayState(ERROR, true);
         LOGE("OpenResource() fail:can't get video stream params");
         return (void *) PLAYER_RESULT_ERROR;
     }
 
-    if (ret == PLAYER_RESULT_ERROR) {
-        return (void *) PLAYER_RESULT_ERROR;
-    }
     playerInfo->SetPlayState(PREPARED, true);
 
     if (IS_DEBUG) {
-        uint8_t exSize = codecpar->extradata_size;
-        if (exSize > 0) {
-            uint8_t *extraData = codecpar->extradata;
-            printCharsHex((char *) extraData, exSize, exSize - 1, "SPS-PPS");
-        }
-        int w = playerInfo->inputVideoStream->codecpar->width;
-        int h = playerInfo->inputVideoStream->codecpar->height;
-        int level = playerInfo->inputVideoStream->codecpar->level;
-        int profile = playerInfo->inputVideoStream->codecpar->profile;
-        int sample_rate = playerInfo->inputVideoStream->codecpar->sample_rate;
-        const int codecId = playerInfo->inputVideoStream->codecpar->codec_id;
-        LOGD("input video stream info :w=%d,h=%d,codec=%d,level=%d,profile=%d,sample_rate=%d",
-             w, h,
-             codecId, level, profile, sample_rate);
-        int format = playerInfo->inputVideoStream->codecpar->format;
-        switch (format) {
-            case AV_PIX_FMT_YUV420P:
-                LOGD("input video color format is YUV420p");
-                break;
-            case AV_PIX_FMT_YUYV422:   ///< packed YUV 4:2:2, 16bpp, Y0 Cb Y1 Cr
-                LOGD("input video color format is YUVV422");
-                break;
-            case AV_PIX_FMT_YUV422P:
-                LOGD("input video color format is YUV422P");
-                break;
-            case AV_PIX_FMT_YUV444P:
-                LOGD("input video color format is YUV444P");
-                break;
-            case AV_PIX_FMT_YUVJ420P://ffmpeg 默认格式
-                LOGD("input video color format is YUVJ420P");
-                break;
-            default:
-                LOGD("input video color format is other");
-                break;
-        }
+        dumpStreamInfo(playerInfo->inputVideoStream->codecpar);
     }
-
 
     return nullptr;
 }
 
 
 void *RecordPkt(void *info) {
-    auto *recorderInfo = (RecorderInfo *) info;
+    auto *recorderInfo = (RecorderContext *) info;
     if (recorderInfo->GetRecordState() == RECORD_START) {
         char *file = recorderInfo->storeFile;
         /* create output context by file name*/
@@ -346,7 +353,7 @@ void *RecordPkt(void *info) {
 
 
 void *Decode(void *info) {
-    auto *playerInfo = (PlayerInfo *) info;
+    auto *playerInfo = (PlayerContext *) info;
     while (true) {
         PlayState state = playerInfo->GetPlayState();
         if (state == PAUSE) {
@@ -362,7 +369,7 @@ void *Decode(void *info) {
         if (ret == PLAYER_RESULT_OK) {
             uint8_t *data = packet->data;
             int length = packet->size;
-            playerInfo->mediaDecoder.decodeVideo(data, length, 0);
+            playerInfo->mediaDecodeContext.decodeVideo(data, length, 0);
         }
     }
     LOGI("-------Decode Stop!---------");
@@ -370,8 +377,8 @@ void *Decode(void *info) {
 }
 
 
-int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *playerInfo,
-                  RecorderInfo *recorderInfo) {
+int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerContext *playerInfo,
+                  RecorderContext *recorderInfo) {
     //检查是否有起始码,如果有说明是标准的H.264数据
     if (packet->size < 5 || playerInfo == NULL) {
         return PLAYER_RESULT_ERROR;
@@ -433,7 +440,7 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerInfo *pla
 }
 
 
-void StartDecodeThread(PlayerInfo *playerInfo) {
+void StartDecodeThread(PlayerContext *playerInfo) {
     LOGI("StartDecodeThread() called");
     pthread_create(&playerInfo->decode_thread, NULL, Decode, playerInfo);
     pthread_setname_np(playerInfo->decode_thread, "decode_thread");
@@ -467,7 +474,7 @@ static bool isLocalFile(char *url) {
 
 void *DeMux(void *param) {
     auto *player = (Player *) param;
-    PlayerInfo *playerInfo = player->playerInfo;
+    PlayerContext *playerInfo = player->playerInfo;
     if (playerInfo == NULL) {
         LOGE("Player is not init");
         return NULL;
@@ -484,7 +491,8 @@ void *DeMux(void *param) {
     float delay = 0;
     int num = playerInfo->inputVideoStream->avg_frame_rate.num;
     int den = playerInfo->inputVideoStream->avg_frame_rate.den;
-    if (isLocalFile(playerInfo->resource)) {
+
+    if (playerInfo->resource.isLocalFile) {
         float fps = (float) num / (float) den;
         delay = 1.0f / fps * 1000000;
         LOGI("--------------------Start DeMux----------------------FPS:%f,span=%d", fps,
@@ -503,7 +511,7 @@ void *DeMux(void *param) {
             LOGD("DeMux() stop,due to state-STOPPED!");
             break;
         }
-        RecorderInfo *recorderInfo = player->recorderInfo;
+        RecorderContext *recorderInfo = player->recorderInfo;
         //只有播放暂停与录制暂停同时出现才会暂停
         if (state == PAUSE) {//播放暂停
             if (recorderInfo != NULL &&
@@ -561,14 +569,14 @@ void Player::StartDeMuxThread() {
     pthread_detach(playerInfo->deMux_thread);
 }
 
-void Player::StartOpenResourceThread(char *res) const {
-    if (!res) {
-        LOGE("StartOpenResourceThread() fail,res is null");
+void Player::StartOpenResourceThread(char *url) const {
+    if (!url) {
+        LOGE("StartOpenResourceThread() fail,urlis null");
         return;
     }
 
     LOGI("start open resource thread");
-    playerInfo->resource = res;
+    playerInfo->resource.url = url;
     pthread_create(&playerInfo->open_resource_thread, NULL, OpenResource, playerInfo);
     pthread_setname_np(playerInfo->open_resource_thread, "open_resource_thread");
     pthread_detach(playerInfo->open_resource_thread);
@@ -577,7 +585,7 @@ void Player::StartOpenResourceThread(char *res) const {
 int Player::InitPlayerInfo() {
     LOGD("InitPlayerInfo() called");
     if (!playerInfo) {
-        playerInfo = new PlayerInfo;
+        playerInfo = new PlayerContext;
         playerInfo->id = playerId;
     } else {
         LOGW("InitPlayerInfo(),playerInfo is not NULL,it may be inited!");
@@ -606,7 +614,7 @@ int Player::SetResource(char *resource) {
     }
 
     if (InitPlayerInfo()) {
-        playerInfo->resource = resource;
+        playerInfo->resource.url = resource;
     } else {
         LOGE("init player info ERROR");
         return PLAYER_RESULT_ERROR;
@@ -625,14 +633,14 @@ int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNo
     }
     if (isOnlyRecorderNode) {
         playerInfo->isOnlyRecordMedia = true;
-        StartOpenResourceThread(playerInfo->resource);
+        StartOpenResourceThread(playerInfo->resource.url);
         return PLAYER_RESULT_OK;
     } else {
-        playerInfo->mediaDecoder.config(playerInfo->mine, window, w, h);
+        playerInfo->mediaDecodeContext.config(playerInfo->mine, window, w, h);
     }
 
     if (playerInfo->GetPlayState() != ERROR) {
-        char *resource = playerInfo->resource;
+        char *resource = playerInfo->resource.url;
         if (!resource) {
             return PLAYER_RESULT_ERROR;
         }
@@ -659,18 +667,18 @@ int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
             LOGE("OpenResource() fail:can't get video stream params");
             return PLAYER_RESULT_ERROR;
         }
-        int ret = playerInfo->mediaDecoder.init(playerInfo->mine,
-                                                window, w, h,
-                                                codecpar->extradata,
-                                                codecpar->extradata_size,
-                                                codecpar->extradata,
-                                                codecpar->extradata_size
+        int ret = playerInfo->mediaDecodeContext.init(playerInfo->mine,
+                                                      window, w, h,
+                                                      codecpar->extradata,
+                                                      codecpar->extradata_size,
+                                                      codecpar->extradata,
+                                                      codecpar->extradata_size
         );
 
         if (ret == PLAYER_RESULT_ERROR) {
             return PLAYER_RESULT_ERROR;
         }
-        ret = playerInfo->mediaDecoder.start();
+        ret = playerInfo->mediaDecodeContext.start();
         if (ret == PLAYER_RESULT_OK) {
             LOGI("--------OnWindowChange() success!state->STARTED");
             StartDecodeThread(playerInfo);
@@ -731,7 +739,7 @@ int Player::Play() {
     AVCodecParameters *codecpar =
             playerInfo->inputVideoStream->codecpar;
     // init decoder
-    int status = playerInfo->mediaDecoder.init(
+    int status = playerInfo->mediaDecodeContext.init(
             codecpar->extradata,
             codecpar->extradata_size,
             codecpar->extradata,
@@ -740,13 +748,13 @@ int Player::Play() {
 
     if (status != PLAYER_RESULT_OK) {
         LOGE("init AMediaCodec fail!");
-        playerInfo->mediaDecoder.release();
+        playerInfo->mediaDecodeContext.release();
         return PLAYER_RESULT_ERROR;
     }
-    status = playerInfo->mediaDecoder.start();
+    status = playerInfo->mediaDecodeContext.start();
     if (status != PLAYER_RESULT_OK) {
         LOGE("start AMediaCodec fail!\n");
-        playerInfo->mediaDecoder.release();
+        playerInfo->mediaDecodeContext.release();
         return PLAYER_RESULT_ERROR;
     }
     LOGI("------------AMediaCodec start success!!\n");
@@ -808,7 +816,7 @@ int Player::PrepareRecorder(char *outPath) {
         return PLAYER_RESULT_ERROR;
     }
     if (recorderInfo == NULL) {
-        recorderInfo = new RecorderInfo;
+        recorderInfo = new RecorderContext;
         recorderInfo->id = playerId;
         if (playerInfo != NULL) {
             recorderInfo->inputVideoStream = playerInfo->inputVideoStream;

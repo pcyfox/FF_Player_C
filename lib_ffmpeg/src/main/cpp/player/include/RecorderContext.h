@@ -8,7 +8,7 @@
 
 #include "StateListener.h"
 #include "AsyncQueue.hpp"
-#include "MediaDecoder.h"
+#include "AMediaDecodeContext.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 
-class RecorderInfo {
+class RecorderContext {
 public:
     int id;
     pthread_t recorder_thread = 0;
@@ -38,8 +38,8 @@ private:
     void (*listener)(RecordState, int) = NULL;
 
 public:
-    ~RecorderInfo();
-    RecorderInfo();
+    ~RecorderContext();
+    RecorderContext();
 
     void SetRecordState(RecordState state);
 

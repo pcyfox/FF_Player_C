@@ -7,8 +7,8 @@
 
 #include <android/native_window_jni.h>
 
-#include <PlayerInfo.h>
-#include <RecorderInfo.h>
+#include <PlayerContext.h>
+#include "RecorderContext.h"
 #include "JPlayerObject.h"
 #include <android/looper.h>
 
@@ -21,8 +21,8 @@ public:
 
 public:
     int playerId;
-    PlayerInfo *playerInfo = NULL;
-    RecorderInfo *recorderInfo = NULL;
+    PlayerContext *playerInfo = NULL;
+    RecorderContext *recorderInfo = NULL;
     void (*playStateListener)(PlayState, int) = NULL;
     void (*recorderStateListener)(RecordState, int) = NULL;
     JPlayerObject jPlayer;

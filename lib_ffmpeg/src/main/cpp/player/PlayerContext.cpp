@@ -2,9 +2,9 @@
 // Created by LN on 2021/1/8.
 //
 
-#include "PlayerInfo.h"
+#include "PlayerContext.h"
 
-PlayerInfo::PlayerInfo() {
+PlayerContext::PlayerContext() {
     pthread_mutex_init(&mutex, NULL);
     pthread_cond_init(&cond, NULL);
     playState = UNINITIALIZED;
@@ -21,7 +21,7 @@ PlayerInfo::PlayerInfo() {
     LOGD("-------PlayerInfo created---------");
 }
 
-PlayerInfo::~PlayerInfo() {
+PlayerContext::~PlayerContext() {
     LOGW("-------PlayerInfo Delete Start---------");
     playState = UNINITIALIZED;
     if (bsf_ctx) {
@@ -48,7 +48,7 @@ PlayerInfo::~PlayerInfo() {
 }
 
 
-void PlayerInfo::SetPlayState(PlayState s, bool isNotify) volatile {
+void PlayerContext::SetPlayState(PlayState s, bool isNotify) volatile {
     playState = s;
     if (stateListener && isNotify) {
         stateListener(playState, id);
@@ -58,12 +58,12 @@ void PlayerInfo::SetPlayState(PlayState s, bool isNotify) volatile {
 }
 
 
-PlayState PlayerInfo::GetPlayState() {
+PlayState PlayerContext::GetPlayState() {
     return playState;
 }
 
 
-void PlayerInfo::SetStateListener(void (*listener)(PlayState, int)) {
+void PlayerContext::SetStateListener(void (*listener)(PlayState, int)) {
     this->stateListener = listener;
 }
 

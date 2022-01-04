@@ -11,7 +11,8 @@
 #include "pthread.h"
 #include "StateListener.h"
 #include "AsyncQueue.hpp"
-#include "MediaDecoder.h"
+#include "AMediaDecodeContext.h"
+#include "Resource.h"
 #include <android/native_window.h>
 
 #ifdef __cplusplus
@@ -27,7 +28,7 @@ extern "C" {
 #endif
 
 
-class PlayerInfo {
+class PlayerContext {
 
 public:
     int id{};
@@ -37,7 +38,8 @@ public:
     AVStream *inputVideoStream = NULL;
     AVStream *inputAudioStream = NULL;
     bool isOnlyRecordMedia = false;
-    char *resource = NULL;
+    Resource resource;
+
     int width{}, height{};
 
     AsyncQueue<AVPacket> packetQueue;
@@ -54,16 +56,16 @@ public:
 
     volatile enum PlayState playState = UNINITIALIZED;
 
-    MediaDecoder mediaDecoder;
+    AMediaDecodeContext mediaDecodeContext;
 private:
     void (*stateListener)(PlayState, int) = NULL;
 
 
 public:
 
-    PlayerInfo();
+    PlayerContext();
 
-    ~PlayerInfo();
+    ~PlayerContext();
 
     void SetPlayState(PlayState s, bool isNotify) volatile;
 

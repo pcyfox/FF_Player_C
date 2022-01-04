@@ -9,7 +9,7 @@
 
 #define TAG "ff-player"
 
-static bool IS_DEBUG = false;
+static bool IS_DEBUG = true;
 
 void LOGD(const char *fmt, ...);
 

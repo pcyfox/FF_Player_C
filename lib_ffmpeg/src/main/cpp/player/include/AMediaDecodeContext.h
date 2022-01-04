@@ -2,8 +2,8 @@
 // Created by LN on 2021/8/23.
 //
 
-#ifndef FF_PLAYER_C_MEDIADECODER_H
-#define FF_PLAYER_C_MEDIADECODER_H
+#ifndef FF_PLAYER_C_AMEDIADECODECONTEXT_H
+#define FF_PLAYER_C_AMEDIADECODECONTEXT_H
 
 #include <android/native_window_jni.h>
 #include <android/native_window.h>
@@ -22,8 +22,8 @@ extern "C" {
 }
 #endif
 
-
-class MediaDecoder {
+//wrap Android MediaCodec
+class AMediaDecodeContext {
 
 public:
     AMediaCodec *videoMediaCodec = nullptr;
@@ -35,7 +35,7 @@ public:
 
 
 public:
-    ~MediaDecoder();
+    ~AMediaDecodeContext();
 
     void configAudio(char *mine);
 
@@ -61,4 +61,4 @@ public:
 };
 
 
-#endif //FF_PLAYER_C_MEDIADECODER_H
+#endif //FF_PLAYER_C_AMEDIADECODECONTEXT_H
