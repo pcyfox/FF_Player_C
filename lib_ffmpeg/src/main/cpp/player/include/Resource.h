@@ -5,15 +5,18 @@
 #ifndef FF_PLAYER_C_RESOURCE_H
 #define FF_PLAYER_C_RESOURCE_H
 
+enum ResourceType {
+    LOCAL_FILE, RTP, OTHER
+};
 
 class Resource {
 
 public:
     char *url;
-    bool isLocalFile;
+    ResourceType type;
 
-    bool checkIsLocalFile(char *url);
     void check(void);
+
 };
 
 #endif //FF_PLAYER_C_RESOURCE_H

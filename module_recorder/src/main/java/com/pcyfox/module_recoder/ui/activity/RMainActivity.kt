@@ -14,7 +14,7 @@ class RMainActivity : AppCompatActivity() {
 
     fun onClick(v: View) {
         when (v.id) {
-            R.id.btn_test_play -> {
+            R.id.btn_test_play_an_recorde -> {
                 startActivity(Intent(this, TestRecorderActivity::class.java))
             }
             R.id.btn_test_multi_video_record -> {

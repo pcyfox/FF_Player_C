@@ -156,7 +156,7 @@ void *OpenResource(void *info) {
     playerInfo->resource.check();
 
     AVDictionary *opts = NULL;
-    if (!playerInfo->resource.isLocalFile) {
+    if (playerInfo->resource.type == RTP) {
         av_dict_set(&opts, "stimeout", "6000000", 0);//设置超时6秒
     }
 
@@ -479,7 +479,7 @@ void *DeMux(void *param) {
     int num = playerInfo->inputVideoStream->avg_frame_rate.num;
     int den = playerInfo->inputVideoStream->avg_frame_rate.den;
 
-    if (playerInfo->resource.isLocalFile) {
+    if (playerInfo->resource.type != RTP) {
         float fps = (float) num / (float) den;
         delay = 1.0f / fps * 1000000;
         LOGI("--------------------Start DeMux----------------------FPS:%f,span=%d", fps,
@@ -526,7 +526,6 @@ void *DeMux(void *param) {
         } else if (ret == AVERROR_EOF) {
             av_packet_free(&i_pkt);
             LOGE("DeMux: end of file!");
-            break;
         } else {
             av_packet_free(&i_pkt);
             LOGW("DeMux:read frame ERROR!,ret=%d", ret);

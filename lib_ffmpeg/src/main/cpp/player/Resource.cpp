@@ -3,9 +3,10 @@
 //
 
 #include <cstdio>
+#include <cstring>
 #include "Resource.h"
 
-bool Resource::checkIsLocalFile(char *url) {
+bool checkIsLocalFile(char *url) {
     bool isFile = false;
     FILE *file = fopen(url, "r");
     if (file) {
@@ -16,5 +17,12 @@ bool Resource::checkIsLocalFile(char *url) {
 }
 
 void Resource::check() {
-    isLocalFile = checkIsLocalFile(url);
+    if (checkIsLocalFile(url)) {
+        type = LOCAL_FILE;
+    } else if (strncmp(url, "rtp", 3) == 0 || strncmp(url, "rtsp", 3) == 0 ||
+               strncmp(url, "rtmp", 3) == 0) {
+        type = RTP;
+    } else {
+        type = OTHER;
+    }
 }
