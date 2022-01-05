@@ -13,7 +13,7 @@
 #ifdef __cplusplus
 extern "C" {
 #include "libavcodec/avcodec.h"
-#include "android_log.h"
+#include "AndroidLog.h"
 #endif
 
 #ifdef __cplusplus

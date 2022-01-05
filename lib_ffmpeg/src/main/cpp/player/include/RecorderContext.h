@@ -33,7 +33,7 @@ public:
     AVStream *inputVideoStream = NULL;
     AVStream *o_video_stream = NULL;
 
-    volatile enum RecordState recordState = UN_START_RECORD;
+    volatile enum RecordState recordState = RECORD_UN_START;
 private:
     void (*listener)(RecordState, int) = NULL;
 

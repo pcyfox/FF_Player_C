@@ -1,5 +1,5 @@
 
-#include "android_log.h"
+#include "AndroidLog.h"
 
 void isDebug(bool isDebug) {
     IS_DEBUG = isDebug;

@@ -17,7 +17,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#include "android_log.h"
+#include "AndroidLog.h"
 #include"libavformat/avformat.h"
 #include "libavcodec/avcodec.h"
 #include "libavutil/avutil.h"
@@ -38,7 +38,7 @@ public:
     AVStream *inputVideoStream = NULL;
     AVStream *inputAudioStream = NULL;
     bool isOnlyRecordMedia = false;
-    Resource resource;
+    Resource resource{};
 
     int width{}, height{};
 

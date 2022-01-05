@@ -9,7 +9,7 @@
 #include <libavutil/timestamp.h>
 #include <libavformat/avformat.h>
 #include <stdbool.h>
-#include <android_log.h>
+#include <AndroidLog.h>
 #include "PlayerResult.h"
 
 //#define LOG_TAG "Muxer------------->"

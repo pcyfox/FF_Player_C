@@ -23,17 +23,15 @@ add_library( # Sets the name of the library.
         # Provides a relative path to your source file(s).
         ${player_dir}/Player.cpp
         ${player_dir}/PlayerContext.cpp
-        ${player_dir}/Muxer.c
         ${player_dir}/RecorderContext.cpp
         ${player_dir}/StateListener.cpp
         ${player_dir}/AMediaDecodeContext.cpp
         ${player_dir}/Resource.cpp
-
+        ${player_dir}/Muxer.c
+        ${player_dir}/AndroidLog.c
         ${jni_dir}/VMLoader.cpp
-       # ${jni_dir}/Looper.cpp
         ${jni_dir}/FFPlayerBridge.cpp
         ${jni_dir}/AVMuxerBridge.cpp
-        ${include_dir}/android_log.c
         )
 
 add_library(avcodec

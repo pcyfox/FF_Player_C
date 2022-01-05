@@ -35,9 +35,11 @@ public:
 
     void StartDeMuxThread();
 
+    void StartDecodeThread() const;
+
     void StartOpenResourceThread() const;
 
-    int InitPlayerInfo();
+    int InitPlayerContext();
 
     int SetResource(char *resource);
 

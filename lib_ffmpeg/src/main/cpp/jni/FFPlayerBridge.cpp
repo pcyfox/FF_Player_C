@@ -14,7 +14,7 @@
 
 #ifdef __cplusplus
 extern "C" {
-#include "android_log.h"
+#include "AndroidLog.h"
 #endif
 #ifdef __cplusplus
 }

@@ -8,6 +8,7 @@
 #include<queue>
 #include <pthread.h>
 #include "Utils.h"
+#include "util.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,119 +25,21 @@ extern "C" {
 //clang -g -o pvlib  ParseVideo.c  -lavformat -lavutil
 //clang -g -o pvlib  ParseVideo.c `pkg-config --libs libavutil libavformat`
 
-#define head_1  0x00
-#define head_2  0x00
-#define head_3  0x00
-#define head_4  0x01
 
-#define head_I  0x65
-#define head_P  0x61
-
-
-//H.264:AVCC->AnnexB
-static int H264_mp4toannexb_filter(AVBSFContext *bsf_ctx, AVPacket *pkt) {
-// 1 获取相应的比特流过滤器
-    // FLV/MP4/MKV等结构中，h264需要h264_mp4toannexb处理。添加SPS/PPS等信息。
-    // FLV封装时，可以把多个NALU放在一个VIDEO TAG中,结构为4B NALU长度+NALU1+4B NALU长度+NALU2+...,
-    // 需要做的处理把4B长度换成00000001或者000001
-    // annexb模式: startcode 00000001 AVCC模式: 无startcode (mp4 flv mkv)
-    // 4 发送和接受
-    // bitstreamfilter内部去维护内存空间
-    if (av_bsf_send_packet(bsf_ctx, pkt) != 0) {
-        return PLAYER_RESULT_ERROR;
-    }
-    int ret = -1;
-    while ((ret = av_bsf_receive_packet(bsf_ctx, pkt)) != 0) {
-        // LOGD("av_bsf_receive_packet,ret=%d", ret);
-    }
-    //  LOGD("av_bsf_receive_packet,ret=%d", ret);
-    return PLAYER_RESULT_OK;
-}
-
-static int GetStartCodeLen(const unsigned char *pkt) {
-    if (pkt[0] == 0 && pkt[1] == 0 && pkt[2] == 0 && pkt[3] == 1) {
-        return 4;
-    } else if (pkt[0] == 0 && pkt[1] == 0 && pkt[2] == 1) {
-        return 3;
-    } else {
-        return 0;
-    }
-}
-
-
-AVStream *findStream(AVFormatContext *i_fmt_ctx, AVMediaType type) {
-    int index = av_find_best_stream(i_fmt_ctx, type, -1, -1, NULL, 0);
-    if (index == AVERROR_STREAM_NOT_FOUND) {
-        return NULL;
-    } else {
-        return i_fmt_ctx->streams[index];
-    }
-}
-
-void StartRelease(PlayerContext *playerInfo, RecorderContext *recorderInfo) {
+static void StartRelease(PlayerContext *playerContext, RecorderContext *recorderContext) {
     LOGW("StartRelease() called !");
-    if (playerInfo) {
-        delete playerInfo;
-        playerInfo = NULL;
+    if (playerContext) {
+        delete playerContext;
+        playerContext = NULL;
     }
-    if (recorderInfo) {
-        delete recorderInfo;
-        recorderInfo = NULL;
-    }
-}
-
-
-int GetNALUType(AVPacket *packet) {
-    int type = -1;
-    const uint8_t *buf = packet->data;
-    int len = GetStartCodeLen(buf);
-    if ((len == 3 || len == 4) && packet->size > len) {
-        type = buf[len] & 0xFF;
-    }
-    return type;
-}
-
-
-void dumpStreamInfo(AVCodecParameters *codecpar) {
-    uint8_t exSize = codecpar->extradata_size;
-    if (exSize > 0) {
-        uint8_t *extraData = codecpar->extradata;
-        printCharsHex((char *) extraData, exSize, exSize - 1, "SPS-PPS");
-    }
-    int w = codecpar->width;
-    int h = codecpar->height;
-    int level = codecpar->level;
-    int profile = codecpar->profile;
-    int sample_rate = codecpar->sample_rate;
-    const int codecId = codecpar->codec_id;
-    LOGD("input video stream info :w=%d,h=%d,codec=%d,level=%d,profile=%d,sample_rate=%d",
-         w, h,
-         codecId, level, profile, sample_rate);
-    int format = codecpar->format;
-    switch (format) {
-        case AV_PIX_FMT_YUV420P:
-            LOGD("input video color format is YUV420p");
-            break;
-        case AV_PIX_FMT_YUYV422:   ///< packed YUV 4:2:2, 16bpp, Y0 Cb Y1 Cr
-            LOGD("input video color format is YUVV422");
-            break;
-        case AV_PIX_FMT_YUV422P:
-            LOGD("input video color format is YUV422P");
-            break;
-        case AV_PIX_FMT_YUV444P:
-            LOGD("input video color format is YUV444P");
-            break;
-        case AV_PIX_FMT_YUVJ420P://ffmpeg 默认格式
-            LOGD("input video color format is YUVJ420P");
-            break;
-        default:
-            LOGD("input video color format is other");
-            break;
+    if (recorderContext) {
+        delete recorderContext;
+        recorderContext = NULL;
     }
 }
 
 
-void *OpenResource(void *info) {
+void *OpenResourceThread(void *info) {
     if (info == nullptr) {
         return nullptr;
     }
@@ -238,7 +141,7 @@ void *OpenResource(void *info) {
 }
 
 
-void *RecordPkt(void *info) {
+void *RecordPktThread(void *info) {
     auto *recorderInfo = (RecorderContext *) info;
     if (recorderInfo->GetRecordState() == RECORD_START) {
         char *file = recorderInfo->storeFile;
@@ -350,7 +253,7 @@ void *RecordPkt(void *info) {
 }
 
 
-void *Decode(void *info) {
+void *DecodeThread(void *info) {
     auto *playerInfo = (PlayerContext *) info;
     while (true) {
         PlayState state = playerInfo->GetPlayState();
@@ -438,63 +341,42 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerContext *
 }
 
 
-void StartDecodeThread(PlayerContext *playerInfo) {
-    LOGI("StartDecodeThread() called");
-    pthread_create(&playerInfo->decode_thread, NULL, Decode, playerInfo);
-    pthread_setname_np(playerInfo->decode_thread, "decode_thread");
-    pthread_detach(playerInfo->decode_thread);
-}
-
-void Player::StartRecorderThread() const {
-    if (playerContext != NULL && recorderContext != NULL) {
-        recorderContext->inputVideoStream = playerContext->inputVideoStream;
-    } else {
-        LOGE("Start recorder thread fail!");
-        return;
-    }
-    LOGI("Start recorder thread");
-    pthread_create(&recorderContext->recorder_thread, NULL, RecordPkt, recorderContext);
-    pthread_setname_np(recorderContext->recorder_thread, "recorder_thread");
-    pthread_detach(recorderContext->recorder_thread);
-}
-
-
-void *DeMux(void *param) {
+void *DeMuxThread(void *param) {
     auto *player = (Player *) param;
-    PlayerContext *playerInfo = player->playerContext;
-    if (playerInfo == NULL) {
+    PlayerContext *playerContext = player->playerContext;
+    if (playerContext == NULL) {
         LOGE("Player is not init");
         return NULL;
     }
 
-    if (playerInfo->GetPlayState() == STARTED) {
+    if (playerContext->GetPlayState() == STARTED) {
         LOGE("DeMux()  called  player is STARTED");
         return NULL;
     }
-    AVStream *i_video_stream = playerInfo->inputVideoStream;
+    AVStream *i_video_stream = playerContext->inputVideoStream;
     AVCodecParameters *i_av_codec_parameters = i_video_stream->codecpar;
     int video_stream_index = i_video_stream->index;
 
     float delay = 0;
-    int num = playerInfo->inputVideoStream->avg_frame_rate.num;
-    int den = playerInfo->inputVideoStream->avg_frame_rate.den;
+    int num = playerContext->inputVideoStream->avg_frame_rate.num;
+    int den = playerContext->inputVideoStream->avg_frame_rate.den;
 
-    if (playerInfo->resource.type != RTP) {
+    if (playerContext->resource.type != RTP) {
         float fps = (float) num / (float) den;
         delay = 1.0f / fps * 1000000;
         LOGI("--------------------Start DeMux----------------------FPS:%f,span=%d", fps,
              (unsigned int) delay);
     }
 
-    playerInfo->SetPlayState(STARTED, true);
-    if (!playerInfo->isOnlyRecordMedia) {
+    playerContext->SetPlayState(STARTED, true);
+    if (!playerContext->isOnlyRecordMedia) {
         LOGI("--------------------DeMux() change state to STARTED----------------------");
-        StartDecodeThread(playerInfo);
+        player->StartDecodeThread();
     }
     PlayState state;
-    while ((state = playerInfo->GetPlayState()) != STOPPED) {
+    while ((state = playerContext->GetPlayState()) != STOPPED) {
         if (state == UNINITIALIZED || state == ERROR || state == RELEASE) {
-            playerInfo->packetQueue.clearAVPacket();
+            playerContext->packetQueue.clearAVPacket();
             LOGD("DeMux() stop,due to state-STOPPED!");
             break;
         }
@@ -513,10 +395,10 @@ void *DeMux(void *param) {
             LOGE("DeMux fail,because alloc av packet fail!");
             return NULL;
         }
-        int ret = av_read_frame(playerInfo->inputContext, i_pkt);
+        int ret = av_read_frame(playerContext->inputContext, i_pkt);
         if (ret == 0 && i_pkt->size > 0) {
             if (i_pkt->stream_index == video_stream_index) {
-                ProcessPacket(i_pkt, i_av_codec_parameters, playerInfo, recorderInfo);
+                ProcessPacket(i_pkt, i_av_codec_parameters, playerContext, recorderInfo);
                 if (delay > 0) {
                     av_usleep((unsigned int) delay);
                 }
@@ -533,25 +415,31 @@ void *DeMux(void *param) {
         }
     }
 
-    if (playerInfo->inputContext != nullptr) {
+    if (playerContext->inputContext != nullptr) {
         LOGI("-----------DeMux close ----------------");
-        avformat_close_input(&playerInfo->inputContext);
-        playerInfo->inputContext = nullptr;
+        avformat_close_input(&playerContext->inputContext);
+        playerContext->inputContext = nullptr;
         LOGI("close input context!");
     }
-    playerInfo->SetPlayState(STOPPED, true);
+    playerContext->SetPlayState(STOPPED, true);
     LOGI("-----------DeMux stop over! ----------------");
-    playerInfo->packetQueue.clearAVPacket();
-    if (playerInfo->GetPlayState() == RELEASE) {
-        StartRelease(playerInfo, nullptr);
+    playerContext->packetQueue.clearAVPacket();
+    if (playerContext->GetPlayState() == RELEASE) {
+        StartRelease(playerContext, nullptr);
     }
     return nullptr;
 }
 
+void Player::StartDecodeThread() const {
+    LOGI("StartDecodeThread() called");
+    pthread_create(&playerContext->decode_thread, NULL, DecodeThread, playerContext);
+    pthread_setname_np(playerContext->decode_thread, "decode_thread");
+    pthread_detach(playerContext->decode_thread);
+}
 
 void Player::StartDeMuxThread() {
     LOGI("start deMux thread");
-    pthread_create(&playerContext->deMux_thread, NULL, DeMux, this);
+    pthread_create(&playerContext->deMux_thread, NULL, DeMuxThread, this);
     pthread_setname_np(playerContext->deMux_thread, "deMux_thread");
     pthread_detach(playerContext->deMux_thread);
 }
@@ -562,18 +450,32 @@ void Player::StartOpenResourceThread() const {
         return;
     }
     LOGI("start open resource thread");
-    pthread_create(&playerContext->open_resource_thread, NULL, OpenResource, playerContext);
+    pthread_create(&playerContext->open_resource_thread, NULL, OpenResourceThread, playerContext);
     pthread_setname_np(playerContext->open_resource_thread, "open_resource_thread");
     pthread_detach(playerContext->open_resource_thread);
 }
 
-int Player::InitPlayerInfo() {
-    LOGD("InitPlayerInfo() called");
+
+void Player::StartRecorderThread() const {
+    if (playerContext != NULL && recorderContext != NULL) {
+        recorderContext->inputVideoStream = playerContext->inputVideoStream;
+    } else {
+        LOGE("Start recorder thread fail!");
+        return;
+    }
+    LOGI("Start recorder thread");
+    pthread_create(&recorderContext->recorder_thread, NULL, RecordPktThread, recorderContext);
+    pthread_setname_np(recorderContext->recorder_thread, "recorder_thread");
+    pthread_detach(recorderContext->recorder_thread);
+}
+
+int Player::InitPlayerContext() {
+    LOGD("InitPlayerContext() called");
     if (!playerContext) {
         playerContext = new PlayerContext;
         playerContext->id = playerId;
     } else {
-        LOGW("InitPlayerInfo(),playerInfo is not NULL,it may be inited!");
+        LOGW("InitPlayerContext(),playerInfo is not NULL,it may be inited!");
     }
 
     playerContext->SetStateListener(playStateListener);
@@ -581,7 +483,7 @@ int Player::InitPlayerInfo() {
         return PLAYER_RESULT_OK;
     }
 
-    LOGI("InitPlayerInfo():state-> INITIALIZED");
+    LOGI("InitPlayerContext():state-> INITIALIZED");
     playerContext->SetPlayState(INITIALIZED, true);
     LOGD("init player info over");
     return PLAYER_RESULT_OK;
@@ -598,7 +500,7 @@ int Player::SetResource(char *url) {
         }
     }
 
-    if (InitPlayerInfo()) {
+    if (InitPlayerContext()) {
         playerContext->resource.url = url;
     } else {
         LOGE("init player info ERROR");
@@ -664,7 +566,7 @@ int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
         ret = playerContext->mediaDecodeContext.start();
         if (ret == PLAYER_RESULT_OK) {
             LOGI("--------OnWindowChange() success!state->STARTED");
-            StartDecodeThread(playerContext);
+            StartDecodeThread();
             playerContext->SetPlayState(STARTED, true);
         }
     } else {

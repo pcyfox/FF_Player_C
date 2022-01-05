@@ -8,7 +8,7 @@
 #ifdef __cplusplus
 extern "C" {
 #include <libavcodec/jni.h>
-#include "android_log.h"
+#include "AndroidLog.h"
 #endif
 #ifdef __cplusplus
 }

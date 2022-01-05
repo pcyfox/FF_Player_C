@@ -1,7 +1,6 @@
 //
 // Created by LN on 2021/1/8.
 //
-#pragma once
 #ifndef TCTS_EDU_APP_RECODER_STATELISTENER_H
 #define TCTS_EDU_APP_RECODER_STATELISTENER_H
 
@@ -21,7 +20,7 @@ enum PlayState {
 
 
 enum RecordState {
-    UN_START_RECORD,
+    RECORD_UN_START,
     RECORD_ERROR,
     RECORD_PREPARED,
     RECORD_START,

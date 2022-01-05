@@ -5,13 +5,15 @@
 
 #ifdef __cplusplus
 extern "C" {
-#include "android_log.h"
+#include "AndroidLog.h"
 #endif
 #ifdef __cplusplus
 }
 #endif
 
 #include "RecorderContext.h"
+#include "include/RecorderContext.h"
+
 
 RecorderContext::~RecorderContext() {
     LOGD("start to delete RecorderInfo ");
@@ -44,3 +46,5 @@ void RecorderContext::SetStateListener(void (*l)(RecordState, int)) {
 RecorderContext::RecorderContext() {
     //packetQueue.tag = "recorder";
 }
+
+
