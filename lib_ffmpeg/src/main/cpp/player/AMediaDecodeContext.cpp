@@ -198,3 +198,7 @@ AMediaDecodeContext::~AMediaDecodeContext() {
     release();
 }
 
+int AMediaDecodeContext::decodeAudio(uint8_t *data, int length, int64_t pts) const {
+    return 0;
+}
+

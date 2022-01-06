@@ -43,37 +43,36 @@ void *OpenResourceThread(void *info) {
     if (info == nullptr) {
         return nullptr;
     }
-    auto *playerInfo = (PlayerContext *) info;
-    char *url = playerInfo->resource.url;
-    if (playerInfo->inputContext != NULL) {
+    auto *playerContext = (PlayerContext *) info;
+    char *url = playerContext->resource.url;
+    if (playerContext->inputContext != NULL) {
         LOGI("close input context!before open resource");
-        avformat_close_input(&playerInfo->inputContext);
-        playerInfo->inputContext = avformat_alloc_context();
+        avformat_close_input(&playerContext->inputContext);
+        playerContext->inputContext = avformat_alloc_context();
     } else {
-        playerInfo->inputContext = avformat_alloc_context();
+        playerContext->inputContext = avformat_alloc_context();
     }
     //打开多媒体文件，根据文件后缀名解析,第三个参数是显式制定文件类型，当文件后缀与文件格式不符
     //或者根本没有后缀时需要填写，
     LOGI("OpenResource() start open=%s", url);
-    playerInfo->SetPlayState(EXECUTING, true);
-    playerInfo->resource.check();
+    playerContext->SetPlayState(EXECUTING, true);
+    playerContext->resource.check();
 
     AVDictionary *opts = NULL;
-    if (playerInfo->resource.type == RTP) {
+    if (playerContext->resource.type == RTP) {
         av_dict_set(&opts, "stimeout", "6000000", 0);//设置超时6秒
     }
 
-    int ret = avformat_open_input(&playerInfo->inputContext, url, NULL, &opts);
+    int ret = avformat_open_input(&playerContext->inputContext, url, NULL, &opts);
     if (ret != 0) {
         LOGE("OpenResource():can't open source: %s ,msg:%s \n", url, av_err2str(ret));
-        playerInfo->inputContext = NULL;
-        playerInfo->SetPlayState(ERROR, true);
+        playerContext->inputContext = NULL;
+        playerContext->SetPlayState(ERROR, true);
         return (void *) PLAYER_RESULT_ERROR;
     }
 
-    PlayState state = playerInfo->GetPlayState();
-    if (state == STOPPED || state == RELEASE || state == ERROR ||
-        playerInfo->inputContext == NULL) {
+    PlayState state = playerContext->GetPlayState();
+    if (state == STOPPED || state == RELEASE || state == ERROR) {
         LOGW("close input context!after open resource,with state=%s",
              StateListener::PlayerStateToString(state).c_str());
         return NULL;
@@ -81,34 +80,57 @@ void *OpenResourceThread(void *info) {
 
     /* find stream info  */
     LOGI("----------open resource success!,start to find stream info-------------");
-    if (avformat_find_stream_info(playerInfo->inputContext, opts == NULL ? NULL : &opts) < 0) {
-        playerInfo->SetPlayState(ERROR, true);
+    if (avformat_find_stream_info(playerContext->inputContext, opts == NULL ? NULL : &opts) < 0) {
+        playerContext->SetPlayState(ERROR, true);
         LOGE("could not find stream info\n");
+        av_freep(&opts);
+        delete playerContext;
         return (void *) PLAYER_RESULT_ERROR;
     }
     av_freep(&opts);
+
     LOGI("----------find stream info success!-------------");
 
     LOGD("----------fmt_ctx:streams number=%d,bit rate=%ld\n",
-         playerInfo->inputContext->nb_streams,
-         playerInfo->inputContext->bit_rate);
+         playerContext->inputContext->nb_streams,
+         playerContext->inputContext->bit_rate);
 
-    //输出多媒体文件信息,第二个参数是流的索引值（默认0），第三个参数，0:输入流，1:输出流
-    playerInfo->inputVideoStream = findStream(playerInfo->inputContext, AVMEDIA_TYPE_VIDEO);
-    if (playerInfo->inputVideoStream == NULL) {
-        playerInfo->SetPlayState(ERROR, true);
+    playerContext->inputVideoStream = findStream(playerContext->inputContext, AVMEDIA_TYPE_VIDEO);
+    if (playerContext->inputVideoStream == NULL) {
+        playerContext->SetPlayState(ERROR, true);
         LOGE("----------find video stream fail!-------------");
         return (void *) PLAYER_RESULT_ERROR;
     }
 
     LOGI("----------find video stream success!-------------");
-    if (playerInfo->isOpenAudio) {
-        playerInfo->inputAudioStream = findStream(playerInfo->inputContext, AVMEDIA_TYPE_AUDIO);
-        if (playerInfo->inputAudioStream) {
+
+    //is H264?
+    if (playerContext->inputVideoStream->codecpar->codec_id != AV_CODEC_ID_H264) {
+        LOGE("sorry this player only support h.264 now!");
+        playerContext->SetPlayState(ERROR, true);
+        return (void *) PLAYER_RESULT_ERROR;
+    }
+
+    AVCodecParameters *codecpar = playerContext->inputVideoStream->codecpar;
+    if (codecpar == nullptr) {
+        playerContext->SetPlayState(ERROR, true);
+        LOGE("OpenResource() fail:can't get video stream params");
+        return (void *) PLAYER_RESULT_ERROR;
+    }
+
+    if (IS_DEBUG) {
+        dumpStreamInfo(codecpar);
+    }
+
+
+    if (playerContext->isOpenAudio) {
+        playerContext->inputAudioStream = findStream(playerContext->inputContext,
+                                                     AVMEDIA_TYPE_AUDIO);
+        if (playerContext->inputAudioStream) {
             LOGI("find audio stream success!");
-            AVCodecID codec_id = playerInfo->inputAudioStream->codecpar->codec_id;
+            AVCodecID codec_id = playerContext->inputAudioStream->codecpar->codec_id;
             if (AV_CODEC_ID_AAC == codec_id) {
-                playerInfo->mediaDecodeContext.configAudio("audio/mp4a-latm");
+                playerContext->mediaDecodeContext.configAudio("audio/mp4a-latm");
             } else {
                 LOGE("not support audio type:%d", codec_id);
             }
@@ -117,26 +139,7 @@ void *OpenResourceThread(void *info) {
         }
     }
 
-    //is H264?
-    if (playerInfo->inputVideoStream->codecpar->codec_id != AV_CODEC_ID_H264) {
-        LOGE("sorry this player only support h.264 now!");
-        playerInfo->SetPlayState(ERROR, true);
-        return (void *) PLAYER_RESULT_ERROR;
-    }
-
-    AVCodecParameters *codecpar = playerInfo->inputVideoStream->codecpar;
-    if (codecpar == nullptr) {
-        playerInfo->SetPlayState(ERROR, true);
-        LOGE("OpenResource() fail:can't get video stream params");
-        return (void *) PLAYER_RESULT_ERROR;
-    }
-
-    playerInfo->SetPlayState(PREPARED, true);
-
-    if (IS_DEBUG) {
-        dumpStreamInfo(playerInfo->inputVideoStream->codecpar);
-    }
-
+    playerContext->SetPlayState(PREPARED, true);
     return nullptr;
 }
 
@@ -258,7 +261,7 @@ void *DecodeThread(void *info) {
     while (true) {
         PlayState state = playerInfo->GetPlayState();
         if (state == PAUSE) {
-            playerInfo->packetQueue.clearAVPacket();
+            playerInfo->videoPacketQueue.clearAVPacket();
             continue;
         }
         if (state != STARTED) {
@@ -266,7 +269,7 @@ void *DecodeThread(void *info) {
         }
 
         AVPacket *packet = NULL;
-        int ret = playerInfo->packetQueue.getAvPacket(&packet);
+        int ret = playerInfo->videoPacketQueue.getAvPacket(&packet);
         if (ret == PLAYER_RESULT_OK) {
             uint8_t *data = packet->data;
             int length = packet->size;
@@ -336,7 +339,7 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerContext *
 
     //加入解码队列
     if (playerInfo->GetPlayState() == STARTED &&
-        !playerInfo->isOnlyRecordMedia) { playerInfo->packetQueue.putAvPacket(packet); }
+        !playerInfo->isOnlyRecordMedia) { playerInfo->videoPacketQueue.putAvPacket(packet); }
     return PLAYER_RESULT_OK;
 }
 
@@ -376,7 +379,7 @@ void *DeMuxThread(void *param) {
     PlayState state;
     while ((state = playerContext->GetPlayState()) != STOPPED) {
         if (state == UNINITIALIZED || state == ERROR || state == RELEASE) {
-            playerContext->packetQueue.clearAVPacket();
+            playerContext->videoPacketQueue.clearAVPacket();
             LOGD("DeMux() stop,due to state-STOPPED!");
             break;
         }
@@ -423,7 +426,7 @@ void *DeMuxThread(void *param) {
     }
     playerContext->SetPlayState(STOPPED, true);
     LOGI("-----------DeMux stop over! ----------------");
-    playerContext->packetQueue.clearAVPacket();
+    playerContext->videoPacketQueue.clearAVPacket();
     if (playerContext->GetPlayState() == RELEASE) {
         StartRelease(playerContext, nullptr);
     }

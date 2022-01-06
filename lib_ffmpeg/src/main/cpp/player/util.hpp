@@ -29,6 +29,7 @@ static int GetNALUType(AVPacket *packet) {
 
 
 AVStream *findStream(AVFormatContext *i_fmt_ctx, AVMediaType type) {
+    //输出多媒体文件信息,第二个参数是流的索引值（默认0），第三个参数，0:输入流，1:输出流
     int index = av_find_best_stream(i_fmt_ctx, type, -1, -1, NULL, 0);
     if (index == AVERROR_STREAM_NOT_FOUND) {
         return NULL;

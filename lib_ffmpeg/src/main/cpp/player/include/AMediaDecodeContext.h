@@ -58,6 +58,10 @@ public:
 
     int decodeVideo(uint8_t *data, int length, int64_t pts) const;
 
+    int decodeAudio(uint8_t *data, int length, int64_t pts) const;
+
+
+
 };
 
 

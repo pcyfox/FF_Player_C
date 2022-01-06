@@ -18,7 +18,7 @@ PlayerContext::PlayerContext() {
         LOGE("avformat alloc context fail!");
     }
 
-    packetQueue.tag = "player";
+    videoPacketQueue.tag = "player";
     LOGD("-------PlayerInfo created---------");
 }
 
@@ -32,10 +32,6 @@ PlayerContext::~PlayerContext() {
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&cond);
 
-    if (outContext != NULL) {
-        avformat_free_context(outContext);
-        outContext = NULL;
-    }
     if (inputContext != NULL) {
         avformat_free_context(inputContext);
     }

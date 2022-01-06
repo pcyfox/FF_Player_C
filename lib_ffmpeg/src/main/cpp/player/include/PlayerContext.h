@@ -34,7 +34,6 @@ public:
     int id{};
     AVBSFContext *bsf_ctx = NULL;
     AVFormatContext *inputContext = NULL;
-    AVFormatContext *outContext = NULL;
     AVStream *inputVideoStream = NULL;
     AVStream *inputAudioStream = NULL;
     bool isOnlyRecordMedia = false;
@@ -42,7 +41,8 @@ public:
 
     int width{}, height{};
 
-    AsyncQueue<AVPacket> packetQueue;
+    AsyncQueue<AVPacket> videoPacketQueue;
+    AsyncQueue<AVPacket> audioPacketQueue;
 
     pthread_t decode_thread = 0;
     pthread_t deMux_thread = 0;
@@ -57,6 +57,7 @@ public:
     volatile enum PlayState playState = UNINITIALIZED;
 
     AMediaDecodeContext mediaDecodeContext;
+
 private:
     void (*stateListener)(PlayState, int) = NULL;
 
