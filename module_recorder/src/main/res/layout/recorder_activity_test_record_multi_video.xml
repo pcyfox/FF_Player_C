@@ -6,7 +6,7 @@
     android:background="@android:color/holo_blue_bright">
 
 
-    <com.pcyfox.module_recoder.ui.view.RecorderView
+    <com.pcyfox.module_recoder.ui.view.FVideoView
         android:id="@+id/rv_record_1"
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -14,7 +14,7 @@
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <com.pcyfox.module_recoder.ui.view.RecorderView
+    <com.pcyfox.module_recoder.ui.view.FVideoView
         android:id="@+id/rv_record_2"
         android:layout_width="0dp"
         android:layout_height="match_parent"

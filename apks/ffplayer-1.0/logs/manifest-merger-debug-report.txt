@@ -1,451 +1,515 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-55:12
-INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-55:12
-INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-55:12
-INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-55:12
-MERGED from [androidx.databinding:databinding-adapters:4.2.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/6d6b50b0347bb36ec8bc180226058d71/databinding-adapters-4.2.2/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.databinding:databinding-runtime:4.2.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/5a00e257b17e2036de3707f9e1e49ad4/databinding-runtime-4.2.2/AndroidManifest.xml:17:1-22:12
-MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/8f74eb0825cb792ca027d135be1c4ae2/jetified-leakcanary-android-2.7/AndroidManifest.xml:17:1-28:12
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-25:12
-MERGED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:2:1-41:12
-MERGED from [androidx.databinding:viewbinding:4.2.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/389b5259ed65d6290eb4ac6ebddce1b1/jetified-viewbinding-4.2.2/AndroidManifest.xml:17:1-22:12
-MERGED from [:lib_ffmpeg] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/lib_ffmpeg/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
-MERGED from [androidx.core:core-ktx:1.3.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/838f2094cb52d495119d6dfcf98538c5/jetified-core-ktx-1.3.2/AndroidManifest.xml:2:1-9:12
-MERGED from [androidx.constraintlayout:constraintlayout:2.0.4] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/60312531c0e97472dabe8947cf1b4f95/constraintlayout-2.0.4/AndroidManifest.xml:2:1-11:12
-MERGED from [androidx.appcompat:appcompat:1.2.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/7079c4eb8744944d4bf81f7e2245e437/appcompat-1.2.0/AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.fragment:fragment:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d887b270a44667aff68baa5ed70abbe0/fragment-1.1.0/AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.appcompat:appcompat-resources:1.2.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/2ab712af1259c24a655d48049a99d729/jetified-appcompat-resources-1.2.0/AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/deec4b0b9af30e5ac03c18feedf04a03/drawerlayout-1.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/06cb425a8fb65e9cd0672e99b9c3ca63/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.loader:loader:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/865dcaef4e96a0175d5f7057b3ccba14/loader-1.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.activity:activity:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/0360f3628f077cf0674522372999de8d/jetified-activity-1.0.0/AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/64098822b1c4b09eef086c457bf9c98e/vectordrawable-animated-1.1.0/AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/c7da716a0b1da3122f40a8b9deeb9757/vectordrawable-1.1.0/AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.customview:customview:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/91753140929ac02fec64675ae7520ea6/customview-1.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.core:core:1.3.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/90a27d85cb118e20b8823a9b4b8ec7cb/core-1.3.2/AndroidManifest.xml:17:1-26:12
-MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/c9e4c9c25f4b10e2ec6605c00c2dcb7b/lifecycle-runtime-2.1.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/f3f015f47fe724fdc4e7e537ee876998/versionedparcelable-1.1.0/AndroidManifest.xml:17:1-27:12
-MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:17:1-76:12
-MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-androidx:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/bd0730295d16723b15910ca4bdc0900c/jetified-leakcanary-object-watcher-android-androidx-2.7/AndroidManifest.xml:2:1-7:12
-MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-support-fragments:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/20f723fb4d69d963940194908472af5d/jetified-leakcanary-object-watcher-android-support-fragments-2.7/AndroidManifest.xml:2:1-7:12
-MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d51a6c8d5b3c39989327c441fb12473f/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:2:1-15:12
-MERGED from [com.squareup.leakcanary:plumber-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/af54c2f330b7adfcc49f471a0f5f28a2/jetified-plumber-android-2.7/AndroidManifest.xml:2:1-15:12
-MERGED from [com.squareup.leakcanary:leakcanary-android-utils:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/f518e3abb1e55c370d25c878d6060ca8/jetified-leakcanary-android-utils-2.7/AndroidManifest.xml:2:1-7:12
-MERGED from [com.squareup.curtains:curtains:1.0.1] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/5dbba9663dc533a4300b5c2ceaa3dd4e/jetified-curtains-1.0.1/AndroidManifest.xml:2:1-9:12
-MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/f1de7ad1cc15bb495374f49c6d8d127f/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/816e8e53af91838988b297378a4f9b7a/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/0663e66ab94348f3d583d973e632ff42/jetified-savedstate-1.0.0/AndroidManifest.xml:17:1-24:12
-MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/afce8604554528a23c7f7d78f622e8a8/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/8bfd897770efc8b00499a95a5adec41c/lifecycle-livedata-2.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/20a5413a061f545a6ad53328d164e72d/lifecycle-livedata-core-2.0.0/AndroidManifest.xml:17:1-22:12
-MERGED from [androidx.arch.core:core-runtime:2.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/c185e6ec90f30686a51b23e289531a77/core-runtime-2.0.0/AndroidManifest.xml:17:1-22:12
-INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-55:12
-INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-55:12
-INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-55:12
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-56:12
+INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-56:12
+INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-56:12
+INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-56:12
+MERGED from [androidx.databinding:databinding-adapters:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/f38fe6ade4f7837e7a515cb392c62870/transformed/databinding-adapters-7.2.2/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.databinding:databinding-ktx:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/b6e77191286fe0db32687584cde9014a/transformed/jetified-databinding-ktx-7.2.2/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.databinding:databinding-runtime:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/bec4df8e42159ea3c01aa3c6cc866023/transformed/databinding-runtime-7.2.2/AndroidManifest.xml:17:1-24:12
+MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/9f52e97f4b36b069eb4f2a01d9e39a7d/transformed/jetified-leakcanary-android-2.7/AndroidManifest.xml:17:1-28:12
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-25:12
+MERGED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:2:1-41:12
+MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/sptlt/.gradle/caches/transforms-3/0d84a4d4da2abb3fb58227fdd5309bb8/transformed/constraintlayout-2.1.4/AndroidManifest.xml:2:1-11:12
+MERGED from [:lib_ffmpeg] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/lib_ffmpeg/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.appcompat:appcompat:1.4.2] /Users/sptlt/.gradle/caches/transforms-3/d4b64ce115264eee4ef5139e292b8f81/transformed/appcompat-1.4.2/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.core:core-ktx:1.8.0] /Users/sptlt/.gradle/caches/transforms-3/8b8ee3e062ecdcbdf390455929ef4f58/transformed/jetified-core-ktx-1.8.0/AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.fragment:fragment:1.3.6] /Users/sptlt/.gradle/caches/transforms-3/2fee84ce99728401b49e699b68198397/transformed/fragment-1.3.6/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.activity:activity:1.2.4] /Users/sptlt/.gradle/caches/transforms-3/9344ef599ed910b649f3c2805708ad85/transformed/jetified-activity-1.2.4/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.appcompat:appcompat-resources:1.4.2] /Users/sptlt/.gradle/caches/transforms-3/45139026a56cbccca2aac4ce0869d89f/transformed/jetified-appcompat-resources-1.4.2/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/e3ed8cf5a3ccf146a0777a43fd68c84d/transformed/drawerlayout-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.emoji2:emoji2-views-helper:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/17d3d5d1853b7327e798fadabdaf880d/transformed/jetified-emoji2-views-helper-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:17:1-37:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/22e43e53ae6f241a8207f0c4c1d3eca2/transformed/viewpager-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/4e687c133cd9045696daa19214a6535c/transformed/loader-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/1cbd011c3c79b09f73786a9394ff1d25/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/a6c2f42b601cff490190ba27a74071ea/transformed/vectordrawable-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.customview:customview:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/1cfdca0a52d476a8f2d6fbf7867352e3/transformed/customview-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core:1.8.0] /Users/sptlt/.gradle/caches/transforms-3/319818de8066db9dee1015fa48896948/transformed/core-1.8.0/AndroidManifest.xml:17:1-26:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/sptlt/.gradle/caches/transforms-3/3367f2aef9957f33c0ae437b02a9c6b3/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.databinding:viewbinding:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/00389a7267d1e4451c746bf1a5e51a3a/transformed/jetified-viewbinding-7.2.2/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.2.0] /Users/sptlt/.gradle/caches/transforms-3/272561bf4d7efff239f5e54b3e84a602/transformed/jetified-lifecycle-runtime-ktx-2.2.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.lifecycle:lifecycle-service:2.2.0] /Users/sptlt/.gradle/caches/transforms-3/3fe379ac814eb00f3109fff2992e5881/transformed/jetified-lifecycle-service-2.2.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/a0fc1150c7cd323ddd62eb2614456c85/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:17:1-37:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/de8baf3de13fc1e4e10793d21f7562e7/transformed/lifecycle-runtime-2.4.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.2.0] /Users/sptlt/.gradle/caches/transforms-3/d718e22c41c5f7ff9415ff9f62e115ae/transformed/lifecycle-livedata-2.2.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.1] /Users/sptlt/.gradle/caches/transforms-3/6652e736dd070d0c329dcf3930ed6cae/transformed/jetified-lifecycle-viewmodel-savedstate-2.3.1/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.3.1] /Users/sptlt/.gradle/caches/transforms-3/30d73f64a06bad2247d99c2121a73fe8/transformed/lifecycle-viewmodel-2.3.1/AndroidManifest.xml:17:1-24:12
+MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:17:1-76:12
+MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-androidx:2.7] /Users/sptlt/.gradle/caches/transforms-3/6fb7423ccab6cb4b2c910894d424fec1/transformed/jetified-leakcanary-object-watcher-android-androidx-2.7/AndroidManifest.xml:2:1-7:12
+MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-support-fragments:2.7] /Users/sptlt/.gradle/caches/transforms-3/ab76809cbf97585cae2c1a1dfea716fb/transformed/jetified-leakcanary-object-watcher-android-support-fragments-2.7/AndroidManifest.xml:2:1-7:12
+MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/8ef7f9352f5d4934da9fe638a7c89057/transformed/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:2:1-15:12
+MERGED from [com.squareup.leakcanary:plumber-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/7722ecb95c3c293c0403e31485242cc3/transformed/jetified-plumber-android-2.7/AndroidManifest.xml:2:1-15:12
+MERGED from [com.squareup.leakcanary:leakcanary-android-utils:2.7] /Users/sptlt/.gradle/caches/transforms-3/4925715156d92a2c0b2a768d5a213514/transformed/jetified-leakcanary-android-utils-2.7/AndroidManifest.xml:2:1-7:12
+MERGED from [com.squareup.curtains:curtains:1.0.1] /Users/sptlt/.gradle/caches/transforms-3/6a539bf3968c1ce762fc22fa902e4a7a/transformed/jetified-curtains-1.0.1/AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.3.1] /Users/sptlt/.gradle/caches/transforms-3/dbd726f71f367d1b2e628d962512265c/transformed/lifecycle-livedata-core-2.3.1/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.arch.core:core-runtime:2.1.0] /Users/sptlt/.gradle/caches/transforms-3/8c44cfbdeee2a652a2edc2eb95479194/transformed/core-runtime-2.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.savedstate:savedstate:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/01f859df61ec63637813088e31f4868e/transformed/jetified-savedstate-1.1.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/944f278a1c6f1b0e45f50820d68c4b1e/transformed/cursoradapter-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.startup:startup-runtime:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/0a5c2ed9d631e2b67db8898669d2ce05/transformed/jetified-startup-runtime-1.0.0/AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/0290636162deec575f6557b493c24311/transformed/jetified-tracing-1.0.0/AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/3796dee342b241c42166492d7a84105a/transformed/interpolator-1.0.0/AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.annotation:annotation-experimental:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/d94281720382a7a89a20af48d66752c9/transformed/jetified-annotation-experimental-1.1.0/AndroidManifest.xml:17:1-24:12
+INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-56:12
+INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-56:12
+INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-56:12
 	package
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:4:5-34
-		INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
-		INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:4:5-34
+		INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
 	android:versionName
-		INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-55:12
-		INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-56:12
+		INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
 	xmlns:tools
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:3:5-51
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:3:5-51
 	android:versionCode
-		INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-55:12
-		INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:1-56:12
+		INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
 	xmlns:android
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:11-69
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:2:11-69
 uses-permission#android.permission.RECEIVE_BOOT_COMPLETED
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:7:5-81
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:7:5-81
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:7:22-78
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:7:22-78
 uses-permission#android.permission.WRITE_EXTERNAL_STORAGE
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:8:5-81
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-81
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-81
-MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:24:5-81
-MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:24:5-81
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:8:5-81
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-81
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:9:5-81
+MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:24:5-81
+MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:24:5-81
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:8:22-78
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:8:22-78
 uses-permission#android.permission.READ_EXTERNAL_STORAGE
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:9:5-80
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:5-80
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:5-80
-MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:23:5-80
-MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:23:5-80
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:9:5-80
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:5-80
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:10:5-80
+MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:23:5-80
+MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:23:5-80
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:9:22-77
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:9:22-77
 uses-permission#android.permission.INTERNET
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:10:5-67
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-67
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-67
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:10:5-67
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-67
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:11:5-67
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:10:22-64
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:10:22-64
 uses-permission#android.permission.VOLUME_CHANGED_ACTION
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:11:5-80
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:11:5-80
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:11:22-77
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:11:22-77
 uses-permission#android.permission.READ_PHONE_STATE
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:12:5-75
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:12:5-75
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:12:22-72
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:12:22-72
 uses-permission#android.permission.CAMERA
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:13:5-65
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:13:5-65
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:13:22-62
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:13:22-62
 uses-permission#android.permission.ACCESS_WIFI_STATE
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:14:5-76
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:14:5-76
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:14:22-73
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:14:22-73
 uses-permission#android.permission.ACCESS_NETWORK_STATE
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:15:5-79
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:15:5-79
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:15:22-76
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:15:22-76
 uses-permission#android.permission.SYSTEM_ALERT_WINDOW
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:16:5-78
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:12:5-78
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:12:5-78
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:16:5-78
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:12:5-78
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:12:5-78
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:16:22-75
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:16:22-75
 application
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:18:5-52:19
-MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/8f74eb0825cb792ca027d135be1c4ae2/jetified-leakcanary-android-2.7/AndroidManifest.xml:22:5-26:19
-MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/8f74eb0825cb792ca027d135be1c4ae2/jetified-leakcanary-android-2.7/AndroidManifest.xml:22:5-26:19
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:5-23:19
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:5-23:19
-MERGED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:9:5-39:19
-MERGED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:9:5-39:19
-MERGED from [androidx.constraintlayout:constraintlayout:2.0.4] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/60312531c0e97472dabe8947cf1b4f95/constraintlayout-2.0.4/AndroidManifest.xml:9:5-20
-MERGED from [androidx.constraintlayout:constraintlayout:2.0.4] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/60312531c0e97472dabe8947cf1b4f95/constraintlayout-2.0.4/AndroidManifest.xml:9:5-20
-MERGED from [androidx.core:core:1.3.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/90a27d85cb118e20b8823a9b4b8ec7cb/core-1.3.2/AndroidManifest.xml:24:5-89
-MERGED from [androidx.core:core:1.3.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/90a27d85cb118e20b8823a9b4b8ec7cb/core-1.3.2/AndroidManifest.xml:24:5-89
-MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/f3f015f47fe724fdc4e7e537ee876998/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
-MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/f3f015f47fe724fdc4e7e537ee876998/versionedparcelable-1.1.0/AndroidManifest.xml:24:5-25:19
-MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:28:5-74:19
-MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:28:5-74:19
-MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d51a6c8d5b3c39989327c441fb12473f/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:7:5-13:19
-MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d51a6c8d5b3c39989327c441fb12473f/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:7:5-13:19
-MERGED from [com.squareup.leakcanary:plumber-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/af54c2f330b7adfcc49f471a0f5f28a2/jetified-plumber-android-2.7/AndroidManifest.xml:7:5-13:19
-MERGED from [com.squareup.leakcanary:plumber-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/af54c2f330b7adfcc49f471a0f5f28a2/jetified-plumber-android-2.7/AndroidManifest.xml:7:5-13:19
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:18:5-53:19
+MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/9f52e97f4b36b069eb4f2a01d9e39a7d/transformed/jetified-leakcanary-android-2.7/AndroidManifest.xml:22:5-26:19
+MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/9f52e97f4b36b069eb4f2a01d9e39a7d/transformed/jetified-leakcanary-android-2.7/AndroidManifest.xml:22:5-26:19
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:5-23:19
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:5-23:19
+MERGED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:9:5-39:19
+MERGED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:9:5-39:19
+MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/sptlt/.gradle/caches/transforms-3/0d84a4d4da2abb3fb58227fdd5309bb8/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
+MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/sptlt/.gradle/caches/transforms-3/0d84a4d4da2abb3fb58227fdd5309bb8/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
+MERGED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:25:5-35:19
+MERGED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:25:5-35:19
+MERGED from [androidx.core:core:1.8.0] /Users/sptlt/.gradle/caches/transforms-3/319818de8066db9dee1015fa48896948/transformed/core-1.8.0/AndroidManifest.xml:24:5-89
+MERGED from [androidx.core:core:1.8.0] /Users/sptlt/.gradle/caches/transforms-3/319818de8066db9dee1015fa48896948/transformed/core-1.8.0/AndroidManifest.xml:24:5-89
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/sptlt/.gradle/caches/transforms-3/3367f2aef9957f33c0ae437b02a9c6b3/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/sptlt/.gradle/caches/transforms-3/3367f2aef9957f33c0ae437b02a9c6b3/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/a0fc1150c7cd323ddd62eb2614456c85/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:25:5-35:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/a0fc1150c7cd323ddd62eb2614456c85/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:25:5-35:19
+MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:28:5-74:19
+MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:28:5-74:19
+MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/8ef7f9352f5d4934da9fe638a7c89057/transformed/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:7:5-13:19
+MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/8ef7f9352f5d4934da9fe638a7c89057/transformed/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:7:5-13:19
+MERGED from [com.squareup.leakcanary:plumber-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/7722ecb95c3c293c0403e31485242cc3/transformed/jetified-plumber-android-2.7/AndroidManifest.xml:7:5-13:19
+MERGED from [com.squareup.leakcanary:plumber-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/7722ecb95c3c293c0403e31485242cc3/transformed/jetified-plumber-android-2.7/AndroidManifest.xml:7:5-13:19
+MERGED from [androidx.startup:startup-runtime:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/0a5c2ed9d631e2b67db8898669d2ce05/transformed/jetified-startup-runtime-1.0.0/AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/0a5c2ed9d631e2b67db8898669d2ce05/transformed/jetified-startup-runtime-1.0.0/AndroidManifest.xml:25:5-31:19
 	android:requestLegacyExternalStorage
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:24:9-52
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:24:9-52
 	android:appComponentFactory
-		ADDED from [androidx.core:core:1.3.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/90a27d85cb118e20b8823a9b4b8ec7cb/core-1.3.2/AndroidManifest.xml:24:18-86
+		ADDED from [androidx.core:core:1.8.0] /Users/sptlt/.gradle/caches/transforms-3/319818de8066db9dee1015fa48896948/transformed/core-1.8.0/AndroidManifest.xml:24:18-86
 	android:supportsRtl
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:25:9-35
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:25:9-35
 	android:label
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:22:9-38
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:22:9-38
 	android:hardwareAccelerated
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:20:9-43
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:20:9-43
 	tools:ignore
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:27:9-48
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:27:9-48
 	android:largeHeap
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:23:9-33
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:23:9-33
 	android:icon
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:21:9-52
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:21:9-52
 	android:allowBackup
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:19:9-35
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:19:9-35
 	android:theme
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:26:9-40
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:26:9-40
 	tools:replace
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:28:9-38
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:28:9-38
 activity#com.pcyfox.module_recoder.ui.activity.RMainActivity
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:29:9-39:20
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:16:9-88
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:16:9-88
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:29:9-40:20
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:16:9-88
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:16:9-88
 	android:screenOrientation
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:31:13-50
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:32:13-50
 	android:turnScreenOn
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:32:13-40
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:33:13-40
 	android:windowSoftInputMode
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:33:13-69
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:34:13-69
+	android:exported
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:30:13-36
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:30:13-79
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:31:13-79
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:34:13-38:29
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:35:13-39:29
 action#android.intent.action.MAIN
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:35:17-69
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:36:17-69
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:35:25-66
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:36:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:37:17-77
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:38:17-77
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:37:27-74
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:38:27-74
 activity#com.pcyfox.module_recoder.ui.activity.RecordeMultiVideoTestActivity
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:41:9-45:72
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:42:9-46:72
 	android:screenOrientation
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:43:13-50
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:44:13-50
 	android:turnScreenOn
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:44:13-40
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:45:13-40
 	android:windowSoftInputMode
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:45:13-69
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:46:13-69
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:42:13-95
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:43:13-95
 activity#com.pcyfox.module_recoder.ui.activity.MediaRecorderActivity
-ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:47:9-51:72
+ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:48:9-52:72
 	android:screenOrientation
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:49:13-50
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:50:13-50
 	android:turnScreenOn
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:50:13-40
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:51:13-40
 	android:windowSoftInputMode
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:51:13-69
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:52:13-69
 	android:name
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:48:13-87
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:49:13-87
 uses-sdk
-INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
-INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
-INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
-MERGED from [androidx.databinding:databinding-adapters:4.2.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/6d6b50b0347bb36ec8bc180226058d71/databinding-adapters-4.2.2/AndroidManifest.xml:20:5-44
-MERGED from [androidx.databinding:databinding-adapters:4.2.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/6d6b50b0347bb36ec8bc180226058d71/databinding-adapters-4.2.2/AndroidManifest.xml:20:5-44
-MERGED from [androidx.databinding:databinding-runtime:4.2.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/5a00e257b17e2036de3707f9e1e49ad4/databinding-runtime-4.2.2/AndroidManifest.xml:20:5-44
-MERGED from [androidx.databinding:databinding-runtime:4.2.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/5a00e257b17e2036de3707f9e1e49ad4/databinding-runtime-4.2.2/AndroidManifest.xml:20:5-44
-MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/8f74eb0825cb792ca027d135be1c4ae2/jetified-leakcanary-android-2.7/AndroidManifest.xml:20:5-44
-MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/8f74eb0825cb792ca027d135be1c4ae2/jetified-leakcanary-android-2.7/AndroidManifest.xml:20:5-44
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:7:5-44
-MERGED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:7:5-44
-MERGED from [androidx.databinding:viewbinding:4.2.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/389b5259ed65d6290eb4ac6ebddce1b1/jetified-viewbinding-4.2.2/AndroidManifest.xml:20:5-44
-MERGED from [androidx.databinding:viewbinding:4.2.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/389b5259ed65d6290eb4ac6ebddce1b1/jetified-viewbinding-4.2.2/AndroidManifest.xml:20:5-44
-MERGED from [:lib_ffmpeg] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/lib_ffmpeg/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [:lib_ffmpeg] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/lib_ffmpeg/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [androidx.core:core-ktx:1.3.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/838f2094cb52d495119d6dfcf98538c5/jetified-core-ktx-1.3.2/AndroidManifest.xml:5:5-7:41
-MERGED from [androidx.core:core-ktx:1.3.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/838f2094cb52d495119d6dfcf98538c5/jetified-core-ktx-1.3.2/AndroidManifest.xml:5:5-7:41
-MERGED from [androidx.constraintlayout:constraintlayout:2.0.4] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/60312531c0e97472dabe8947cf1b4f95/constraintlayout-2.0.4/AndroidManifest.xml:5:5-7:41
-MERGED from [androidx.constraintlayout:constraintlayout:2.0.4] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/60312531c0e97472dabe8947cf1b4f95/constraintlayout-2.0.4/AndroidManifest.xml:5:5-7:41
-MERGED from [androidx.appcompat:appcompat:1.2.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/7079c4eb8744944d4bf81f7e2245e437/appcompat-1.2.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.appcompat:appcompat:1.2.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/7079c4eb8744944d4bf81f7e2245e437/appcompat-1.2.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.fragment:fragment:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d887b270a44667aff68baa5ed70abbe0/fragment-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.fragment:fragment:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d887b270a44667aff68baa5ed70abbe0/fragment-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.appcompat:appcompat-resources:1.2.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/2ab712af1259c24a655d48049a99d729/jetified-appcompat-resources-1.2.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.appcompat:appcompat-resources:1.2.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/2ab712af1259c24a655d48049a99d729/jetified-appcompat-resources-1.2.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/deec4b0b9af30e5ac03c18feedf04a03/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/deec4b0b9af30e5ac03c18feedf04a03/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/06cb425a8fb65e9cd0672e99b9c3ca63/viewpager-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/06cb425a8fb65e9cd0672e99b9c3ca63/viewpager-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.loader:loader:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/865dcaef4e96a0175d5f7057b3ccba14/loader-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.loader:loader:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/865dcaef4e96a0175d5f7057b3ccba14/loader-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.activity:activity:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/0360f3628f077cf0674522372999de8d/jetified-activity-1.0.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.activity:activity:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/0360f3628f077cf0674522372999de8d/jetified-activity-1.0.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/64098822b1c4b09eef086c457bf9c98e/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/64098822b1c4b09eef086c457bf9c98e/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/c7da716a0b1da3122f40a8b9deeb9757/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/c7da716a0b1da3122f40a8b9deeb9757/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.customview:customview:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/91753140929ac02fec64675ae7520ea6/customview-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.customview:customview:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/91753140929ac02fec64675ae7520ea6/customview-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.core:core:1.3.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/90a27d85cb118e20b8823a9b4b8ec7cb/core-1.3.2/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.core:core:1.3.2] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/90a27d85cb118e20b8823a9b4b8ec7cb/core-1.3.2/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/c9e4c9c25f4b10e2ec6605c00c2dcb7b/lifecycle-runtime-2.1.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-runtime:2.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/c9e4c9c25f4b10e2ec6605c00c2dcb7b/lifecycle-runtime-2.1.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/f3f015f47fe724fdc4e7e537ee876998/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/f3f015f47fe724fdc4e7e537ee876998/versionedparcelable-1.1.0/AndroidManifest.xml:20:5-22:41
-MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:20:5-44
-MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:20:5-44
-MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-androidx:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/bd0730295d16723b15910ca4bdc0900c/jetified-leakcanary-object-watcher-android-androidx-2.7/AndroidManifest.xml:5:5-44
-MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-androidx:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/bd0730295d16723b15910ca4bdc0900c/jetified-leakcanary-object-watcher-android-androidx-2.7/AndroidManifest.xml:5:5-44
-MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-support-fragments:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/20f723fb4d69d963940194908472af5d/jetified-leakcanary-object-watcher-android-support-fragments-2.7/AndroidManifest.xml:5:5-44
-MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-support-fragments:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/20f723fb4d69d963940194908472af5d/jetified-leakcanary-object-watcher-android-support-fragments-2.7/AndroidManifest.xml:5:5-44
-MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d51a6c8d5b3c39989327c441fb12473f/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:5:5-44
-MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d51a6c8d5b3c39989327c441fb12473f/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:5:5-44
-MERGED from [com.squareup.leakcanary:plumber-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/af54c2f330b7adfcc49f471a0f5f28a2/jetified-plumber-android-2.7/AndroidManifest.xml:5:5-44
-MERGED from [com.squareup.leakcanary:plumber-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/af54c2f330b7adfcc49f471a0f5f28a2/jetified-plumber-android-2.7/AndroidManifest.xml:5:5-44
-MERGED from [com.squareup.leakcanary:leakcanary-android-utils:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/f518e3abb1e55c370d25c878d6060ca8/jetified-leakcanary-android-utils-2.7/AndroidManifest.xml:5:5-44
-MERGED from [com.squareup.leakcanary:leakcanary-android-utils:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/f518e3abb1e55c370d25c878d6060ca8/jetified-leakcanary-android-utils-2.7/AndroidManifest.xml:5:5-44
-MERGED from [com.squareup.curtains:curtains:1.0.1] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/5dbba9663dc533a4300b5c2ceaa3dd4e/jetified-curtains-1.0.1/AndroidManifest.xml:5:5-7:41
-MERGED from [com.squareup.curtains:curtains:1.0.1] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/5dbba9663dc533a4300b5c2ceaa3dd4e/jetified-curtains-1.0.1/AndroidManifest.xml:5:5-7:41
-MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/f1de7ad1cc15bb495374f49c6d8d127f/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/f1de7ad1cc15bb495374f49c6d8d127f/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/816e8e53af91838988b297378a4f9b7a/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.1.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/816e8e53af91838988b297378a4f9b7a/lifecycle-viewmodel-2.1.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/0663e66ab94348f3d583d973e632ff42/jetified-savedstate-1.0.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.savedstate:savedstate:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/0663e66ab94348f3d583d973e632ff42/jetified-savedstate-1.0.0/AndroidManifest.xml:20:5-22:41
-MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/afce8604554528a23c7f7d78f622e8a8/interpolator-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/afce8604554528a23c7f7d78f622e8a8/interpolator-1.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/8bfd897770efc8b00499a95a5adec41c/lifecycle-livedata-2.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-livedata:2.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/8bfd897770efc8b00499a95a5adec41c/lifecycle-livedata-2.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/20a5413a061f545a6ad53328d164e72d/lifecycle-livedata-core-2.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/20a5413a061f545a6ad53328d164e72d/lifecycle-livedata-core-2.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.arch.core:core-runtime:2.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/c185e6ec90f30686a51b23e289531a77/core-runtime-2.0.0/AndroidManifest.xml:20:5-44
-MERGED from [androidx.arch.core:core-runtime:2.0.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/c185e6ec90f30686a51b23e289531a77/core-runtime-2.0.0/AndroidManifest.xml:20:5-44
-INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
-INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+MERGED from [androidx.databinding:databinding-adapters:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/f38fe6ade4f7837e7a515cb392c62870/transformed/databinding-adapters-7.2.2/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.databinding:databinding-adapters:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/f38fe6ade4f7837e7a515cb392c62870/transformed/databinding-adapters-7.2.2/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.databinding:databinding-ktx:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/b6e77191286fe0db32687584cde9014a/transformed/jetified-databinding-ktx-7.2.2/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.databinding:databinding-ktx:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/b6e77191286fe0db32687584cde9014a/transformed/jetified-databinding-ktx-7.2.2/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.databinding:databinding-runtime:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/bec4df8e42159ea3c01aa3c6cc866023/transformed/databinding-runtime-7.2.2/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.databinding:databinding-runtime:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/bec4df8e42159ea3c01aa3c6cc866023/transformed/databinding-runtime-7.2.2/AndroidManifest.xml:20:5-22:41
+MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/9f52e97f4b36b069eb4f2a01d9e39a7d/transformed/jetified-leakcanary-android-2.7/AndroidManifest.xml:20:5-44
+MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/9f52e97f4b36b069eb4f2a01d9e39a7d/transformed/jetified-leakcanary-android-2.7/AndroidManifest.xml:20:5-44
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:7:5-44
+MERGED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:7:5-44
+MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/sptlt/.gradle/caches/transforms-3/0d84a4d4da2abb3fb58227fdd5309bb8/transformed/constraintlayout-2.1.4/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/sptlt/.gradle/caches/transforms-3/0d84a4d4da2abb3fb58227fdd5309bb8/transformed/constraintlayout-2.1.4/AndroidManifest.xml:5:5-7:41
+MERGED from [:lib_ffmpeg] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/lib_ffmpeg/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [:lib_ffmpeg] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/lib_ffmpeg/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.appcompat:appcompat:1.4.2] /Users/sptlt/.gradle/caches/transforms-3/d4b64ce115264eee4ef5139e292b8f81/transformed/appcompat-1.4.2/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat:1.4.2] /Users/sptlt/.gradle/caches/transforms-3/d4b64ce115264eee4ef5139e292b8f81/transformed/appcompat-1.4.2/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core-ktx:1.8.0] /Users/sptlt/.gradle/caches/transforms-3/8b8ee3e062ecdcbdf390455929ef4f58/transformed/jetified-core-ktx-1.8.0/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.core:core-ktx:1.8.0] /Users/sptlt/.gradle/caches/transforms-3/8b8ee3e062ecdcbdf390455929ef4f58/transformed/jetified-core-ktx-1.8.0/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.fragment:fragment:1.3.6] /Users/sptlt/.gradle/caches/transforms-3/2fee84ce99728401b49e699b68198397/transformed/fragment-1.3.6/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.3.6] /Users/sptlt/.gradle/caches/transforms-3/2fee84ce99728401b49e699b68198397/transformed/fragment-1.3.6/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.2.4] /Users/sptlt/.gradle/caches/transforms-3/9344ef599ed910b649f3c2805708ad85/transformed/jetified-activity-1.2.4/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.2.4] /Users/sptlt/.gradle/caches/transforms-3/9344ef599ed910b649f3c2805708ad85/transformed/jetified-activity-1.2.4/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat-resources:1.4.2] /Users/sptlt/.gradle/caches/transforms-3/45139026a56cbccca2aac4ce0869d89f/transformed/jetified-appcompat-resources-1.4.2/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.appcompat:appcompat-resources:1.4.2] /Users/sptlt/.gradle/caches/transforms-3/45139026a56cbccca2aac4ce0869d89f/transformed/jetified-appcompat-resources-1.4.2/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/e3ed8cf5a3ccf146a0777a43fd68c84d/transformed/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/e3ed8cf5a3ccf146a0777a43fd68c84d/transformed/drawerlayout-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/17d3d5d1853b7327e798fadabdaf880d/transformed/jetified-emoji2-views-helper-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.emoji2:emoji2-views-helper:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/17d3d5d1853b7327e798fadabdaf880d/transformed/jetified-emoji2-views-helper-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/22e43e53ae6f241a8207f0c4c1d3eca2/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/22e43e53ae6f241a8207f0c4c1d3eca2/transformed/viewpager-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/4e687c133cd9045696daa19214a6535c/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/4e687c133cd9045696daa19214a6535c/transformed/loader-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/1cbd011c3c79b09f73786a9394ff1d25/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/1cbd011c3c79b09f73786a9394ff1d25/transformed/vectordrawable-animated-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/a6c2f42b601cff490190ba27a74071ea/transformed/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/a6c2f42b601cff490190ba27a74071ea/transformed/vectordrawable-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.customview:customview:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/1cfdca0a52d476a8f2d6fbf7867352e3/transformed/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/1cfdca0a52d476a8f2d6fbf7867352e3/transformed/customview-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.8.0] /Users/sptlt/.gradle/caches/transforms-3/319818de8066db9dee1015fa48896948/transformed/core-1.8.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.8.0] /Users/sptlt/.gradle/caches/transforms-3/319818de8066db9dee1015fa48896948/transformed/core-1.8.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/sptlt/.gradle/caches/transforms-3/3367f2aef9957f33c0ae437b02a9c6b3/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] /Users/sptlt/.gradle/caches/transforms-3/3367f2aef9957f33c0ae437b02a9c6b3/transformed/versionedparcelable-1.1.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.databinding:viewbinding:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/00389a7267d1e4451c746bf1a5e51a3a/transformed/jetified-viewbinding-7.2.2/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.databinding:viewbinding:7.2.2] /Users/sptlt/.gradle/caches/transforms-3/00389a7267d1e4451c746bf1a5e51a3a/transformed/jetified-viewbinding-7.2.2/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.2.0] /Users/sptlt/.gradle/caches/transforms-3/272561bf4d7efff239f5e54b3e84a602/transformed/jetified-lifecycle-runtime-ktx-2.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.2.0] /Users/sptlt/.gradle/caches/transforms-3/272561bf4d7efff239f5e54b3e84a602/transformed/jetified-lifecycle-runtime-ktx-2.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-service:2.2.0] /Users/sptlt/.gradle/caches/transforms-3/3fe379ac814eb00f3109fff2992e5881/transformed/jetified-lifecycle-service-2.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-service:2.2.0] /Users/sptlt/.gradle/caches/transforms-3/3fe379ac814eb00f3109fff2992e5881/transformed/jetified-lifecycle-service-2.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/a0fc1150c7cd323ddd62eb2614456c85/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/a0fc1150c7cd323ddd62eb2614456c85/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/de8baf3de13fc1e4e10793d21f7562e7/transformed/lifecycle-runtime-2.4.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/de8baf3de13fc1e4e10793d21f7562e7/transformed/lifecycle-runtime-2.4.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.2.0] /Users/sptlt/.gradle/caches/transforms-3/d718e22c41c5f7ff9415ff9f62e115ae/transformed/lifecycle-livedata-2.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.2.0] /Users/sptlt/.gradle/caches/transforms-3/d718e22c41c5f7ff9415ff9f62e115ae/transformed/lifecycle-livedata-2.2.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.1] /Users/sptlt/.gradle/caches/transforms-3/6652e736dd070d0c329dcf3930ed6cae/transformed/jetified-lifecycle-viewmodel-savedstate-2.3.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.3.1] /Users/sptlt/.gradle/caches/transforms-3/6652e736dd070d0c329dcf3930ed6cae/transformed/jetified-lifecycle-viewmodel-savedstate-2.3.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.3.1] /Users/sptlt/.gradle/caches/transforms-3/30d73f64a06bad2247d99c2121a73fe8/transformed/lifecycle-viewmodel-2.3.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.3.1] /Users/sptlt/.gradle/caches/transforms-3/30d73f64a06bad2247d99c2121a73fe8/transformed/lifecycle-viewmodel-2.3.1/AndroidManifest.xml:20:5-22:41
+MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:20:5-44
+MERGED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:20:5-44
+MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-androidx:2.7] /Users/sptlt/.gradle/caches/transforms-3/6fb7423ccab6cb4b2c910894d424fec1/transformed/jetified-leakcanary-object-watcher-android-androidx-2.7/AndroidManifest.xml:5:5-44
+MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-androidx:2.7] /Users/sptlt/.gradle/caches/transforms-3/6fb7423ccab6cb4b2c910894d424fec1/transformed/jetified-leakcanary-object-watcher-android-androidx-2.7/AndroidManifest.xml:5:5-44
+MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-support-fragments:2.7] /Users/sptlt/.gradle/caches/transforms-3/ab76809cbf97585cae2c1a1dfea716fb/transformed/jetified-leakcanary-object-watcher-android-support-fragments-2.7/AndroidManifest.xml:5:5-44
+MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android-support-fragments:2.7] /Users/sptlt/.gradle/caches/transforms-3/ab76809cbf97585cae2c1a1dfea716fb/transformed/jetified-leakcanary-object-watcher-android-support-fragments-2.7/AndroidManifest.xml:5:5-44
+MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/8ef7f9352f5d4934da9fe638a7c89057/transformed/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:5:5-44
+MERGED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/8ef7f9352f5d4934da9fe638a7c89057/transformed/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:5:5-44
+MERGED from [com.squareup.leakcanary:plumber-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/7722ecb95c3c293c0403e31485242cc3/transformed/jetified-plumber-android-2.7/AndroidManifest.xml:5:5-44
+MERGED from [com.squareup.leakcanary:plumber-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/7722ecb95c3c293c0403e31485242cc3/transformed/jetified-plumber-android-2.7/AndroidManifest.xml:5:5-44
+MERGED from [com.squareup.leakcanary:leakcanary-android-utils:2.7] /Users/sptlt/.gradle/caches/transforms-3/4925715156d92a2c0b2a768d5a213514/transformed/jetified-leakcanary-android-utils-2.7/AndroidManifest.xml:5:5-44
+MERGED from [com.squareup.leakcanary:leakcanary-android-utils:2.7] /Users/sptlt/.gradle/caches/transforms-3/4925715156d92a2c0b2a768d5a213514/transformed/jetified-leakcanary-android-utils-2.7/AndroidManifest.xml:5:5-44
+MERGED from [com.squareup.curtains:curtains:1.0.1] /Users/sptlt/.gradle/caches/transforms-3/6a539bf3968c1ce762fc22fa902e4a7a/transformed/jetified-curtains-1.0.1/AndroidManifest.xml:5:5-7:41
+MERGED from [com.squareup.curtains:curtains:1.0.1] /Users/sptlt/.gradle/caches/transforms-3/6a539bf3968c1ce762fc22fa902e4a7a/transformed/jetified-curtains-1.0.1/AndroidManifest.xml:5:5-7:41
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.3.1] /Users/sptlt/.gradle/caches/transforms-3/dbd726f71f367d1b2e628d962512265c/transformed/lifecycle-livedata-core-2.3.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.3.1] /Users/sptlt/.gradle/caches/transforms-3/dbd726f71f367d1b2e628d962512265c/transformed/lifecycle-livedata-core-2.3.1/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.1.0] /Users/sptlt/.gradle/caches/transforms-3/8c44cfbdeee2a652a2edc2eb95479194/transformed/core-runtime-2.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.1.0] /Users/sptlt/.gradle/caches/transforms-3/8c44cfbdeee2a652a2edc2eb95479194/transformed/core-runtime-2.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.savedstate:savedstate:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/01f859df61ec63637813088e31f4868e/transformed/jetified-savedstate-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.savedstate:savedstate:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/01f859df61ec63637813088e31f4868e/transformed/jetified-savedstate-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/944f278a1c6f1b0e45f50820d68c4b1e/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/944f278a1c6f1b0e45f50820d68c4b1e/transformed/cursoradapter-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.startup:startup-runtime:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/0a5c2ed9d631e2b67db8898669d2ce05/transformed/jetified-startup-runtime-1.0.0/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/0a5c2ed9d631e2b67db8898669d2ce05/transformed/jetified-startup-runtime-1.0.0/AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/0290636162deec575f6557b493c24311/transformed/jetified-tracing-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.tracing:tracing:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/0290636162deec575f6557b493c24311/transformed/jetified-tracing-1.0.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/3796dee342b241c42166492d7a84105a/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/3796dee342b241c42166492d7a84105a/transformed/interpolator-1.0.0/AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/d94281720382a7a89a20af48d66752c9/transformed/jetified-annotation-experimental-1.1.0/AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.annotation:annotation-experimental:1.1.0] /Users/sptlt/.gradle/caches/transforms-3/d94281720382a7a89a20af48d66752c9/transformed/jetified-annotation-experimental-1.1.0/AndroidManifest.xml:20:5-22:41
+INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
 	android:targetSdkVersion
-		INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
-		INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
 	android:minSdkVersion
-		INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
-		ADDED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
-		INJECTED from /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
+		INJECTED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml
 service#leakcanary.internal.HeapAnalyzerService
-ADDED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/8f74eb0825cb792ca027d135be1c4ae2/jetified-leakcanary-android-2.7/AndroidManifest.xml:23:9-25:40
+ADDED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/9f52e97f4b36b069eb4f2a01d9e39a7d/transformed/jetified-leakcanary-android-2.7/AndroidManifest.xml:23:9-25:40
 	android:exported
-		ADDED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/8f74eb0825cb792ca027d135be1c4ae2/jetified-leakcanary-android-2.7/AndroidManifest.xml:25:13-37
+		ADDED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/9f52e97f4b36b069eb4f2a01d9e39a7d/transformed/jetified-leakcanary-android-2.7/AndroidManifest.xml:25:13-37
 	android:name
-		ADDED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/8f74eb0825cb792ca027d135be1c4ae2/jetified-leakcanary-android-2.7/AndroidManifest.xml:24:13-67
+		ADDED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/9f52e97f4b36b069eb4f2a01d9e39a7d/transformed/jetified-leakcanary-android-2.7/AndroidManifest.xml:24:13-67
 uses-permission#android.permission.RECORD_AUDIO
-ADDED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-71
+ADDED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:13:5-71
 	android:name
-		ADDED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:13:22-68
+		ADDED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:13:22-68
 activity#com.pcyfox.module_recoder.ui.activity.TestRecorderActivity
-ADDED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:17:9-19:53
+ADDED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:17:9-19:53
 	android:screenOrientation
-		ADDED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:19:13-50
+		ADDED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:19:13-50
 	android:name
-		ADDED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:18:13-86
+		ADDED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:18:13-86
 activity#com.pcyfox.module_recoder.ui.activity.LocalVideoPlayTestActivity
-ADDED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:20:9-22:53
+ADDED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:20:9-22:53
 	android:screenOrientation
-		ADDED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:22:13-50
+		ADDED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:22:13-50
 	android:name
-		ADDED from [:module_recorder] /Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:21:13-92
+		ADDED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:21:13-92
 activity#com.blankj.utilcode.util.UtilsTransActivity4MainProcess
-ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:10:9-14:75
+ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:10:9-14:75
 	android:windowSoftInputMode
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:14:13-72
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:14:13-72
 	android:configChanges
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:12:13-74
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:12:13-74
 	android:theme
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:13:13-55
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:13:13-55
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:11:13-83
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:11:13-83
 activity#com.blankj.utilcode.util.UtilsTransActivity
-ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:15:9-20:75
+ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:15:9-20:75
 	android:multiprocess
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:18:13-40
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:18:13-40
 	android:windowSoftInputMode
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:20:13-72
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:20:13-72
 	android:configChanges
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:17:13-74
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:17:13-74
 	android:theme
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:19:13-55
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:19:13-55
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:16:13-71
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:16:13-71
 provider#com.blankj.utilcode.util.UtilsFileProvider
-ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:22:9-30:20
+ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:22:9-30:20
 	android:grantUriPermissions
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:26:13-47
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:26:13-47
 	android:authorities
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:24:13-69
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:24:13-69
 	android:exported
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:25:13-37
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:25:13-37
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:23:13-70
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:23:13-70
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:27:13-29:68
+ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:27:13-29:68
 	android:resource
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:29:17-65
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:29:17-65
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:28:17-67
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:28:17-67
 service#com.blankj.utilcode.util.MessengerUtils$ServerService
-ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:32:9-38:19
+ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:32:9-38:19
 	android:exported
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:34:13-37
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:34:13-37
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:33:13-81
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:33:13-81
 intent-filter#action:name:${applicationId}.messenger
-ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:35:13-37:29
+ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:35:13-37:29
 intent-filter#action:name:com.pcyfox.ffplayer.messenger
-ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:35:13-37:29
+ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:35:13-37:29
 action#${applicationId}.messenger
-ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:36:17-69
+ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:36:17-69
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:36:25-66
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:36:25-66
 action#com.pcyfox.ffplayer.messenger
-ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:36:17-69
+ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:36:17-69
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/cc00511f2b6efa337735df5fe3dda4b3/jetified-utilcode-1.30.0/AndroidManifest.xml:36:25-66
+		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/571bbbea10b501c8bf1219fd97cb50a6/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:36:25-66
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:26:9-34:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/a0fc1150c7cd323ddd62eb2614456c85/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:26:9-34:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/a0fc1150c7cd323ddd62eb2614456c85/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:26:9-34:20
+MERGED from [androidx.startup:startup-runtime:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/0a5c2ed9d631e2b67db8898669d2ce05/transformed/jetified-startup-runtime-1.0.0/AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/0a5c2ed9d631e2b67db8898669d2ce05/transformed/jetified-startup-runtime-1.0.0/AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:30:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:28:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:29:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:27:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:31:13-33:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:33:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/f4d50966a1306d53c6cbc5f0c0893584/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:32:17-75
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/a0fc1150c7cd323ddd62eb2614456c85/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:31:13-33:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/a0fc1150c7cd323ddd62eb2614456c85/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:33:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/a0fc1150c7cd323ddd62eb2614456c85/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:32:17-78
 uses-permission#android.permission.FOREGROUND_SERVICE
-ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:26:5-77
+ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:26:5-77
 	android:name
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:26:22-74
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:26:22-74
 provider#leakcanary.internal.LeakCanaryFileProvider
-ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:29:9-37:20
+ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:29:9-37:20
 	android:grantUriPermissions
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:33:13-47
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:33:13-47
 	android:authorities
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:31:13-88
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:31:13-88
 	android:exported
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:32:13-37
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:32:13-37
 	android:name
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:30:13-70
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:30:13-70
 activity#leakcanary.internal.activity.LeakActivity
-ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:39:9-44:66
+ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:39:9-44:66
 	android:label
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:42:13-71
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:42:13-71
 	android:icon
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:41:13-52
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:41:13-52
 	android:theme
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:44:13-63
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:44:13-63
 	android:taskAffinity
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:43:13-76
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:43:13-76
 	android:name
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:40:13-69
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:40:13-69
 activity-alias#leakcanary.internal.activity.LeakLauncherActivity
-ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:46:9-63:26
+ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:46:9-63:26
 	android:enabled
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:49:13-66
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:49:13-66
 	android:label
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:52:13-71
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:52:13-71
 	android:exported
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:50:13-36
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:50:13-36
 	android:targetActivity
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:53:13-79
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:53:13-79
 	android:icon
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:51:13-52
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:51:13-52
 	android:banner
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:48:13-59
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:48:13-59
 	android:theme
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:55:13-63
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:55:13-63
 	android:taskAffinity
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:54:13-76
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:54:13-76
 	android:name
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:47:13-77
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:47:13-77
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER+category:name:android.intent.category.LEANBACK_LAUNCHER
-ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:56:13-62:29
+ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:56:13-62:29
 category#android.intent.category.LEANBACK_LAUNCHER
-ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:61:17-86
+ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:61:17-86
 	android:name
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:61:27-83
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:61:27-83
 activity#leakcanary.internal.RequestStoragePermissionActivity
-ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:65:9-71:68
+ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:65:9-71:68
 	android:label
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:69:13-82
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:69:13-82
 	android:excludeFromRecents
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:67:13-46
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:67:13-46
 	android:icon
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:68:13-52
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:68:13-52
 	android:theme
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:71:13-65
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:71:13-65
 	android:taskAffinity
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:70:13-76
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:70:13-76
 	android:name
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:66:13-80
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:66:13-80
 receiver#leakcanary.internal.NotificationReceiver
-ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:73:9-77
+ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:73:9-77
 	android:name
-		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/33424866d57e6d754389f501dc5045f3/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:73:19-74
+		ADDED from [com.squareup.leakcanary:leakcanary-android-core:2.7] /Users/sptlt/.gradle/caches/transforms-3/c6fabb521fbe547bd68fbd6239f0c159/transformed/jetified-leakcanary-android-core-2.7/AndroidManifest.xml:73:19-74
 provider#leakcanary.internal.AppWatcherInstaller$MainProcess
-ADDED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d51a6c8d5b3c39989327c441fb12473f/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:8:9-12:40
+ADDED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/8ef7f9352f5d4934da9fe638a7c89057/transformed/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:8:9-12:40
 	android:enabled
-		ADDED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d51a6c8d5b3c39989327c441fb12473f/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:11:13-69
+		ADDED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/8ef7f9352f5d4934da9fe638a7c89057/transformed/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:11:13-69
 	android:authorities
-		ADDED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d51a6c8d5b3c39989327c441fb12473f/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:10:13-72
+		ADDED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/8ef7f9352f5d4934da9fe638a7c89057/transformed/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:10:13-72
 	android:exported
-		ADDED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d51a6c8d5b3c39989327c441fb12473f/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:12:13-37
+		ADDED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/8ef7f9352f5d4934da9fe638a7c89057/transformed/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:12:13-37
 	android:name
-		ADDED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/d51a6c8d5b3c39989327c441fb12473f/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:9:13-79
+		ADDED from [com.squareup.leakcanary:leakcanary-object-watcher-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/8ef7f9352f5d4934da9fe638a7c89057/transformed/jetified-leakcanary-object-watcher-android-2.7/AndroidManifest.xml:9:13-79
 provider#leakcanary.internal.PlumberInstaller
-ADDED from [com.squareup.leakcanary:plumber-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/af54c2f330b7adfcc49f471a0f5f28a2/jetified-plumber-android-2.7/AndroidManifest.xml:8:9-12:40
+ADDED from [com.squareup.leakcanary:plumber-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/7722ecb95c3c293c0403e31485242cc3/transformed/jetified-plumber-android-2.7/AndroidManifest.xml:8:9-12:40
 	android:enabled
-		ADDED from [com.squareup.leakcanary:plumber-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/af54c2f330b7adfcc49f471a0f5f28a2/jetified-plumber-android-2.7/AndroidManifest.xml:11:13-69
+		ADDED from [com.squareup.leakcanary:plumber-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/7722ecb95c3c293c0403e31485242cc3/transformed/jetified-plumber-android-2.7/AndroidManifest.xml:11:13-69
 	android:authorities
-		ADDED from [com.squareup.leakcanary:plumber-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/af54c2f330b7adfcc49f471a0f5f28a2/jetified-plumber-android-2.7/AndroidManifest.xml:10:13-69
+		ADDED from [com.squareup.leakcanary:plumber-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/7722ecb95c3c293c0403e31485242cc3/transformed/jetified-plumber-android-2.7/AndroidManifest.xml:10:13-69
 	android:exported
-		ADDED from [com.squareup.leakcanary:plumber-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/af54c2f330b7adfcc49f471a0f5f28a2/jetified-plumber-android-2.7/AndroidManifest.xml:12:13-37
+		ADDED from [com.squareup.leakcanary:plumber-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/7722ecb95c3c293c0403e31485242cc3/transformed/jetified-plumber-android-2.7/AndroidManifest.xml:12:13-37
 	android:name
-		ADDED from [com.squareup.leakcanary:plumber-android:2.7] /Users/pcyfox/.gradle/caches/transforms-2/files-2.1/af54c2f330b7adfcc49f471a0f5f28a2/jetified-plumber-android-2.7/AndroidManifest.xml:9:13-64
+		ADDED from [com.squareup.leakcanary:plumber-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/7722ecb95c3c293c0403e31485242cc3/transformed/jetified-plumber-android-2.7/AndroidManifest.xml:9:13-64

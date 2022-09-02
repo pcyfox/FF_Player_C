@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "artifactType": {
     "type": "APK",
     "kind": "Directory"
@@ -10,9 +10,11 @@
     {
       "type": "SINGLE",
       "filters": [],
+      "attributes": [],
       "versionCode": 1,
       "versionName": "1.0",
-      "outputFile": "debug_ffplayer_1.0_1_2022-01-05_15-57-23.apk"
+      "outputFile": "debug_ffplayer_1.0_1_2022-09-02_10-40-14.apk"
     }
-  ]
+  ],
+  "elementType": "File"
 }

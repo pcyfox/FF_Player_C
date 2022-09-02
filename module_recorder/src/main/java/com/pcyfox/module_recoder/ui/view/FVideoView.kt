@@ -15,7 +15,7 @@ import com.pcyfox.module_recoder.audio.RecorderContract
 import java.io.File
 import java.lang.Exception
 
-class RecorderView : RelativeLayout {
+class FVideoView : RelativeLayout {
     constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs);
     constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
         context,

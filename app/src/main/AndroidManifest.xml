@@ -27,6 +27,7 @@
         tools:ignore="GoogleAppIndexingWarning"
         tools:replace="android:label">
         <activity
+            android:exported="true"
             android:name="com.pcyfox.module_recoder.ui.activity.RMainActivity"
             android:screenOrientation="landscape"
             android:turnScreenOn="true"
