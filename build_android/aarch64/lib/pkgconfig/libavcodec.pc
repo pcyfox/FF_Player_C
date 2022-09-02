@@ -1,0 +1,14 @@
+prefix=/Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/build_android/aarch64
+exec_prefix=${prefix}
+libdir=/Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/build_android/aarch64/lib
+includedir=/Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/build_android/aarch64/include
+
+Name: libavcodec
+Description: FFmpeg codec library
+Version: 58.134.100
+Requires: 
+Requires.private: libavutil >= 56.70.100
+Conflicts:
+Libs: -L${libdir}  -lavcodec 
+Libs.private: -pthread -lm -lz
+Cflags: -I${includedir}

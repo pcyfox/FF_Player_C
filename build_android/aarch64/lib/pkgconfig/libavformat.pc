@@ -1,0 +1,14 @@
+prefix=/Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/build_android/aarch64
+exec_prefix=${prefix}
+libdir=/Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/build_android/aarch64/lib
+includedir=/Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/build_android/aarch64/include
+
+Name: libavformat
+Description: FFmpeg container format library
+Version: 58.76.100
+Requires: 
+Requires.private: libavcodec >= 58.134.100, libavutil >= 56.70.100
+Conflicts:
+Libs: -L${libdir}  -lavformat 
+Libs.private: -lm -lz
+Cflags: -I${includedir}

@@ -1,0 +1,14 @@
+prefix=/Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/build_android/aarch64
+exec_prefix=${prefix}
+libdir=/Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/build_android/aarch64/lib
+includedir=/Users/pcyfox/AndroidProjects/RTSP_Player/FF_Player_C/build_android/aarch64/include
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 56.70.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavutil 
+Libs.private: -pthread -lm
+Cflags: -I${includedir}
