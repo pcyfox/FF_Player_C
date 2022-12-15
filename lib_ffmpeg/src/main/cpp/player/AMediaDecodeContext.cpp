@@ -59,7 +59,7 @@ int AMediaDecodeContext::decodeVideo(uint8_t *data, int length, int64_t pts) con
             LOGE("video producer output EOS");
         }
         if (IS_DEBUG) {
-        //    dumpOutFormat(videoMediaCodec)
+            //    dumpOutFormat(videoMediaCodec)
         }
     } else {
         switch (status) {
@@ -89,6 +89,11 @@ int AMediaDecodeContext::release() {
         AMediaCodec_stop(videoMediaCodec);
         AMediaCodec_delete(videoMediaCodec);
         videoMediaCodec = nullptr;
+    }
+    if (audioMediaCodec) {
+        AMediaCodec_stop(audioMediaCodec);
+        AMediaCodec_delete(audioMediaCodec);
+        audioMediaCodec = nullptr;
     }
     return 0;
 }
@@ -121,7 +126,8 @@ int AMediaDecodeContext::flush() const {
 }
 
 
-int AMediaDecodeContext::init(const char *mine, ANativeWindow *window, int width, int height, uint8_t *sps,
+int AMediaDecodeContext::init(const char *mine, ANativeWindow *window, int width, int height,
+                              uint8_t *sps,
                               int spsSize,
                               uint8_t *pps, int ppsSize) {
 

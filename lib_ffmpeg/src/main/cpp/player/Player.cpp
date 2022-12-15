@@ -62,7 +62,7 @@ void *OpenResourceThread(void *info) {
     if (playerContext->resource.type == RTP) {
         av_dict_set(&opts, "stimeout", "6000000", 0);//设置超时6秒
     }
-
+    //open
     int ret = avformat_open_input(&playerContext->inputContext, url, NULL, &opts);
     if (ret != 0) {
         LOGE("OpenResource():can't open source: %s ,msg:%s \n", url, av_err2str(ret));
@@ -89,8 +89,6 @@ void *OpenResourceThread(void *info) {
     }
     av_freep(&opts);
 
-    LOGI("----------find stream info success!-------------");
-
     LOGD("----------fmt_ctx:streams number=%d,bit rate=%ld\n",
          playerContext->inputContext->nb_streams,
          playerContext->inputContext->bit_rate);
@@ -101,14 +99,17 @@ void *OpenResourceThread(void *info) {
         LOGE("----------find video stream fail!-------------");
         return (void *) PLAYER_RESULT_ERROR;
     }
-
     LOGI("----------find video stream success!-------------");
-
     //is H264?
     if (playerContext->inputVideoStream->codecpar->codec_id != AV_CODEC_ID_H264) {
         LOGE("sorry this player only support h.264 now!");
         playerContext->SetPlayState(ERROR, true);
         return (void *) PLAYER_RESULT_ERROR;
+    }
+
+    playerContext->inputAudioStream = findStream(playerContext->inputContext, AVMEDIA_TYPE_AUDIO);
+    if (playerContext->inputAudioStream) {
+        LOGI("----------find Audio stream success!-------------");
     }
 
     AVCodecParameters *codecpar = playerContext->inputVideoStream->codecpar;
@@ -118,10 +119,7 @@ void *OpenResourceThread(void *info) {
         return (void *) PLAYER_RESULT_ERROR;
     }
 
-    if (IS_DEBUG) {
-        dumpStreamInfo(codecpar);
-    }
-
+    dumpStreamInfo(codecpar);
 
     if (playerContext->isOpenAudio) {
         playerContext->inputAudioStream = findStream(playerContext->inputContext,
@@ -138,9 +136,9 @@ void *OpenResourceThread(void *info) {
             LOGW("find audio stream fail!");
         }
     }
-
     playerContext->SetPlayState(PREPARED, true);
-    return nullptr;
+
+    return info;
 }
 
 
@@ -358,6 +356,7 @@ void *DeMuxThread(void *param) {
     }
     AVStream *i_video_stream = playerContext->inputVideoStream;
     AVCodecParameters *i_av_codec_parameters = i_video_stream->codecpar;
+
     int video_stream_index = i_video_stream->index;
 
     float delay = 0;
@@ -400,6 +399,7 @@ void *DeMuxThread(void *param) {
         }
         int ret = av_read_frame(playerContext->inputContext, i_pkt);
         if (ret == 0 && i_pkt->size > 0) {
+
             if (i_pkt->stream_index == video_stream_index) {
                 ProcessPacket(i_pkt, i_av_codec_parameters, playerContext, recorderInfo);
                 if (delay > 0) {
@@ -408,6 +408,7 @@ void *DeMuxThread(void *param) {
             } else {
                 av_packet_free(&i_pkt);
             }
+
         } else if (ret == AVERROR_EOF) {
             av_packet_free(&i_pkt);
             LOGE("DeMux: end of file!");
@@ -513,34 +514,6 @@ int Player::SetResource(char *url) {
     return PLAYER_RESULT_OK;
 }
 
-
-int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNode) const {
-    LOGI("----------Configure() called with: w=%d,h=%d,isOnlyRecorderNode=%d", w, h,
-         isOnlyRecorderNode);
-    if (playerContext == NULL) {
-        LOGE("player info not init !");
-        return PLAYER_RESULT_ERROR;
-    }
-    if (isOnlyRecorderNode) {
-        playerContext->isOnlyRecordMedia = true;
-        StartOpenResourceThread();
-        return PLAYER_RESULT_OK;
-    }
-
-    playerContext->mediaDecodeContext.config(playerContext->mine, window, w, h);
-    if (playerContext->GetPlayState() != ERROR) {
-        if (!playerContext->resource.url) {
-            return PLAYER_RESULT_ERROR;
-        }
-        StartOpenResourceThread();
-    } else {
-        LOGE("can't configure due to init player ERROR\n");
-        return PLAYER_RESULT_ERROR;
-    }
-    LOGD("----------Configure Over-------------");
-    return PLAYER_RESULT_OK;
-}
-
 int Player::OnWindowDestroy(ANativeWindow *window) {
     return PLAYER_RESULT_OK;
 }
@@ -576,6 +549,34 @@ int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
         LOGE("player not init or it not pause");
         return PLAYER_RESULT_ERROR;
     }
+    return PLAYER_RESULT_OK;
+}
+
+
+int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNode) const {
+    LOGI("----------Configure() called with: w=%d,h=%d,isOnlyRecorderNode=%d", w, h,
+         isOnlyRecorderNode);
+    if (playerContext == NULL) {
+        LOGE("player info not init !");
+        return PLAYER_RESULT_ERROR;
+    }
+    if (isOnlyRecorderNode) {
+        playerContext->isOnlyRecordMedia = true;
+        StartOpenResourceThread();
+        return PLAYER_RESULT_OK;
+    }
+
+    playerContext->mediaDecodeContext.config(playerContext->mine, window, w, h);
+    if (playerContext->GetPlayState() != ERROR) {
+        if (!playerContext->resource.url) {
+            return PLAYER_RESULT_ERROR;
+        }
+        StartOpenResourceThread();
+    } else {
+        LOGE("can't configure due to init player ERROR\n");
+        return PLAYER_RESULT_ERROR;
+    }
+    LOGD("----------Configure Over-------------");
     return PLAYER_RESULT_OK;
 }
 
@@ -780,20 +781,22 @@ int Player::ResumeRecord() const {
 
 int Player::Release() {
     LOGD("Release() called!");
+
     if (playerContext && playerContext->GetPlayState() == STOPPED) {
         StartRelease(playerContext, recorderContext);
+        if (playerContext) {
+            playerContext->SetPlayState(RELEASE, true);
+        }
+        if (recorderContext) {
+            recorderContext->SetRecordState(RECORDER_RELEASE);
+        }
+        jPlayer.jMid_onRecordStateChangeId = nullptr;
+        jPlayer.jMid_onPlayStateChangeId = nullptr;
+        LOGD("Release() over!");
         return PLAYER_RESULT_OK;
     }
-    if (playerContext) {
-        playerContext->SetPlayState(RELEASE, true);
-    }
-    if (recorderContext) {
-        recorderContext->SetRecordState(RECORDER_RELEASE);
-    }
-    jPlayer.jMid_onRecordStateChangeId = nullptr;
-    jPlayer.jMid_onPlayStateChangeId = nullptr;
-    LOGD("Release() over!");
-    return PLAYER_RESULT_OK;
+
+    return PLAYER_RESULT_ERROR;
 }
 
 
@@ -805,15 +808,6 @@ void Player::SetDebug(bool debug) {
     } else {
         av_log_set_callback(NULL);
     }
-}
-
-Player::Player(int id) {
-    playerId = id;
-}
-
-Player::~Player() {
-    Release();
-    LOGE("player delete over!");
 }
 
 
@@ -830,6 +824,17 @@ void Player::SetPlayStateChangeListener(void (*listener)(PlayState, int)) {
         playerContext->SetStateListener(listener);
     }
 }
+
+Player::Player(int id) {
+    playerId = id;
+}
+
+Player::~Player() {
+    Release();
+    LOGE("player delete over!");
+}
+
+
 
 
 

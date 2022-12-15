@@ -13,9 +13,9 @@ android {
         consumerProguardFiles "consumer-rules.pro"
 
 
-        android {
-            ndkVersion "25.1.8937393" // e.g.,  ndkVersion "21.3.6528147"
-        }
+//        android {
+//            ndkVersion "25.1.8937393" // e.g.,  ndkVersion "21.3.6528147"
+//        }
 
         ndk {
             ldLibs "log", "android", "nativewindow"
@@ -58,6 +58,8 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    ndkVersion '25.1.8937393'
+    namespace 'com.pcyfox.lib_ffmpeg'
 }
 
 dependencies {

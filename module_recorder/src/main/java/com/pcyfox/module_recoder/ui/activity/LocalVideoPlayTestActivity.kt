@@ -36,7 +36,7 @@ class LocalVideoPlayTestActivity : AppCompatActivity() {
     }
 
     private fun initView() {
-        rv_record.run {
+        fPlayer.run {
             setOnStateChangeListener { state ->
                 Log.d(TAG, "initView() called with: state = $state")
                 when (state) {
@@ -84,7 +84,7 @@ class LocalVideoPlayTestActivity : AppCompatActivity() {
 
 
     fun onClick(v: View) {
-        rv_record.run {
+        fPlayer.run {
             when (v.id) {
                 R.id.btn_play -> {
                     recordCount++
@@ -136,7 +136,7 @@ class LocalVideoPlayTestActivity : AppCompatActivity() {
     private fun mux() {
         Thread {
             Log.d(TAG, "mux() called start")
-            val ret = rv_record.mux(getOutFile().absolutePath)
+            val ret = fPlayer.mux(getOutFile().absolutePath)
             if (ret) {
                 Log.d(TAG, "mux() called over!")
                 ToastUtils.showShort("MUX Over!")
@@ -145,6 +145,11 @@ class LocalVideoPlayTestActivity : AppCompatActivity() {
                 Log.e(TAG, "mux() called fail!")
             }
         }.start()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        fPlayer.release()
     }
 
 }

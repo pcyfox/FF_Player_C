@@ -36,6 +36,8 @@ PlayerContext::~PlayerContext() {
         avformat_free_context(inputContext);
     }
 
+    mediaDecodeContext.release();
+
     inputContext = NULL;
     decode_thread = 0;
     deMux_thread = 0;

@@ -70,6 +70,7 @@ android {
     buildFeatures {
         dataBinding = true
     }
+    namespace 'com.pcyfox.ffplayer'
 
     applicationVariants.all {
         variant ->

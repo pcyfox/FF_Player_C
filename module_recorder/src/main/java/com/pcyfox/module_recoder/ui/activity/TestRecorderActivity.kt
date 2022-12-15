@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.util.Log
 import android.view.View
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.blankj.utilcode.constant.PermissionConstants
 import com.blankj.utilcode.util.PermissionUtils
@@ -57,7 +56,7 @@ class TestRecorderActivity : AppCompatActivity() {
         btn_play.postDelayed({
             btn_play.performClick()
         }, 200)
-        rv_record.run {
+        fPlayer.run {
             avRecorderCallback = object : AVRecorderCallback {
                 override fun onPrepareRecord() {
                 }
@@ -86,7 +85,7 @@ class TestRecorderActivity : AppCompatActivity() {
                     }
                     PlayState.STOPPED -> {
                         if (isFinishing || isDestroyed) {
-                            rv_record.release()
+                            fPlayer.release()
                         }
                     }
                     else -> {
@@ -129,7 +128,7 @@ class TestRecorderActivity : AppCompatActivity() {
 
 
     fun onClick(v: View) {
-        rv_record.run {
+        fPlayer.run {
             url = et_url.text.toString()
             when (v.id) {
                 R.id.btn_play -> {
@@ -190,7 +189,7 @@ class TestRecorderActivity : AppCompatActivity() {
         MediaFormat.MIMETYPE_AUDIO_AAC
         Thread {
             Log.d(TAG, "mux() called start")
-            val ret = rv_record.mux(
+            val ret = fPlayer.mux(
                 getVideoFile(false).absolutePath,
                 getAudioFile(false).absolutePath,
                 getOutFile().absolutePath
@@ -213,9 +212,9 @@ class TestRecorderActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        rv_record.stop()
-        rv_record.release()
-        rv_record.release()
+        fPlayer.stop()
+        fPlayer.release()
+        fPlayer.release()
     }
 
 }

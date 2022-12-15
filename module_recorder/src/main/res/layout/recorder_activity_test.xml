@@ -8,7 +8,7 @@
 
 
     <com.pcyfox.module_recoder.ui.view.FVideoView
-        android:id="@+id/rv_record"
+        android:id="@+id/fPlayer"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 

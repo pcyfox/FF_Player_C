@@ -51,7 +51,7 @@ const void *onPlayStateChange(PlayState state, int id) {
     Player *player = findPlayer(id);
     if (player == NULL) {
         LOGE("onStateChange() not found player with id=%d", id);
-        return nullptr;
+        return nullptr ;
     }
     if (player->jPlayer.jMid_onPlayStateChangeId == NULL) {
         return nullptr;
