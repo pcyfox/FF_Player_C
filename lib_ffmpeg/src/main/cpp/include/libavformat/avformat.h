@@ -619,7 +619,7 @@ typedef struct AVOutputFormat {
      *
      * If a trailer is being written, this is called after write_trailer().
      *
-     * This is called if init() fails as well.
+     * This is called if createVideoCodec() fails as well.
      */
     void (*deinit)(struct AVFormatContext *);
     /**

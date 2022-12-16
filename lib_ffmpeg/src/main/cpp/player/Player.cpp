@@ -23,7 +23,7 @@ extern "C" {
 #endif
 
 //clang -g -o pvlib  ParseVideo.c  -lavformat -lavutil
-//clang -g -o pvlib  ParseVideo.c `pkg-config --libs libavutil libavformat`
+//clang -g -o pvlib  ParseVideo.c `pkg-configVideo --libs libavutil libavformat`
 
 
 static void StartRelease(PlayerContext *playerContext, RecorderContext *recorderContext) {
@@ -205,7 +205,7 @@ void *RecordPktThread(void *info) {
             break;
         }
         if (recordState == RECORD_PAUSE) {
-            recorderInfo->packetQueue.clearAVPacket();
+            recorderInfo->videoPacketQueue.clearAVPacket();
             continue;
         }
 
@@ -219,7 +219,7 @@ void *RecordPktThread(void *info) {
             break;
         }
 
-        int ret = recorderInfo->packetQueue.getAvPacket(&packet);
+        int ret = recorderInfo->videoPacketQueue.getAvPacket(&packet);
 
         if (ret == PLAYER_RESULT_ERROR) {
             //LOGW("-----------------record,not found pkt in queue--------------");
@@ -246,7 +246,7 @@ void *RecordPktThread(void *info) {
         av_packet_unref(packet);
     }
     LOGI("----------------- record work stop,start to delete recordInfo--------------");
-    recorderInfo->packetQueue.clearAVPacket();
+    recorderInfo->videoPacketQueue.clearAVPacket();
     if (recorderInfo->GetRecordState() == RECORDER_RELEASE) {
         StartRelease(NULL, recorderInfo);
     }
@@ -257,60 +257,79 @@ void *RecordPktThread(void *info) {
 void *DecodeThread(void *info) {
     auto *playerInfo = (PlayerContext *) info;
     while (true) {
+
         PlayState state = playerInfo->GetPlayState();
         if (state == PAUSE) {
             playerInfo->videoPacketQueue.clearAVPacket();
+            playerInfo->audioPacketQueue.clearAVPacket();
             continue;
         }
         if (state != STARTED) {
             break;
         }
 
-        AVPacket *packet = NULL;
-        int ret = playerInfo->videoPacketQueue.getAvPacket(&packet);
-        if (ret == PLAYER_RESULT_OK) {
-            uint8_t *data = packet->data;
-            int length = packet->size;
+        AVPacket *vPacket = NULL;
+        int getVideo = playerInfo->videoPacketQueue.getAvPacket(&vPacket);
+        if (getVideo == PLAYER_RESULT_OK) {
+            uint8_t *data = vPacket->data;
+            int length = vPacket->size;
             playerInfo->mediaDecodeContext.decodeVideo(data, length, 0);
+        }
+
+        AVPacket *aPacket = NULL;
+        int getAudio = playerInfo->audioPacketQueue.getAvPacket(&aPacket);
+        if (getAudio == PLAYER_RESULT_OK) {
+            uint8_t *data = aPacket->data;
+            int length = aPacket->size;
+            playerInfo->mediaDecodeContext.decodeAudio(data, length, 0);
         }
     }
     LOGI("-------Decode Stop!---------");
     return NULL;
 }
 
+int ProcessAudioPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerContext *playerContext,
+                       RecorderContext *recorderInfo) {
 
-int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerContext *playerInfo,
-                  RecorderContext *recorderInfo) {
+    //加入解码队列
+    if (playerContext->GetPlayState() == STARTED &&
+        !playerContext->isOnlyRecordMedia) { playerContext->audioPacketQueue.putAvPacket(packet); }
+
+    return PLAYER_RESULT_OK;
+}
+
+int ProcessVideoPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerContext *playerContext,
+                       RecorderContext *recorderInfo) {
     //检查是否有起始码,如果有说明是标准的H.264数据
-    if (packet->size < 5 || playerInfo == NULL) {
+    if (packet->size < 5 || playerContext == NULL) {
         return PLAYER_RESULT_ERROR;
     }
     int type = GetNALUType(packet);
 //    if (isDebug) {
-//        LOGD("------ProcessPacket NALU type=%0x,flag=%d", type, packet->flags);
-//        if (type == 0x67 && playerInfo->lastNALUType == type) {
-//            LOGW("------ProcessPacket more than one SPS in this GOP");
+//        LOGD("------ProcessVideoPacket NALU type=%0x,flag=%d", type, packet->flags);
+//        if (type == 0x67 && playerContext->lastNALUType == type) {
+//            LOGW("------ProcessVideoPacket more than one SPS in this GOP");
 //        }
 //        printCharsHex((char *) packet->data, 22, 18, "-------before------");
-//        LOGD("ProcessPacket :pos=%ld,dts=%ld,pts=%ld,duration=%ld", packet->pos, packet->dts,
+//        LOGD("ProcessVideoPacket :pos=%ld,dts=%ld,pts=%ld,duration=%ld", packet->pos, packet->dts,
 //             packet->pts, packet->duration);
 //    }
     //H264的打包类型有AVC1、H264 、X264 、x264
     //The main difference between these media types is the presence of start codes in the bitstream.
     // If the subtype is MEDIASUBTYPE_AVC1, the bitstream does not contain start codes.
     if (type < 0) {//MEDIASUBTYPE_AVC1
-        if (playerInfo->bsf_ctx == NULL) {
+        if (playerContext->bsf_ctx == NULL) {
             const AVBitStreamFilter *bsfilter = av_bsf_get_by_name("h264_mp4toannexb");
             if (!bsfilter) {
                 return PLAYER_RESULT_ERROR;
             }
             // 2 初始化过滤器上下文
-            av_bsf_alloc(bsfilter, &playerInfo->bsf_ctx); //AVBSFContext;
+            av_bsf_alloc(bsfilter, &playerContext->bsf_ctx); //AVBSFContext;
             // 3 添加解码器属性
-            avcodec_parameters_copy(playerInfo->bsf_ctx->par_in, codecpar);
-            av_bsf_init(playerInfo->bsf_ctx);
+            avcodec_parameters_copy(playerContext->bsf_ctx->par_in, codecpar);
+            av_bsf_init(playerContext->bsf_ctx);
         }
-        H264_mp4toannexb_filter(playerInfo->bsf_ctx, packet);
+        H264_mp4toannexb_filter(playerContext->bsf_ctx, packet);
 //        if (isDebug) {
 //         printCharsHex((char *) packet->data, 22, 16, "-------after------");
 //        }
@@ -328,16 +347,17 @@ int ProcessPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerContext *
             // Create a new packet that references the same data as src
             AVPacket *copyPkt = av_packet_clone(packet);
             if (copyPkt != NULL) {
-                recorderInfo->packetQueue.putAvPacket(copyPkt);
+                recorderInfo->videoPacketQueue.putAvPacket(copyPkt);
             } else {
-                LOGE("ProcessPacket clone packet fail!");
+                LOGE("ProcessVideoPacket clone packet fail!");
             }
         }
     }
 
     //加入解码队列
-    if (playerInfo->GetPlayState() == STARTED &&
-        !playerInfo->isOnlyRecordMedia) { playerInfo->videoPacketQueue.putAvPacket(packet); }
+    if (playerContext->GetPlayState() == STARTED &&
+        !playerContext->isOnlyRecordMedia) { playerContext->videoPacketQueue.putAvPacket(packet); }
+
     return PLAYER_RESULT_OK;
 }
 
@@ -346,7 +366,7 @@ void *DeMuxThread(void *param) {
     auto *player = (Player *) param;
     PlayerContext *playerContext = player->playerContext;
     if (playerContext == NULL) {
-        LOGE("Player is not init");
+        LOGE("Player is not createVideoCodec");
         return NULL;
     }
 
@@ -355,8 +375,8 @@ void *DeMuxThread(void *param) {
         return NULL;
     }
     AVStream *i_video_stream = playerContext->inputVideoStream;
+    AVStream *i_audio_stream = playerContext->inputAudioStream;
     AVCodecParameters *i_av_codec_parameters = i_video_stream->codecpar;
-
     int video_stream_index = i_video_stream->index;
 
     float delay = 0;
@@ -376,20 +396,28 @@ void *DeMuxThread(void *param) {
         player->StartDecodeThread();
     }
     PlayState state;
+    bool isPaused = false;
     while ((state = playerContext->GetPlayState()) != STOPPED) {
         if (state == UNINITIALIZED || state == ERROR || state == RELEASE) {
             playerContext->videoPacketQueue.clearAVPacket();
             LOGD("DeMux() stop,due to state-STOPPED!");
             break;
         }
+
         RecorderContext *recorderInfo = player->recorderContext;
-        //只有播放暂停与录制暂停同时出现才会暂停
-        if (state == PAUSE) {//播放暂停
+        if (state == PAUSE) {//暂停
+            //只有播放暂停与录制暂停同时出现才会暂停
             if (recorderInfo != NULL &&
-                recorderInfo->GetRecordState() == RECORD_PAUSE ||
-                recorderInfo == NULL) {//检查录制是否也要暂停
+                recorderInfo->GetRecordState() == RECORD_PAUSE) {
+                if (!isPaused) {
+                    isPaused = av_read_pause(playerContext->inputContext) > 0;
+                }
                 continue;
             }
+        }
+
+        if (isPaused) {
+            isPaused = av_read_play(playerContext->inputContext) < 0;
         }
 
         AVPacket *i_pkt = av_packet_alloc();
@@ -398,13 +426,16 @@ void *DeMuxThread(void *param) {
             return NULL;
         }
         int ret = av_read_frame(playerContext->inputContext, i_pkt);
-        if (ret == 0 && i_pkt->size > 0) {
 
+        if (ret == 0 && i_pkt->size > 0) {
             if (i_pkt->stream_index == video_stream_index) {
-                ProcessPacket(i_pkt, i_av_codec_parameters, playerContext, recorderInfo);
-                if (delay > 0) {
+                ProcessVideoPacket(i_pkt, i_av_codec_parameters, playerContext, recorderInfo);
+                if (delay > 0) {//control play speed
                     av_usleep((unsigned int) delay);
                 }
+            } else if (i_audio_stream &&
+                       i_pkt->stream_index == i_audio_stream->index) {//find audio packet
+                ProcessAudioPacket(i_pkt, i_av_codec_parameters, playerContext, recorderInfo);
             } else {
                 av_packet_free(&i_pkt);
             }
@@ -489,7 +520,7 @@ int Player::InitPlayerContext() {
 
     LOGI("InitPlayerContext():state-> INITIALIZED");
     playerContext->SetPlayState(INITIALIZED, true);
-    LOGD("init player info over");
+    LOGD("createVideoCodec player info over");
     return PLAYER_RESULT_OK;
 }
 
@@ -507,7 +538,7 @@ int Player::SetResource(char *url) {
     if (InitPlayerContext()) {
         playerContext->resource.url = url;
     } else {
-        LOGE("init player info ERROR");
+        LOGE("createVideoCodec player info ERROR");
         return PLAYER_RESULT_ERROR;
     }
     LOGD("SetResource() OK");
@@ -528,12 +559,12 @@ int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
             LOGE("OpenResource() fail:can't get video stream params");
             return PLAYER_RESULT_ERROR;
         }
-        int ret = playerContext->mediaDecodeContext.init(playerContext->mine,
-                                                         window, w, h,
-                                                         codecpar->extradata,
-                                                         codecpar->extradata_size,
-                                                         codecpar->extradata,
-                                                         codecpar->extradata_size
+        int ret = playerContext->mediaDecodeContext.createVideoCodec(playerContext->mine,
+                                                                     window, w, h,
+                                                                     codecpar->extradata,
+                                                                     codecpar->extradata_size,
+                                                                     codecpar->extradata,
+                                                                     codecpar->extradata_size
         );
 
         if (ret == PLAYER_RESULT_ERROR) {
@@ -546,34 +577,35 @@ int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
             playerContext->SetPlayState(STARTED, true);
         }
     } else {
-        LOGE("player not init or it not pause");
+        LOGE("player not createVideoCodec or it not pause");
         return PLAYER_RESULT_ERROR;
     }
     return PLAYER_RESULT_OK;
 }
 
-
 int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNode) const {
     LOGI("----------Configure() called with: w=%d,h=%d,isOnlyRecorderNode=%d", w, h,
          isOnlyRecorderNode);
     if (playerContext == NULL) {
-        LOGE("player info not init !");
+        LOGE("player info not createVideoCodec !");
         return PLAYER_RESULT_ERROR;
     }
+
     if (isOnlyRecorderNode) {
         playerContext->isOnlyRecordMedia = true;
         StartOpenResourceThread();
         return PLAYER_RESULT_OK;
     }
 
-    playerContext->mediaDecodeContext.config(playerContext->mine, window, w, h);
+
+    playerContext->mediaDecodeContext.configVideo(playerContext->mine, window, w, h);
     if (playerContext->GetPlayState() != ERROR) {
         if (!playerContext->resource.url) {
             return PLAYER_RESULT_ERROR;
         }
         StartOpenResourceThread();
     } else {
-        LOGE("can't configure due to init player ERROR\n");
+        LOGE("can't configure due to createVideoCodec player ERROR\n");
         return PLAYER_RESULT_ERROR;
     }
     LOGD("----------Configure Over-------------");
@@ -584,7 +616,7 @@ int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNo
 int Player::Start() {
     LOGI("--------Play()  start-------");
     if (playerContext == NULL) {
-        LOGE("player not init,playerInfo == NULL!");
+        LOGE("player not createVideoCodec,playerInfo == NULL!");
         return PLAYER_RESULT_ERROR;
     }
     PlayState state = playerContext->GetPlayState();
@@ -599,7 +631,7 @@ int Player::Start() {
 int Player::Play() {
     LOGI("--------Play()  called-------");
     if (playerContext == NULL) {
-        LOGE("player not init,playerInfo == NULL!");
+        LOGE("player not createVideoCodec,playerInfo == NULL!");
         return PLAYER_RESULT_ERROR;
     }
 
@@ -627,8 +659,8 @@ int Player::Play() {
 
     AVCodecParameters *codecpar =
             playerContext->inputVideoStream->codecpar;
-    // init decoder
-    int status = playerContext->mediaDecodeContext.init(
+    // createVideoCodec decoder
+    int status = playerContext->mediaDecodeContext.initVideoCodec(
             codecpar->extradata,
             codecpar->extradata_size,
             codecpar->extradata,
@@ -636,7 +668,7 @@ int Player::Play() {
     );
 
     if (status != PLAYER_RESULT_OK) {
-        LOGE("init AMediaCodec fail!");
+        LOGE("createVideoCodec AMediaCodec fail!");
         playerContext->mediaDecodeContext.release();
         return PLAYER_RESULT_ERROR;
     }
@@ -674,7 +706,7 @@ int Player::Resume() const {
         LOGE("--------Pause()  called fail, player not pause------");
         return PLAYER_RESULT_ERROR;
     }
-    //  playerInfo->packetQueue.clearAVPacket();
+    //  playerInfo->videoPacketQueue.clearAVPacket();
     playerContext->SetPlayState(STARTED, true);
     return PLAYER_RESULT_OK;
 }
@@ -720,7 +752,7 @@ int Player::PrepareRecorder(char *outPath) {
 
 int Player::StartRecord() const {
     if (!playerContext || !recorderContext) {
-        LOGE("------StartRecord() player init or recorder not prepare");
+        LOGE("------StartRecord() player createVideoCodec or recorder not prepare");
         return PLAYER_RESULT_ERROR;
     }
     RecordState state = recorderContext->GetRecordState();

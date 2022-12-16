@@ -11,6 +11,7 @@
 #include <media/NdkMediaFormat.h>
 
 #include <PlayerResult.h>
+#include "libavcodec/avcodec.h"
 
 
 #ifdef __cplusplus
@@ -21,6 +22,10 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
+
+
+#define TIMEOUT_US  10000
+#define  MEDIA_MIMETYPE_AUDIO_AAC  "audio/mp4a-latm"
 
 //wrap Android MediaCodec
 class AMediaDecodeContext {
@@ -39,13 +44,15 @@ public:
 
     void configAudio(char *mine);
 
-    void config(char *mine, ANativeWindow *nativeWindow, int width, int height);
-
-    int init(const char *mine, ANativeWindow *nativeWindow, int width, int height, uint8_t *sps,
-             int spsSize, uint8_t *pps, int ppsSize);
+    void configVideo(char *mine, ANativeWindow *nativeWindow, int width, int height);
 
 
-    int init(uint8_t *sps, int spsSize, uint8_t *pps, int ppsSize);
+    int createVideoCodec(const char *mineType, ANativeWindow *window, int width, int height,
+                         uint8_t *sps,
+                         int spsSize, uint8_t *pps, int ppsSize);
+
+
+    int initVideoCodec(uint8_t *sps, int spsSize, uint8_t *pps, int ppsSize);
 
 
     int start() const;
@@ -59,8 +66,6 @@ public:
     int decodeVideo(uint8_t *data, int length, int64_t pts) const;
 
     int decodeAudio(uint8_t *data, int length, int64_t pts) const;
-
-
 
 };
 

@@ -128,7 +128,7 @@ public class FFPlayer {
 
 
     public int config(SurfaceView surfaceView, int w, int h, boolean isOnlyRecord) {
-        Log.d(TAG, "config() called with: surfaceView = [" + surfaceView + "], w = [" + w + "], h = [" + h + "], isOnlyRecord = [" + isOnlyRecord + "]");
+        Log.d(TAG, "configVideo() called with: surfaceView = [" + surfaceView + "], w = [" + w + "], h = [" + h + "], isOnlyRecord = [" + isOnlyRecord + "]");
         if (isOnlyRecord) {
             return onlyRecord();
         }
@@ -137,7 +137,7 @@ public class FFPlayer {
         this.h = h;
 
         if (surfaceView == null || w * h == 0) {
-            Log.e(TAG, "config() called with: surfaceView = [" + surfaceView + "], w = [" + w + "], h = [" + h + "], isOnlyRecord = [" + isOnlyRecord + "]");
+            Log.e(TAG, "configVideo() called with: surfaceView = [" + surfaceView + "], w = [" + w + "], h = [" + h + "], isOnlyRecord = [" + isOnlyRecord + "]");
             return -1;
         }
         configPlayer(surfaceView.getHolder().getSurface(), w, h, 0, id);

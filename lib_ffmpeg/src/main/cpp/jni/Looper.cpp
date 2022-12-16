@@ -54,7 +54,7 @@ void Looper::init() {
     int ret = ALooper_addFd(aLooper, readPipe, 1, ALOOPER_EVENT_INPUT, Looper::handle_message,
                             NULL);
     if (ret < 0) {
-        LOGD("Looper init fail");
+        LOGD("Looper createVideoCodec fail");
     }
 }
 

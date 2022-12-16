@@ -195,7 +195,7 @@ Java_com_pcyfox_lib_1ffmpeg_FFPlayer_init(JNIEnv *env, jobject thiz, int isDebug
     }
 
     if (findPlayer(id) == NULL) {
-        LOGI("init() called with: isDebug=%d,id=%d", isDebug, id);
+        LOGI("createVideoCodec() called with: isDebug=%d,id=%d", isDebug, id);
         auto *player = new Player(id);
         Player::SetDebug(isDebug);
         playerCache.insert(std::map<int, Player *>::value_type(id, player));

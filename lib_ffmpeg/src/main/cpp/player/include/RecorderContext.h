@@ -27,11 +27,16 @@ class RecorderContext {
 public:
     int id;
     pthread_t recorder_thread = 0;
-    AsyncQueue<AVPacket> packetQueue;
+    AsyncQueue<AVPacket> videoPacketQueue;
+    AsyncQueue<AVPacket> audioPacketQueue;
     char *storeFile;
     AVFormatContext *o_fmt_ctx = NULL;
+
     AVStream *inputVideoStream = NULL;
+    AVStream *inputAudioStream = NULL;
+
     AVStream *o_video_stream = NULL;
+    AVStream *o_audio_stream = NULL;
 
     volatile enum RecordState recordState = RECORD_UN_START;
 private:
@@ -39,6 +44,7 @@ private:
 
 public:
     ~RecorderContext();
+
     RecorderContext();
 
     void SetRecordState(RecordState state);

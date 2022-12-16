@@ -16,6 +16,7 @@ import java.io.File
 
 class LocalVideoPlayTestActivity : AppCompatActivity() {
     private val TAG = "TestActivity"
+
     //private val url = "/storage/emulated/0/test/20210531_18_30_48/1/video.h264"
     private val url = "/storage/emulated/0/test.mp4"
     private val storeDir = Environment.getExternalStorageDirectory().absolutePath + "/test/"
@@ -90,14 +91,6 @@ class LocalVideoPlayTestActivity : AppCompatActivity() {
                     recordCount++
                     prepareRecorder(getVideoFile().absolutePath, getAudioFile().absolutePath)
                     setResource(url)
-                }
-
-                R.id.btn_start -> {
-/*
-                    recordCount++
-                    prepareRecorder(getVideoFile().absolutePath, getAudioFile().absolutePath)
-                    setResource(url)
-*/
                 }
 
                 R.id.btn_stop -> {

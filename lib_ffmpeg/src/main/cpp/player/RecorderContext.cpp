@@ -18,7 +18,7 @@ extern "C" {
 RecorderContext::~RecorderContext() {
     LOGD("start to delete RecorderInfo ");
     if (o_fmt_ctx != NULL) {
-        packetQueue.clearAVPacket();
+        videoPacketQueue.clearAVPacket();
         avformat_free_context(o_fmt_ctx);
         o_fmt_ctx = NULL;
     }
@@ -44,7 +44,7 @@ void RecorderContext::SetStateListener(void (*l)(RecordState, int)) {
 }
 
 RecorderContext::RecorderContext() {
-    //packetQueue.tag = "recorder";
+    //videoPacketQueue.tag = "recorder";
 }
 
 

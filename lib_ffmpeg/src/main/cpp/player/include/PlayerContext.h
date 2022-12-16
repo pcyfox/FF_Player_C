@@ -34,6 +34,7 @@ public:
     int id{};
     AVBSFContext *bsf_ctx = NULL;
     AVFormatContext *inputContext = NULL;
+
     AVStream *inputVideoStream = NULL;
     AVStream *inputAudioStream = NULL;
     bool isOnlyRecordMedia = false;

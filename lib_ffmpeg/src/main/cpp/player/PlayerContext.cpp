@@ -25,25 +25,27 @@ PlayerContext::PlayerContext() {
 PlayerContext::~PlayerContext() {
     LOGW("-------PlayerInfo Delete Start---------");
     playState = UNINITIALIZED;
+    videoPacketQueue.clearAVPacket();
+    audioPacketQueue.clearAVPacket();
+
     if (bsf_ctx) {
         av_bsf_free(&bsf_ctx);
+        bsf_ctx = nullptr;
     }
 
     pthread_mutex_destroy(&mutex);
     pthread_cond_destroy(&cond);
 
-    if (inputContext != NULL) {
+    if (inputContext) {
         avformat_free_context(inputContext);
+        inputContext = nullptr;
     }
 
-    mediaDecodeContext.release();
-
-    inputContext = NULL;
     decode_thread = 0;
     deMux_thread = 0;
     open_resource_thread = 0;
-    stateListener = NULL;
-
+    stateListener = nullptr;
+    mediaDecodeContext.release();
     LOGW("-------PlayerInfo Delete Over---------");
 }
 

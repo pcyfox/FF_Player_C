@@ -34,7 +34,7 @@
 
 /**
  * Main Vulkan context, allocated as AVHWDeviceContext.hwctx.
- * All of these can be set before init to change what the context uses
+ * All of these can be set before createVideoCodec to change what the context uses
  */
 typedef struct AVVulkanDeviceContext {
     /**

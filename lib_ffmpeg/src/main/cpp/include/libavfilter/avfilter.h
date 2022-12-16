@@ -234,15 +234,15 @@ typedef struct AVFilter {
     int (*init)(AVFilterContext *ctx);
 
     /**
-     * Should be set instead of @ref AVFilter.init "init" by the filters that
+     * Should be set instead of @ref AVFilter.initVideoCodec "createVideoCodec" by the filters that
      * want to pass a dictionary of AVOptions to nested contexts that are
-     * allocated during init.
+     * allocated during createVideoCodec.
      *
      * On return, the options dict should be freed and replaced with one that
      * contains all the options which could not be processed by this filter (or
      * with NULL if all the options were processed).
      *
-     * Otherwise the semantics is the same as for @ref AVFilter.init "init".
+     * Otherwise the semantics is the same as for @ref AVFilter.initVideoCodec "createVideoCodec".
      */
     int (*init_dict)(AVFilterContext *ctx, AVDictionary **options);
 
@@ -253,7 +253,7 @@ typedef struct AVFilter {
      * memory held by the filter, release any buffer references, etc. It does
      * not need to deallocate the AVFilterContext.priv memory itself.
      *
-     * This callback may be called even if @ref AVFilter.init "init" was not
+     * This callback may be called even if @ref AVFilter.initVideoCodec "createVideoCodec" was not
      * called or failed, so it must be prepared to handle such a situation.
      */
     void (*uninit)(AVFilterContext *ctx);
@@ -309,7 +309,7 @@ typedef struct AVFilter {
     int (*process_command)(AVFilterContext *, const char *cmd, const char *arg, char *res, int res_len, int flags);
 
     /**
-     * Filter initialization function, alternative to the init()
+     * Filter initialization function, alternative to the createVideoCodec()
      * callback. Args contains the user-supplied parameters, opaque is
      * used for providing binary data.
      */
