@@ -373,15 +373,17 @@ int ProcessVideoPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerCont
 void *DeMuxThread(void *param) {
     auto *player = (Player *) param;
     PlayerContext *playerContext = player->playerContext;
-    if (playerContext == NULL) {
+    RecorderContext *recorderContext = player->recorderContext;
+    if (playerContext == nullptr) {
         LOGE("Player is not createVideoCodec");
-        return NULL;
+        return param;
     }
 
     if (playerContext->GetPlayState() == STARTED) {
         LOGE("DeMux()  called  player is STARTED");
-        return NULL;
+        return param;
     }
+
     AVStream *i_video_stream = playerContext->inputVideoStream;
     AVStream *i_audio_stream = playerContext->inputAudioStream;
     AVCodecParameters *i_av_codec_parameters = i_video_stream->codecpar;
@@ -412,16 +414,13 @@ void *DeMuxThread(void *param) {
             break;
         }
 
-        RecorderContext *recorderInfo = player->recorderContext;
-        if (state == PAUSE) {//暂停
-            //只有播放暂停与录制暂停同时出现才会暂停
-            if (recorderInfo != NULL &&
-                recorderInfo->GetRecordState() == RECORD_PAUSE) {
-                if (!isPaused) {
-                    isPaused = av_read_pause(playerContext->inputContext) > 0;
-                }
-                continue;
+        //只有播放暂停与录制暂停同时出现才会暂停
+        if (state == PAUSE && recorderContext != nullptr &&
+            recorderContext->GetRecordState() == RECORD_PAUSE) {
+            if (!isPaused) {
+                isPaused = av_read_pause(playerContext->inputContext) > 0;
             }
+            continue;
         }
 
         if (isPaused) {
@@ -436,15 +435,15 @@ void *DeMuxThread(void *param) {
         int ret = av_read_frame(playerContext->inputContext, i_pkt);
 
         if (ret == 0 && i_pkt->size > 0) {
-            if (i_pkt->stream_index == video_stream_index) {
-                ProcessVideoPacket(i_pkt, i_av_codec_parameters, playerContext, recorderInfo);
+            if (i_pkt->stream_index == video_stream_index) {//video packet
+                ProcessVideoPacket(i_pkt, i_av_codec_parameters, playerContext, recorderContext);
                 if (delay > 0) {//control play speed
                     av_usleep((unsigned int) delay);
                 }
             } else if (i_audio_stream &&
                        i_pkt->stream_index == i_audio_stream->index) {//find audio packet
-                ProcessAudioPacket(i_pkt, i_av_codec_parameters, playerContext, recorderInfo);
-            } else {
+                ProcessAudioPacket(i_pkt, i_av_codec_parameters, playerContext, recorderContext);
+            } else { //unknown packet
                 av_packet_free(&i_pkt);
             }
 
@@ -464,8 +463,10 @@ void *DeMuxThread(void *param) {
         playerContext->inputContext = nullptr;
         LOGI("close input context!");
     }
+
     playerContext->SetPlayState(STOPPED, true);
     LOGI("-----------DeMux stop over! ----------------");
+
     playerContext->videoPacketQueue.clearAVPacket();
     if (playerContext->GetPlayState() == RELEASE) {
         StartRelease(playerContext, nullptr);
@@ -475,14 +476,14 @@ void *DeMuxThread(void *param) {
 
 void Player::StartDecodeThread() {
     LOGI("StartDecodeThread() called");
-    pthread_create(&playerContext->decode_thread, NULL, DecodeThread, this);
+    pthread_create(&playerContext->decode_thread, nullptr, DecodeThread, this);
     pthread_setname_np(playerContext->deMux_thread, "decode_thread");
     pthread_detach(playerContext->deMux_thread);
 }
 
 void Player::StartDeMuxThread() {
     LOGI("start deMux thread");
-    pthread_create(&playerContext->deMux_thread, NULL, DeMuxThread, this);
+    pthread_create(&playerContext->deMux_thread, nullptr, DeMuxThread, this);
     pthread_setname_np(playerContext->deMux_thread, "deMux_thread");
     pthread_detach(playerContext->deMux_thread);
 }

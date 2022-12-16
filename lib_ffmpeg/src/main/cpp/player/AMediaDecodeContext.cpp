@@ -29,7 +29,7 @@ void dumpOutFormat(AMediaCodec *videoMediaCodec) {
 }
 
 
-int decode(AMediaCodec *codec, uint8_t *data, int length, int64_t pts) {
+int decode(AMediaCodec *codec, uint8_t *data, int length, int64_t pts, char *tag) {
     if (!codec || !data) {
         return PLAYER_RESULT_ERROR;
     }
@@ -52,7 +52,7 @@ int decode(AMediaCodec *codec, uint8_t *data, int length, int64_t pts) {
                                                                  pts, 0);
 
             if (status != AMEDIA_OK) {
-                LOGE("queue input buffer error status=%d", status);
+                LOGE("decode %s:queue input buffer error status=%d", tag, status);
             }
         }
     }
@@ -63,7 +63,7 @@ int decode(AMediaCodec *codec, uint8_t *data, int length, int64_t pts) {
     if (status > 0) {
         AMediaCodec_releaseOutputBuffer(codec, status, bufferInfo.size != 0);
         if (bufferInfo.flags & AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM) {
-            LOGE("video producer output EOS");
+            LOGE("decode %s:producer output EOS", tag);
         }
         if (IS_DEBUG) {
             //dumpOutFormat(codec)
@@ -71,19 +71,19 @@ int decode(AMediaCodec *codec, uint8_t *data, int length, int64_t pts) {
     } else {
         switch (status) {
             case AMEDIACODEC_INFO_OUTPUT_BUFFERS_CHANGED:
-                LOGW("output buffers changed");
+                LOGW("decode %s:output buffers changed", tag);
                 break;
             case AMEDIACODEC_INFO_OUTPUT_FORMAT_CHANGED:
-                LOGW("output buffers format changed");
+                LOGW("decode %s:output buffers format changed", tag);
                 break;
             case AMEDIACODEC_INFO_TRY_AGAIN_LATER:
-                LOGW("timeout,video no output buffer right now");
+                LOGW("decode %s:timeout,video no output buffer right now", tag);
                 break;
             case AMEDIACODEC_BUFFER_FLAG_END_OF_STREAM:
-                LOGW("end of stream");
+                LOGW("decode %s:end of stream", tag);
                 break;
             default:
-                LOGE("unexpected info code: %zd", status);
+                LOGE("decode %s:unexpected info code: %zd", tag, status);
         }
     }
     return (int) status;
@@ -91,11 +91,11 @@ int decode(AMediaCodec *codec, uint8_t *data, int length, int64_t pts) {
 
 
 int AMediaDecodeContext::decodeVideo(uint8_t *data, int length, int64_t pts) const {
-    return decode(videoCodec, data, length, pts);
+    return decode(videoCodec, data, length, pts, "Video");
 }
 
 int AMediaDecodeContext::decodeAudio(uint8_t *data, int length, int64_t pts) const {
-    return decode(audioCodec, data, length, pts);
+    return decode(audioCodec, data, length, pts, "Audio");
 }
 
 
@@ -203,7 +203,8 @@ int AMediaDecodeContext::createVideoCodec(const char *mineType, ANativeWindow *w
 
 int AMediaDecodeContext::initVideoCodec(uint8_t *sps, int spsSize, uint8_t *pps, int ppsSize) {
     if (nativeWindow) {
-        return createVideoCodec(videoMineType, nativeWindow, width, height, sps, spsSize, pps, ppsSize);
+        return createVideoCodec(videoMineType, nativeWindow, width, height, sps, spsSize, pps,
+                                ppsSize);
     }
     return PLAYER_RESULT_ERROR;
 }

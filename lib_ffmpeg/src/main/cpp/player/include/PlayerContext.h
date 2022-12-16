@@ -39,9 +39,12 @@ public:
     AVStream *inputAudioStream = NULL;
 
     bool isOnlyRecordMedia = false;
+    bool isOpenAudio = false;
+
     Resource resource{};
 
-    int width{}, height{};
+    int width{0}, height{0};
+    volatile enum PlayState playState = UNINITIALIZED;
 
     AsyncQueue<AVPacket> videoPacketQueue;
     AsyncQueue<AVPacket> audioPacketQueue;
@@ -53,13 +56,9 @@ public:
     pthread_mutex_t mutex{};
     pthread_cond_t cond{};
 
-    bool isOpenAudio = false;
 
     char *videoMineType = MEDIA_MIMETYPE_VIDEO_AVC;
-
     char *audioMineType = MEDIA_MIMETYPE_AUDIO_AAC;
-
-    volatile enum PlayState playState = UNINITIALIZED;
 
     AMediaDecodeContext mediaDecodeContext;
 
