@@ -5,8 +5,8 @@
 
 #include "Player.h"
 #include <PlayerResult.h>
-#include<queue>
-#include <pthread.h>
+#include <queue>
+#include <thread>
 #include "Utils.h"
 #include "util.hpp"
 
@@ -39,11 +39,11 @@ static void StartRelease(PlayerContext *playerContext, RecorderContext *recorder
 }
 
 
-void *OpenResourceThread(void *info) {
-    if (info == nullptr) {
+void *OpenResourceThread(void *pct) {
+    if (pct == nullptr) {
         return nullptr;
     }
-    auto *playerContext = (PlayerContext *) info;
+    auto *playerContext = (PlayerContext *) pct;
     char *url = playerContext->resource.url;
     if (playerContext->inputContext != NULL) {
         LOGI("close input context!before open resource");
@@ -128,7 +128,7 @@ void *OpenResourceThread(void *info) {
             LOGI("find audio stream success!");
             AVCodecID codec_id = playerContext->inputAudioStream->codecpar->codec_id;
             if (AV_CODEC_ID_AAC == codec_id) {
-                playerContext->mediaDecodeContext.configAudio("audio/mp4a-latm");
+                playerContext->mediaDecodeContext.configAudio(MEDIA_MIMETYPE_AUDIO_AAC);
             } else {
                 LOGE("not support audio type:%d", codec_id);
             }
@@ -137,8 +137,7 @@ void *OpenResourceThread(void *info) {
         }
     }
     playerContext->SetPlayState(PREPARED, true);
-
-    return info;
+    return pct;
 }
 
 
@@ -186,7 +185,7 @@ void *RecordPktThread(void *info) {
             LOGI("open file success,file=%s", file);
         }
         /*write file header*/
-        ret = avformat_write_header(recorderInfo->o_fmt_ctx, NULL);
+        ret = avformat_write_header(recorderInfo->o_fmt_ctx, nullptr);
         if (ret < 0) {
             LOGE("record video write file header error,ret=%d", ret);
             recorderInfo->SetRecordState(RECORD_ERROR);
@@ -254,38 +253,47 @@ void *RecordPktThread(void *info) {
 }
 
 
-void *DecodeThread(void *info) {
-    auto *playerInfo = (PlayerContext *) info;
+static void *DecodeThread(void *p) {
+    auto *player = (Player *) p;
+    auto playerContext = player->playerContext;
+    auto recorderContext = player->recorderContext;
     while (true) {
-
-        PlayState state = playerInfo->GetPlayState();
+        PlayState state = playerContext->GetPlayState();
         if (state == PAUSE) {
-            playerInfo->videoPacketQueue.clearAVPacket();
-            playerInfo->audioPacketQueue.clearAVPacket();
+            playerContext->videoPacketQueue.clearAVPacket();
+            playerContext->audioPacketQueue.clearAVPacket();
             continue;
         }
-        if (state != STARTED) {
-            break;
-        }
 
-        AVPacket *vPacket = NULL;
-        int getVideo = playerInfo->videoPacketQueue.getAvPacket(&vPacket);
+        if (state != STARTED) break;
+
+        bool isRecording =
+                recorderContext != nullptr && recorderContext->GetRecordState() == RECORDING;
+
+        AVPacket *vPacket = nullptr;
+        int getVideo = playerContext->videoPacketQueue.getAvPacket(&vPacket);
         if (getVideo == PLAYER_RESULT_OK) {
             uint8_t *data = vPacket->data;
             int length = vPacket->size;
-            playerInfo->mediaDecodeContext.decodeVideo(data, length, 0);
+            auto ret = playerContext->mediaDecodeContext.decodeVideo(data, length, 0);
+            if (ret == PLAYER_RESULT_ERROR || !isRecording) {
+                av_packet_unref(vPacket);
+            }
         }
 
-        AVPacket *aPacket = NULL;
-        int getAudio = playerInfo->audioPacketQueue.getAvPacket(&aPacket);
+        AVPacket *aPacket = nullptr;
+        int getAudio = playerContext->audioPacketQueue.getAvPacket(&aPacket);
         if (getAudio == PLAYER_RESULT_OK) {
             uint8_t *data = aPacket->data;
             int length = aPacket->size;
-            playerInfo->mediaDecodeContext.decodeAudio(data, length, 0);
+            auto ret = playerContext->mediaDecodeContext.decodeAudio(data, length, 0);
+            if (ret == PLAYER_RESULT_ERROR || !isRecording) {
+                av_packet_unref(aPacket);
+            }
         }
     }
     LOGI("-------Decode Stop!---------");
-    return NULL;
+    return p;
 }
 
 int ProcessAudioPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerContext *playerContext,
@@ -462,14 +470,14 @@ void *DeMuxThread(void *param) {
     if (playerContext->GetPlayState() == RELEASE) {
         StartRelease(playerContext, nullptr);
     }
-    return nullptr;
+    return param;
 }
 
-void Player::StartDecodeThread() const {
+void Player::StartDecodeThread() {
     LOGI("StartDecodeThread() called");
-    pthread_create(&playerContext->decode_thread, NULL, DecodeThread, playerContext);
-    pthread_setname_np(playerContext->decode_thread, "decode_thread");
-    pthread_detach(playerContext->decode_thread);
+    pthread_create(&playerContext->decode_thread, NULL, DecodeThread, this);
+    pthread_setname_np(playerContext->deMux_thread, "decode_thread");
+    pthread_detach(playerContext->deMux_thread);
 }
 
 void Player::StartDeMuxThread() {
@@ -549,7 +557,7 @@ int Player::OnWindowDestroy(ANativeWindow *window) {
     return PLAYER_RESULT_OK;
 }
 
-int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
+int Player::OnWindowChange(ANativeWindow *window, int w, int h) {
     LOGI("--------OnWindowChange() called with w=%d,h=%d", w, h);
     if (playerContext && playerContext->GetPlayState() == PAUSE) {
         AVCodecParameters *codecpar = nullptr;
@@ -559,7 +567,7 @@ int Player::OnWindowChange(ANativeWindow *window, int w, int h) const {
             LOGE("OpenResource() fail:can't get video stream params");
             return PLAYER_RESULT_ERROR;
         }
-        int ret = playerContext->mediaDecodeContext.createVideoCodec(playerContext->mine,
+        int ret = playerContext->mediaDecodeContext.createVideoCodec(playerContext->videoMineType,
                                                                      window, w, h,
                                                                      codecpar->extradata,
                                                                      codecpar->extradata_size,
@@ -598,7 +606,7 @@ int Player::Configure(ANativeWindow *window, int w, int h, bool isOnlyRecorderNo
     }
 
 
-    playerContext->mediaDecodeContext.configVideo(playerContext->mine, window, w, h);
+    playerContext->mediaDecodeContext.configVideo(playerContext->videoMineType, window, w, h);
     if (playerContext->GetPlayState() != ERROR) {
         if (!playerContext->resource.url) {
             return PLAYER_RESULT_ERROR;

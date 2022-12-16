@@ -37,6 +37,7 @@ public:
 
     AVStream *inputVideoStream = NULL;
     AVStream *inputAudioStream = NULL;
+
     bool isOnlyRecordMedia = false;
     Resource resource{};
 
@@ -53,7 +54,10 @@ public:
     pthread_cond_t cond{};
 
     bool isOpenAudio = false;
-    char *mine = "video/avc";
+
+    char *videoMineType = MEDIA_MIMETYPE_VIDEO_AVC;
+
+    char *audioMineType = MEDIA_MIMETYPE_AUDIO_AAC;
 
     volatile enum PlayState playState = UNINITIALIZED;
 
@@ -74,7 +78,6 @@ public:
     PlayState GetPlayState();
 
     void SetStateListener(void (*stateListener)(PlayState, int));
-
 };
 
 #endif //AUDIO_PRACTICE_QUEUE_H

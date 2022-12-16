@@ -2,8 +2,10 @@
 # documentation: https://d.android.com/studio/projects/add-native-code.html
 
 cmake_minimum_required(VERSION 3.10.2)
-set(CMAKE_C_COMPILER "clang")
-set(CMAKE_CXX_COMPILER "clang++")
+
+#set(CMAKE_C_COMPILER "clang")
+#set(CMAKE_CXX_COMPILER "clang++")
+
 
 set(CMAKE_BUILD_TYPE "Debug")
 project("x_ffmpeg")

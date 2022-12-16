@@ -23,8 +23,10 @@ public:
     int playerId;
     PlayerContext *playerContext = NULL;
     RecorderContext *recorderContext = NULL;
+
     void (*playStateListener)(PlayState, int) = NULL;
     void (*recorderStateListener)(RecordState, int) = NULL;
+
     JPlayerObject jPlayer;
 
 public:
@@ -35,7 +37,7 @@ public:
 
     void StartDeMuxThread();
 
-    void StartDecodeThread() const;
+    void StartDecodeThread() ;
 
     void StartOpenResourceThread() const;
 
@@ -47,7 +49,7 @@ public:
 
     int Configure(ANativeWindow *window, int w, int h, bool isOnly) const;
 
-    int OnWindowChange(ANativeWindow *window, int w, int h) const;
+    int OnWindowChange(ANativeWindow *window, int w, int h) ;
 
     int OnWindowDestroy(ANativeWindow *window);
 
@@ -69,7 +71,11 @@ public:
 
     int ResumeRecord(void) const;
 
-    int Release(void) ;
+    bool isRecording() {
+        return (recorderContext && recorderContext->recordState == RECORDING);
+    }
+
+    int Release(void);
 
     void SetPlayStateChangeListener(void (*listener)(PlayState playState, int id));
 

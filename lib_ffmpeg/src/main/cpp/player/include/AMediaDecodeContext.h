@@ -25,16 +25,19 @@ extern "C" {
 
 
 #define TIMEOUT_US  10000
+
 #define  MEDIA_MIMETYPE_AUDIO_AAC  "audio/mp4a-latm"
+#define  MEDIA_MIMETYPE_VIDEO_AVC  "video/avc"
 
 //wrap Android MediaCodec
 class AMediaDecodeContext {
 
 public:
-    AMediaCodec *videoMediaCodec = nullptr;
-    AMediaCodec *audioMediaCodec = nullptr;
+    AMediaCodec *videoCodec = nullptr;
+    AMediaCodec *audioCodec = nullptr;
+
     ANativeWindow *nativeWindow = nullptr;
-    const char *mine;
+    const char *videoMineType;
     int width;
     int height;
 

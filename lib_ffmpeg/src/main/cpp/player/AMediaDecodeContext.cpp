@@ -91,12 +91,11 @@ int decode(AMediaCodec *codec, uint8_t *data, int length, int64_t pts) {
 
 
 int AMediaDecodeContext::decodeVideo(uint8_t *data, int length, int64_t pts) const {
-    return decode(videoMediaCodec, data, length, pts);
+    return decode(videoCodec, data, length, pts);
 }
 
 int AMediaDecodeContext::decodeAudio(uint8_t *data, int length, int64_t pts) const {
-    return 0;
-    //return decode(audioMediaCodec, data, length, pts);
+    return decode(audioCodec, data, length, pts);
 }
 
 
@@ -105,42 +104,42 @@ int AMediaDecodeContext::release() {
         ANativeWindow_release(nativeWindow);
         nativeWindow = nullptr;
     }
-    if (videoMediaCodec) {
-        AMediaCodec_stop(videoMediaCodec);
-        AMediaCodec_delete(videoMediaCodec);
-        videoMediaCodec = nullptr;
+    if (videoCodec) {
+        AMediaCodec_stop(videoCodec);
+        AMediaCodec_delete(videoCodec);
+        videoCodec = nullptr;
     }
-    if (audioMediaCodec) {
-        AMediaCodec_stop(audioMediaCodec);
-        AMediaCodec_delete(audioMediaCodec);
-        audioMediaCodec = nullptr;
+    if (audioCodec) {
+        AMediaCodec_stop(audioCodec);
+        AMediaCodec_delete(audioCodec);
+        audioCodec = nullptr;
     }
     return 0;
 }
 
 
 int AMediaDecodeContext::stop() const {
-    if (videoMediaCodec) {
-        return AMediaCodec_stop(videoMediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
-                                                              : PLAYER_RESULT_ERROR;
+    if (videoCodec) {
+        return AMediaCodec_stop(videoCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
+                                                         : PLAYER_RESULT_ERROR;
     }
 
     return PLAYER_RESULT_ERROR;
 }
 
 int AMediaDecodeContext::start() const {
-    if (videoMediaCodec) {
-        return AMediaCodec_start(videoMediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
-                                                               : PLAYER_RESULT_ERROR;
+    if (videoCodec) {
+        return AMediaCodec_start(videoCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
+                                                          : PLAYER_RESULT_ERROR;
     }
 
     return PLAYER_RESULT_ERROR;
 }
 
 int AMediaDecodeContext::flush() const {
-    if (videoMediaCodec) {
-        return AMediaCodec_flush(videoMediaCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
-                                                               : PLAYER_RESULT_ERROR;
+    if (videoCodec) {
+        return AMediaCodec_flush(videoCodec) == AMEDIA_OK ? PLAYER_RESULT_OK
+                                                          : PLAYER_RESULT_ERROR;
     }
     return PLAYER_RESULT_ERROR;
 }
@@ -156,14 +155,14 @@ int AMediaDecodeContext::createVideoCodec(const char *mineType, ANativeWindow *w
         LOGE("MediaDecoder createVideoCodec() not support video size");
         return PLAYER_RESULT_ERROR;
     }
-    if (videoMediaCodec) {
-        AMediaCodec_stop(videoMediaCodec);
-        AMediaCodec_delete(videoMediaCodec);
-        videoMediaCodec = nullptr;
+    if (videoCodec) {
+        AMediaCodec_stop(videoCodec);
+        AMediaCodec_delete(videoCodec);
+        videoCodec = nullptr;
         LOGW("MediaDecoder createAMediaCodec() delete old codec!");
     }
-    videoMediaCodec = AMediaCodec_createDecoderByType(mineType);
-    if (!videoMediaCodec) {
+    videoCodec = AMediaCodec_createDecoderByType(mineType);
+    if (!videoCodec) {
         LOGE("MediaDecoder createAMediaCodec()  create decoder fail!");
         return PLAYER_RESULT_ERROR;
     } else {
@@ -171,7 +170,7 @@ int AMediaDecodeContext::createVideoCodec(const char *mineType, ANativeWindow *w
     }
     AMediaFormat *videoFormat = AMediaFormat_new();
     AMediaFormat_setString(videoFormat, "mime", mineType);
-    this->mine = mineType;
+    this->videoMineType = mineType;
     if (window) {
         nativeWindow = window;
     }
@@ -186,7 +185,7 @@ int AMediaDecodeContext::createVideoCodec(const char *mineType, ANativeWindow *w
         AMediaFormat_setBuffer(videoFormat, "csd-1", pps, ppsSize); // pps
     }
 
-    media_status_t status = AMediaCodec_configure(videoMediaCodec, videoFormat, nativeWindow,
+    media_status_t status = AMediaCodec_configure(videoCodec, videoFormat, nativeWindow,
                                                   nullptr,
                                                   0);
 
@@ -194,8 +193,8 @@ int AMediaDecodeContext::createVideoCodec(const char *mineType, ANativeWindow *w
         LOGD("MediaDecoder configure AMediaCodec success!");
     } else {
         LOGE("MediaDecoder configure AMediaCodec fail!,ret=%d", status);
-        AMediaCodec_delete(videoMediaCodec);
-        videoMediaCodec = nullptr;
+        AMediaCodec_delete(videoCodec);
+        videoCodec = nullptr;
         return PLAYER_RESULT_ERROR;
     }
     return PLAYER_RESULT_OK;
@@ -204,14 +203,14 @@ int AMediaDecodeContext::createVideoCodec(const char *mineType, ANativeWindow *w
 
 int AMediaDecodeContext::initVideoCodec(uint8_t *sps, int spsSize, uint8_t *pps, int ppsSize) {
     if (nativeWindow) {
-        return createVideoCodec(mine, nativeWindow, width, height, sps, spsSize, pps, ppsSize);
+        return createVideoCodec(videoMineType, nativeWindow, width, height, sps, spsSize, pps, ppsSize);
     }
     return PLAYER_RESULT_ERROR;
 }
 
 void
 AMediaDecodeContext::configVideo(char *mineType, ANativeWindow *window, int w, int h) {
-    this->mine = mineType;
+    this->videoMineType = mineType;
     this->nativeWindow = window;
     this->width = w;
     this->height = h;
