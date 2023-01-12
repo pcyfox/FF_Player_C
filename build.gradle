@@ -34,6 +34,6 @@ task clean(type: Delete) {
 
 
 ext {
-    javaSourceCompatibility = JavaVersion.VERSION_1_8
-    javaTargetCompatibility = JavaVersion.VERSION_1_8
+    javaSourceCompatibility = JavaVersion.VERSION_11
+    javaTargetCompatibility = JavaVersion.VERSION_11
 }
