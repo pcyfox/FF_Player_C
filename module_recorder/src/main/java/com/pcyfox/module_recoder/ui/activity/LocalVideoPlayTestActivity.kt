@@ -29,10 +29,6 @@ class LocalVideoPlayTestActivity : AppCompatActivity() {
         PermissionUtils.permission(PermissionConstants.MICROPHONE, PermissionConstants.STORAGE)
             .request()
         initView()
-        val store = File(storeDir)
-        if (!store.exists()) {
-            store.mkdirs()
-        }
         startTime = TimeUtils.getNowString(TimeUtils.getSafeDateFormat("yyyyMMdd_HH_mm_ss"))
     }
 
@@ -122,8 +118,6 @@ class LocalVideoPlayTestActivity : AppCompatActivity() {
                 }
             }
         }
-
-
     }
 
     private fun mux() {
@@ -143,6 +137,20 @@ class LocalVideoPlayTestActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         fPlayer.release()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (permissions.size == grantResults.size) {
+            val store = File(storeDir)
+            if (!store.exists()) {
+                store.mkdirs()
+            }
+        }
     }
 
 }

@@ -154,7 +154,7 @@ MERGED from [androidx.startup:startup-runtime:1.0.0] /Users/sptlt/.gradle/caches
 	android:supportsRtl
 		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:24:9-35
 	android:label
-		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:21:9-38
+		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:21:9-41
 	android:hardwareAccelerated
 		ADDED from /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/app/src/main/AndroidManifest.xml:19:9-43
 	tools:ignore

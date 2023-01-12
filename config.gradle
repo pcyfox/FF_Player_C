@@ -1,7 +1,7 @@
 ext {
     compileSdkVersion = 32
     androidBuildTools = '30.0.2'
-    androidTargetSdk = 32
+    androidTargetSdk = 24
     minSdkVersion = 23
 
     versionCode =1
