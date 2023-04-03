@@ -5,8 +5,8 @@
 #include "PlayerContext.h"
 
 PlayerContext::PlayerContext() {
-    pthread_mutex_init(&mutex, NULL);
-    pthread_cond_init(&cond, NULL);
+    pthread_mutex_init(&mutex, nullptr);
+    pthread_cond_init(&cond, nullptr);
     playState = UNINITIALIZED;
     if (IS_DEBUG) {
         av_log_set_level(AV_LOG_DEBUG);

@@ -38,6 +38,7 @@ public:
     AVStream *o_video_stream = NULL;
     AVStream *o_audio_stream = NULL;
 
+
     volatile enum RecordState recordState = RECORD_UN_START;
 private:
     void (*listener)(RecordState, int) = NULL;

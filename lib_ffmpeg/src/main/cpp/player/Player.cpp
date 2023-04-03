@@ -349,9 +349,7 @@ int ProcessVideoPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerCont
     if (recorderInfo != nullptr) {
         RecordState recordState = recorderInfo->GetRecordState();
         //还需要写入文件尾部信h264息
-        if (recordState == RECORD_STOP ||
-            recordState == RECORD_START ||
-            recordState == RECORDING) {
+        if (recordState == RECORD_START || recordState == RECORDING) {
             // Create a new packet that references the same data as src
             AVPacket *copyPkt = av_packet_clone(packet);
             if (copyPkt != nullptr) {
