@@ -29,7 +29,7 @@ class TestRecorderActivity : AppCompatActivity() {
     //private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
     //private var url = "rtsp://admin:taike@2020@192.168.10.63:554/Streaming/Channels/101?transportmode=unicast&profile=Profile_1"
     //private var url = "http://stream4.iqilu.com/ksd/video/2020/02/17/c5e02420426d58521a8783e754e9f4e6.mp4"
-    private var url = "http://vfx.mtime.cn/Video/2019/03/19/mp4/190319212559089721.mp4"
+    private var url = "rtsp://admin:taike@2020@192.168.40.15:554/Streaming/Channels/101?transportmode=unicast&profile=Profile_1"
 
     private var recordCount = 0
     private var startTime = "2021"

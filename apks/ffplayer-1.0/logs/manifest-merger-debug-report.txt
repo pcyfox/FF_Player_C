@@ -10,7 +10,7 @@ MERGED from [androidx.databinding:databinding-runtime:7.3.1] /Users/sptlt/.gradl
 MERGED from [androidx.lifecycle:lifecycle-runtime-ktx:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/0da254f7fba1f546f90e8a04ffb6f413/transformed/jetified-lifecycle-runtime-ktx-2.4.0/AndroidManifest.xml:17:1-24:12
 MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/4d10b441e13de26961f30c777dfc1d4a/transformed/jetified-leakcanary-android-2.7/AndroidManifest.xml:17:1-28:12
 MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-25:12
-MERGED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:2:1-41:12
+MERGED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:2:1-52:12
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/sptlt/.gradle/caches/transforms-3/b767dad15c535e9fb21b84fb10b8766f/transformed/constraintlayout-2.1.4/AndroidManifest.xml:2:1-11:12
 MERGED from [:lib_ffmpeg] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/lib_ffmpeg/build/intermediates/merged_manifest/debug/AndroidManifest.xml:2:1-9:12
 MERGED from [androidx.appcompat:appcompat:1.4.2] /Users/sptlt/.gradle/caches/transforms-3/9d0296f8293178a34f0fdc3d6fa31786/transformed/appcompat-1.4.2/AndroidManifest.xml:17:1-24:12
@@ -127,8 +127,8 @@ MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradl
 MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/4d10b441e13de26961f30c777dfc1d4a/transformed/jetified-leakcanary-android-2.7/AndroidManifest.xml:22:5-26:19
 MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:5-23:19
 MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:15:5-23:19
-MERGED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:9:5-39:19
-MERGED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:9:5-39:19
+MERGED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:18:5-50:19
+MERGED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:18:5-50:19
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/sptlt/.gradle/caches/transforms-3/b767dad15c535e9fb21b84fb10b8766f/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/sptlt/.gradle/caches/transforms-3/b767dad15c535e9fb21b84fb10b8766f/transformed/constraintlayout-2.1.4/AndroidManifest.xml:9:5-20
 MERGED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/c3d197f881b252c48be747492b1efb1f/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:25:5-35:19
@@ -229,8 +229,8 @@ MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradl
 MERGED from [com.squareup.leakcanary:leakcanary-android:2.7] /Users/sptlt/.gradle/caches/transforms-3/4d10b441e13de26961f30c777dfc1d4a/transformed/jetified-leakcanary-android-2.7/AndroidManifest.xml:20:5-44
 MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
 MERGED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
-MERGED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:7:5-44
-MERGED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:7:5-44
+MERGED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:7:5-44
+MERGED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:7:5-44
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/sptlt/.gradle/caches/transforms-3/b767dad15c535e9fb21b84fb10b8766f/transformed/constraintlayout-2.1.4/AndroidManifest.xml:5:5-7:41
 MERGED from [androidx.constraintlayout:constraintlayout:2.1.4] /Users/sptlt/.gradle/caches/transforms-3/b767dad15c535e9fb21b84fb10b8766f/transformed/constraintlayout-2.1.4/AndroidManifest.xml:5:5-7:41
 MERGED from [:lib_ffmpeg] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/lib_ffmpeg/build/intermediates/merged_manifest/debug/AndroidManifest.xml:5:5-7:41
@@ -341,62 +341,76 @@ ADDED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/
 		ADDED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:22:13-50
 	android:name
 		ADDED from [:module_recorder] /Users/sptlt/Projects/AndroidProjects/RTSP_Player/FF_Player_C/module_recorder/build/intermediates/merged_manifest/debug/AndroidManifest.xml:21:13-92
+queries
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:9:5-16:15
+intent#action:name:android.intent.action.MAIN
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:10:9-12:18
+intent#action:name:android.intent.action.VIEW
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:13:9-15:18
+action#android.intent.action.VIEW
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:14:13-65
+	android:name
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:14:21-62
 activity#com.blankj.utilcode.util.UtilsTransActivity4MainProcess
-ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:10:9-14:75
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:19:9-24:75
 	android:windowSoftInputMode
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:14:13-72
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:24:13-72
+	android:exported
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:22:13-37
 	android:configChanges
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:12:13-74
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:21:13-74
 	android:theme
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:13:13-55
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:23:13-55
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:11:13-83
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:20:13-83
 activity#com.blankj.utilcode.util.UtilsTransActivity
-ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:15:9-20:75
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:25:9-31:75
 	android:multiprocess
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:18:13-40
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:29:13-40
 	android:windowSoftInputMode
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:20:13-72
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:31:13-72
+	android:exported
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:28:13-37
 	android:configChanges
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:17:13-74
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:27:13-74
 	android:theme
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:19:13-55
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:30:13-55
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:16:13-71
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:26:13-71
 provider#com.blankj.utilcode.util.UtilsFileProvider
-ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:22:9-30:20
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:33:9-41:20
 	android:grantUriPermissions
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:26:13-47
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:37:13-47
 	android:authorities
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:24:13-69
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:35:13-73
 	android:exported
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:25:13-37
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:36:13-37
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:23:13-70
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:34:13-70
 meta-data#android.support.FILE_PROVIDER_PATHS
-ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:27:13-29:68
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:38:13-40:68
 	android:resource
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:29:17-65
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:40:17-65
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:28:17-67
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:39:17-67
 service#com.blankj.utilcode.util.MessengerUtils$ServerService
-ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:32:9-38:19
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:43:9-49:19
 	android:exported
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:34:13-37
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:45:13-37
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:33:13-81
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:44:13-81
 intent-filter#action:name:${applicationId}.messenger
-ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:35:13-37:29
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:46:13-48:29
 intent-filter#action:name:com.pcyfox.ffplayer.messenger
-ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:35:13-37:29
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:46:13-48:29
 action#${applicationId}.messenger
-ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:36:17-69
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:47:17-69
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:36:25-66
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:47:25-66
 action#com.pcyfox.ffplayer.messenger
-ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:36:17-69
+ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:47:17-69
 	android:name
-		ADDED from [com.blankj:utilcode:1.30.0] /Users/sptlt/.gradle/caches/transforms-3/8b7fb0887c0e2a2d4cd11068709f614c/transformed/jetified-utilcode-1.30.0/AndroidManifest.xml:36:25-66
+		ADDED from [com.blankj:utilcodex:1.31.1] /Users/sptlt/.gradle/caches/transforms-3/8aab5b4e192a83428516d20c81d457f3/transformed/jetified-utilcodex-1.31.1/AndroidManifest.xml:47:25-66
 provider#androidx.startup.InitializationProvider
 ADDED from [androidx.emoji2:emoji2:1.0.0] /Users/sptlt/.gradle/caches/transforms-3/c3d197f881b252c48be747492b1efb1f/transformed/jetified-emoji2-1.0.0/AndroidManifest.xml:26:9-34:20
 MERGED from [androidx.lifecycle:lifecycle-process:2.4.0] /Users/sptlt/.gradle/caches/transforms-3/8820bf602e0e84fb97a8432ebdbf80e6/transformed/jetified-lifecycle-process-2.4.0/AndroidManifest.xml:26:9-34:20

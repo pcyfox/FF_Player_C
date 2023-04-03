@@ -141,54 +141,54 @@ void *OpenResourceThread(void *pct) {
 }
 
 
-void *RecordPktThread(void *info) {
-    auto *recorderInfo = (RecorderContext *) info;
-    if (recorderInfo->GetRecordState() == RECORD_START) {
-        char *file = recorderInfo->storeFile;
+void *RecordPktThread(void *ctx) {
+    auto *recorderContext = (RecorderContext *) ctx;
+    if (recorderContext->GetRecordState() == RECORD_START) {
+        char *file = recorderContext->storeFile;
         /* create output context by file name*/
-        avformat_alloc_output_context2(&(recorderInfo->o_fmt_ctx), NULL, NULL, file);
-        if (!recorderInfo->o_fmt_ctx) {
-            recorderInfo->SetRecordState(RECORD_ERROR);
+        avformat_alloc_output_context2(&(recorderContext->o_fmt_ctx), nullptr, nullptr, file);
+        if (!recorderContext->o_fmt_ctx) {
+            recorderContext->SetRecordState(RECORD_ERROR);
             LOGE("avformat_alloc_output_context  error ,file=%s ", file);
-            delete recorderInfo;
-            recorderInfo = NULL;
+            delete recorderContext;
+            recorderContext = nullptr;
             return (void *) PLAYER_RESULT_ERROR;
         }
         /*
         * since all input files are supposed to be identical (framerate, dimension, color format, ...)
         * we can safely set output codec values from first input file
         */
-        AVCodecParameters *i_av_codec_parameters = recorderInfo->inputVideoStream->codecpar;
-        recorderInfo->o_video_stream = avformat_new_stream(recorderInfo->o_fmt_ctx, NULL);
-        if (!recorderInfo->o_video_stream) {
+        AVCodecParameters *i_av_codec_parameters = recorderContext->inputVideoStream->codecpar;
+        recorderContext->o_video_stream = avformat_new_stream(recorderContext->o_fmt_ctx, nullptr);
+        if (!recorderContext->o_video_stream) {
             LOGE("record fail,not found video stream!");
             return (void *) PLAYER_RESULT_ERROR;
         } else {
             LOGI("found video stream!");
         }
 
-        recorderInfo->o_video_stream->codecpar->codec_tag = 0;
-        int ret = avcodec_parameters_copy(recorderInfo->o_video_stream->codecpar,
+        recorderContext->o_video_stream->codecpar->codec_tag = 0;
+        int ret = avcodec_parameters_copy(recorderContext->o_video_stream->codecpar,
                                           i_av_codec_parameters);
-        recorderInfo->o_video_stream->codecpar->format = AV_PIX_FMT_YUV420P;
+        recorderContext->o_video_stream->codecpar->format = AV_PIX_FMT_YUV420P;
         if (ret < 0) {
-            recorderInfo->SetRecordState(RECORD_ERROR);
+            recorderContext->SetRecordState(RECORD_ERROR);
             LOGE("Failed to copy codec parameters\n");
             return (void *) PLAYER_RESULT_ERROR;
         }
         /*open file  pb:AVIOContext*/
-        if (avio_open(&recorderInfo->o_fmt_ctx->pb, file, AVIO_FLAG_WRITE) < 0) {
+        if (avio_open(&recorderContext->o_fmt_ctx->pb, file, AVIO_FLAG_WRITE) < 0) {
             LOGE("open file ERROR,file=%s", file);
-            recorderInfo->SetRecordState(RECORD_ERROR);
+            recorderContext->SetRecordState(RECORD_ERROR);
             return (void *) PLAYER_RESULT_ERROR;
         } else {
             LOGI("open file success,file=%s", file);
         }
         /*write file header*/
-        ret = avformat_write_header(recorderInfo->o_fmt_ctx, nullptr);
+        ret = avformat_write_header(recorderContext->o_fmt_ctx, nullptr);
         if (ret < 0) {
             LOGE("record video write file header error,ret=%d", ret);
-            recorderInfo->SetRecordState(RECORD_ERROR);
+            recorderContext->SetRecordState(RECORD_ERROR);
             return (void *) PLAYER_RESULT_ERROR;
         } else {
             LOGI("record video write file header success!");
@@ -199,26 +199,26 @@ void *RecordPktThread(void *info) {
 
     while (true) {
         AVPacket *packet;
-        RecordState recordState = recorderInfo->GetRecordState();
+        RecordState recordState = recorderContext->GetRecordState();
         if (recordState == RECORDER_RELEASE) {
             break;
         }
         if (recordState == RECORD_PAUSE) {
-            recorderInfo->videoPacketQueue.clearAVPacket();
+            recorderContext->videoPacketQueue.clearAVPacket();
             continue;
         }
 
         if (recordState == RECORD_STOP) {
             /*write file trailer*/
             LOGD("--------- recordState changed to stop ---------");
-            av_write_trailer(recorderInfo->o_fmt_ctx);
-            avformat_close_input(&recorderInfo->o_fmt_ctx);
-            recorderInfo->o_fmt_ctx = NULL;
+            av_write_trailer(recorderContext->o_fmt_ctx);
+            avformat_close_input(&recorderContext->o_fmt_ctx);
+            recorderContext->o_fmt_ctx = nullptr;
             LOGI("--------- record stop ,and write trailer over ---------");
             break;
         }
 
-        int ret = recorderInfo->videoPacketQueue.getAvPacket(&packet);
+        int ret = recorderContext->videoPacketQueue.getAvPacket(&packet);
 
         if (ret == PLAYER_RESULT_ERROR) {
             //LOGW("-----------------record,not found pkt in queue--------------");
@@ -226,28 +226,28 @@ void *RecordPktThread(void *info) {
         }
 
         //等待关键帧或sps、pps的出现
-        if (recorderInfo->GetRecordState() == RECORD_START) {
+        if (recorderContext->GetRecordState() == RECORD_START) {
             int type = packet->flags;
             if (type == 0x65 || type == 0x67 || type == 0x68 || type == 24 || type == 25 ||
                 type == 26 || type == 27) {
-                recorderInfo->SetRecordState(RECORDING);
+                recorderContext->SetRecordState(RECORDING);
                 LOGI("-----------------real start recording--------------");
             } else {
                 LOGW("-----------------record ,current is not key frame--------------");
                 continue;
             }
         }
-        if (recorderInfo->GetRecordState() == RECORDING) {
+        if (recorderContext->GetRecordState() == RECORDING) {
             //---------------write pkt data to file-----------
             /*write packet and auto free packet*/
-            av_interleaved_write_frame(recorderInfo->o_fmt_ctx, packet);
+            av_interleaved_write_frame(recorderContext->o_fmt_ctx, packet);
         }
         av_packet_unref(packet);
     }
     LOGI("----------------- record work stop,start to delete recordInfo--------------");
-    recorderInfo->videoPacketQueue.clearAVPacket();
-    if (recorderInfo->GetRecordState() == RECORDER_RELEASE) {
-        StartRelease(NULL, recorderInfo);
+    recorderContext->videoPacketQueue.clearAVPacket();
+    if (recorderContext->GetRecordState() == RECORDER_RELEASE) {
+        StartRelease(nullptr, recorderContext);
     }
     return (void *) PLAYER_RESULT_OK;
 }
@@ -326,7 +326,7 @@ int ProcessVideoPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerCont
     //The main difference between these media types is the presence of start codes in the bitstream.
     // If the subtype is MEDIASUBTYPE_AVC1, the bitstream does not contain start codes.
     if (type < 0) {//MEDIASUBTYPE_AVC1
-        if (playerContext->bsf_ctx == NULL) {
+        if (playerContext->bsf_ctx == nullptr) {
             const AVBitStreamFilter *bsfilter = av_bsf_get_by_name("h264_mp4toannexb");
             if (!bsfilter) {
                 return PLAYER_RESULT_ERROR;
@@ -346,7 +346,7 @@ int ProcessVideoPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerCont
     }
 
     //加入录制队列
-    if (recorderInfo != NULL) {
+    if (recorderInfo != nullptr) {
         RecordState recordState = recorderInfo->GetRecordState();
         //还需要写入文件尾部信h264息
         if (recordState == RECORD_STOP ||
@@ -354,7 +354,7 @@ int ProcessVideoPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerCont
             recordState == RECORDING) {
             // Create a new packet that references the same data as src
             AVPacket *copyPkt = av_packet_clone(packet);
-            if (copyPkt != NULL) {
+            if (copyPkt != nullptr) {
                 recorderInfo->videoPacketQueue.putAvPacket(copyPkt);
             } else {
                 LOGE("ProcessVideoPacket clone packet fail!");
@@ -373,7 +373,6 @@ int ProcessVideoPacket(AVPacket *packet, AVCodecParameters *codecpar, PlayerCont
 void *DeMuxThread(void *param) {
     auto *player = (Player *) param;
     PlayerContext *playerContext = player->playerContext;
-    RecorderContext *recorderContext = player->recorderContext;
     if (playerContext == nullptr) {
         LOGE("Player is not createVideoCodec");
         return param;
@@ -414,6 +413,7 @@ void *DeMuxThread(void *param) {
             break;
         }
 
+        RecorderContext *recorderContext = player->recorderContext;
         //只有播放暂停与录制暂停同时出现才会暂停
         if (state == PAUSE && recorderContext != nullptr &&
             recorderContext->GetRecordState() == RECORD_PAUSE) {
@@ -428,12 +428,12 @@ void *DeMuxThread(void *param) {
         }
 
         AVPacket *i_pkt = av_packet_alloc();
-        if (i_pkt == NULL) {
+        if (i_pkt == nullptr) {
             LOGE("DeMux fail,because alloc av packet fail!");
-            return NULL;
+            return nullptr;
         }
-        int ret = av_read_frame(playerContext->inputContext, i_pkt);
 
+        int ret = av_read_frame(playerContext->inputContext, i_pkt);
         if (ret == 0 && i_pkt->size > 0) {
             if (i_pkt->stream_index == video_stream_index) {//video packet
                 ProcessVideoPacket(i_pkt, i_av_codec_parameters, playerContext, recorderContext);
@@ -477,8 +477,8 @@ void *DeMuxThread(void *param) {
 void Player::StartDecodeThread() {
     LOGI("StartDecodeThread() called");
     pthread_create(&playerContext->decode_thread, nullptr, DecodeThread, this);
-    pthread_setname_np(playerContext->deMux_thread, "decode_thread");
-    pthread_detach(playerContext->deMux_thread);
+    pthread_setname_np(playerContext->decode_thread, "decode_thread");
+    pthread_detach(playerContext->decode_thread);
 }
 
 void Player::StartDeMuxThread() {
@@ -494,21 +494,22 @@ void Player::StartOpenResourceThread() const {
         return;
     }
     LOGI("start open resource thread");
-    pthread_create(&playerContext->open_resource_thread, NULL, OpenResourceThread, playerContext);
+    pthread_create(&playerContext->open_resource_thread, nullptr, OpenResourceThread,
+                   playerContext);
     pthread_setname_np(playerContext->open_resource_thread, "open_resource_thread");
     pthread_detach(playerContext->open_resource_thread);
 }
 
 
 void Player::StartRecorderThread() const {
-    if (playerContext != NULL && recorderContext != NULL) {
+    if (playerContext != nullptr && recorderContext != nullptr) {
         recorderContext->inputVideoStream = playerContext->inputVideoStream;
     } else {
         LOGE("Start recorder thread fail!");
         return;
     }
     LOGI("Start recorder thread");
-    pthread_create(&recorderContext->recorder_thread, NULL, RecordPktThread, recorderContext);
+    pthread_create(&recorderContext->recorder_thread, nullptr, RecordPktThread, recorderContext);
     pthread_setname_np(recorderContext->recorder_thread, "recorder_thread");
     pthread_detach(recorderContext->recorder_thread);
 }
@@ -745,10 +746,10 @@ int Player::PrepareRecorder(char *outPath) {
     if (!outPath) {
         return PLAYER_RESULT_ERROR;
     }
-    if (recorderContext == NULL) {
+    if (recorderContext == nullptr) {
         recorderContext = new RecorderContext;
         recorderContext->id = playerId;
-        if (playerContext != NULL) {
+        if (playerContext != nullptr) {
             recorderContext->inputVideoStream = playerContext->inputVideoStream;
         }
         LOGI("---------PrepareRecorder()  new RecorderInfo ");
