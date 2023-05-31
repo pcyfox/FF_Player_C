@@ -45,7 +45,7 @@
             android:windowSoftInputMode="stateHidden|stateUnchanged" />
 
         <activity
-            android:name="com.pcyfox.module_recoder.ui.activity.MediaRecorderActivity"
+            android:name="com.pcyfox.module_recoder.ui.activity.OnlyRecorderActivity"
             android:screenOrientation="landscape"
             android:turnScreenOn="true"
             android:windowSoftInputMode="stateHidden|stateUnchanged" />

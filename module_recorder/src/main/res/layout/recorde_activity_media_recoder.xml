@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".ui.activity.MediaRecorderActivity">
+    tools:context=".ui.activity.OnlyRecorderActivity">
 
     <SurfaceView
         android:id="@+id/recorder_rtp_view"
@@ -15,7 +15,7 @@
         android:keepScreenOn="true" />
 
     <EditText
-        android:id="@+id/recorder_tip"
+        android:id="@+id/recorder_url"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"

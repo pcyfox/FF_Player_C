@@ -96,7 +96,7 @@ public class AudioRecorder implements RecorderContract.Recorder {
 
     @Override
     public void startRecording() {
-        Log.d(TAG, "startRecording() called");
+        Log.d(TAG, "startRecording() called-------------<");
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && isPaused) {
             try {
                 recorder.resume();
@@ -125,7 +125,7 @@ public class AudioRecorder implements RecorderContract.Recorder {
                     }
                 }
             } else {
-                Log.e(TAG, "Recorder is not PREPARED!!!");
+                Log.e(TAG, "startRecording() called fail,Recorder is not PREPARED!!!");
             }
             isPaused = false;
         }
@@ -194,6 +194,7 @@ public class AudioRecorder implements RecorderContract.Recorder {
     }
 
     private void startRecordingTimer() {
+        Log.d(TAG, "startRecordingTimer() called");
         timerProgress = new Timer();
         timerProgress.schedule(new TimerTask() {
             @Override

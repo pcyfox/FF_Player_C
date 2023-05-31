@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="onClick"
-            android:text="Test Play" />
+            android:text="Test Play and record Av" />
 
         <Button
             android:id="@+id/btn_test_multi_video_record"
@@ -40,6 +40,16 @@
             android:layout_marginStart="20dp"
             android:onClick="onClick"
             android:text="Local Video Play Test" />
+
+
+
+        <Button
+            android:id="@+id/btn_test_video_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:onClick="onClick"
+            android:text=" Video View Test" />
 
     </LinearLayout>
 

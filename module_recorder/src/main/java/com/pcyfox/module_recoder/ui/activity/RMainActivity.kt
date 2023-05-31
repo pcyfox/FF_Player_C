@@ -15,7 +15,7 @@ class RMainActivity : AppCompatActivity() {
     fun onClick(v: View) {
         when (v.id) {
             R.id.btn_test_play_an_recorde -> {
-                startActivity(Intent(this, TestRecorderActivity::class.java))
+                startActivity(Intent(this, OnlyRecorderActivity::class.java))
             }
             R.id.btn_test_multi_video_record -> {
                 startActivity(Intent(this, RecordeMultiVideoTestActivity::class.java))
@@ -23,6 +23,12 @@ class RMainActivity : AppCompatActivity() {
             R.id.btn_local_video_play_test -> startActivity(
                 Intent(
                     this, LocalVideoPlayTestActivity::class.java
+                )
+            )
+
+            R.id.btn_test_video_view -> startActivity(
+                Intent(
+                    this, TestVideoVIewActivity::class.java
                 )
             )
         }

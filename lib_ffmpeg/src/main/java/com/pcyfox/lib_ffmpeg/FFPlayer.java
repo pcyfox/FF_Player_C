@@ -167,6 +167,7 @@ public class FFPlayer {
     }
 
     public int prepareRecorder(String outFilePath) {
+        Log.d(TAG, "prepareRecorder() called with: outFilePath = [" + outFilePath + "]");
         return prepareRecorder(outFilePath, id);
     }
 

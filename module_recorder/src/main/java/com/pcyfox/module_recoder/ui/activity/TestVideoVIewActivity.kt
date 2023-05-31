@@ -16,20 +16,18 @@ import com.pcyfox.module_recoder.ui.view.AVRecorderCallback
 import kotlinx.android.synthetic.main.recorder_activity_test.*
 import java.io.File
 
-class TestRecorderActivity : AppCompatActivity() {
+class TestVideoVIewActivity : AppCompatActivity() {
     companion object {
         private val TAG = "TestActivity"
         private const val KEY_URL = "KEY_URL"
         private val storeDir = Environment.getExternalStorageDirectory().absolutePath + "/test/"
     }
 
-    /**
-     *
-     */
     //private var url = "rtsp://admin:taike@2020@192.168.28.12:554/h264/ch01/main/av_stream"
     //private var url = "rtsp://admin:taike@2020@192.168.10.63:554/Streaming/Channels/101?transportmode=unicast&profile=Profile_1"
     //private var url = "http://stream4.iqilu.com/ksd/video/2020/02/17/c5e02420426d58521a8783e754e9f4e6.mp4"
-    private var url = "rtsp://admin:taike@2020@192.168.40.15:554/Streaming/Channels/101?transportmode=unicast&profile=Profile_1"
+
+    private var url = "rtsp://admin:taike@2020@192.168.10.54:554/Streaming/Channels/101?transportmode=unicast&profile=Profile_1"
 
     private var recordCount = 0
     private var startTime = "2021"
@@ -59,22 +57,27 @@ class TestRecorderActivity : AppCompatActivity() {
         fPlayer.run {
             avRecorderCallback = object : AVRecorderCallback {
                 override fun onPrepareRecord() {
+                    Log.d(TAG, "onPrepareRecord() called")
                 }
 
                 override fun onStartRecord(audio: File?, video: File?) {
+                    Log.d(TAG, "onStartRecord() called with: audio = $audio, video = $video")
                 }
 
                 override fun onPauseRecord() {
+                    Log.d(TAG, "onPauseRecord() called")
                 }
 
                 override fun onRecordProgress(mills: Long, amp: Int) {
-                    //Log.d(TAG, "onRecordProgress() called with: mills = $mills, amp = $amp")
+                    Log.d(TAG, "onRecordProgress() called with: mills = $mills, amp = $amp")
                 }
 
                 override fun onStopRecord(audio: File?, video: File?) {
+                    Log.d(TAG, "onStopRecord() called with: audio = $audio, video = $video")
                 }
 
                 override fun onError(throwable: Exception?) {
+                    Log.d(TAG, "onError() called with: throwable = $throwable")
                 }
             }
             setOnStateChangeListener { state ->

@@ -9,7 +9,7 @@
 
     <application>
         <activity android:name=".ui.activity.RMainActivity"/>
-        <activity android:name=".ui.activity.TestRecorderActivity" android:screenOrientation="landscape"/>
+        <activity android:name=".ui.activity.TestVideoVIewActivity" android:screenOrientation="landscape"/>
         <activity android:name=".ui.activity.LocalVideoPlayTestActivity" android:screenOrientation="landscape"/>
     </application>
 

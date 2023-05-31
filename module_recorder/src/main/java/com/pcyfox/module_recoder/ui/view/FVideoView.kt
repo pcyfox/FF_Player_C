@@ -26,7 +26,7 @@ class FVideoView : RelativeLayout {
     private val sv = SurfaceView(context)
     private var videoPath = ""
     private var audioPath = ""
-    private val TAG = "RecorderView"
+    private val TAG = "FVideoView"
     private val ffPlayer: FFPlayer = FFPlayer(hashCode(), true)
     private val audioRecorder = AudioRecorder.getInstance()
     private var isNeedRelease = false
@@ -56,22 +56,6 @@ class FVideoView : RelativeLayout {
 
     fun prepareRecorder(videoPath: String?, audioPath: String? = "") {
         Log.d(TAG, "prepareRecorder() called with: videoPath = $videoPath, audioPath = $audioPath")
-
-        ffPlayer.setOnRecordStateChangeListener {
-            Log.d(TAG, "record StateChange state=$it")
-            if (isOnlyRecordeVideo) {
-                return@setOnRecordStateChangeListener
-            }
-            when (it) {
-                RecordState.RECORD_PREPARED-> audioRecorder.startRecording()
-                RecordState.RECORD_PAUSE -> audioRecorder.pauseRecording()
-                RecordState.RECORD_STOP -> audioRecorder.stopRecording()
-                RecordState.RECORD_RESUME -> audioRecorder.startRecording()
-                else -> {
-                }
-            }
-        }
-
         if (!videoPath.isNullOrEmpty()) {
             this.videoPath = videoPath
             ffPlayer.prepareRecorder(videoPath)
@@ -91,10 +75,28 @@ class FVideoView : RelativeLayout {
             )
         }
 
+        ffPlayer.setOnRecordStateChangeListener {
+            Log.d(TAG, "record StateChange state=$it")
+            if (isOnlyRecordeVideo) {
+                return@setOnRecordStateChangeListener
+            }
+            when (it) {
+                RecordState.RECORDING-> audioRecorder.startRecording()
+                RecordState.RECORD_PAUSE -> audioRecorder.pauseRecording()
+                RecordState.RECORD_STOP -> audioRecorder.stopRecording()
+                RecordState.RECORD_RESUME -> audioRecorder.startRecording()
+                else -> {
+                }
+            }
+        }
+
     }
 
     fun startRecord(): Boolean {
-        Log.d(TAG, "startRecord() called with: videoPath = $videoPath, audioPath = $audioPath")
+        Log.d(
+            TAG,
+            "startRecord() called with: videoPath = $videoPath, audioPath = $audioPath,isOnlyRecordeVideo = $isOnlyRecordeVideo"
+        )
         if (ffPlayer.playState != PlayState.STARTED) {
             Log.e(TAG, "startRecord() called fail,state=${ffPlayer.playState}")
             return false
