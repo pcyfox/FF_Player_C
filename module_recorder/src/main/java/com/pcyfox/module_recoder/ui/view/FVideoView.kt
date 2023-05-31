@@ -52,7 +52,6 @@ class FVideoView : RelativeLayout {
     }
 
     fun getPlayState() = ffPlayer.playState
-
     fun getRecorderState() = ffPlayer.recodeState
 
     fun prepareRecorder(videoPath: String?, audioPath: String? = "") {
@@ -64,7 +63,7 @@ class FVideoView : RelativeLayout {
                 return@setOnRecordStateChangeListener
             }
             when (it) {
-                RecordState.RECORDING -> audioRecorder.startRecording()
+                RecordState.RECORD_PREPARED-> audioRecorder.startRecording()
                 RecordState.RECORD_PAUSE -> audioRecorder.pauseRecording()
                 RecordState.RECORD_STOP -> audioRecorder.stopRecording()
                 RecordState.RECORD_RESUME -> audioRecorder.startRecording()
